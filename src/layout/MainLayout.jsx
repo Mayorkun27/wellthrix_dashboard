@@ -137,7 +137,7 @@ const MainLayout = ({ child, pageName, subText }) => {
             {/* Main Content */}
             <div 
                 ref={mainContentRef}
-                className="my-8 pb-10 md:h-[calc(100%-10vh)] h-[calc(100%-(10vh+40px+16px))] overflow-y-scroll no-scrollbar"
+                className="my-6 lg:pb-10 md:h-[calc(100%-10vh)] h-[calc(100%-(10vh+10px))] overflow-y-scroll no-scrollbar"
                 style={{
                     minHeight: '0',
                     WebkitOverflowScrolling: 'touch',
@@ -150,6 +150,7 @@ const MainLayout = ({ child, pageName, subText }) => {
                         initial="initial"
                         animate="animate"
                         exit="exit"
+                        className='made-container'
                         variants={pageVariants}
                         style={{ minHeight: "100%", display: "flex", flexDirection: "column" }}
                     >

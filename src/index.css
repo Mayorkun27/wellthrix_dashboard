@@ -18,9 +18,9 @@ body {
 }
 
 .made-container {
-    @apply w-[90%] mx-auto md:px-0 backdrop-blur-md
+    @apply md:w-[95%] w-[90%] mx-auto md:px-0 backdrop-blur-md
 }
 
-::-webkit-scrollbar{
+.no-scrollbar::-webkit-scrollbar{
     @apply hidden
 }
