@@ -18,9 +18,18 @@ body {
 }
 
 .made-container {
-    @apply md:w-[95%] w-[90%] mx-auto md:px-0 backdrop-blur-md
+    @apply md:w-[95%] w-[90%] mx-auto md:px-0 backdrop-blur-md;
 }
 
 .no-scrollbar::-webkit-scrollbar{
     @apply hidden
+}
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
