@@ -10,7 +10,7 @@ import { FaXmark } from 'react-icons/fa6';
 const MainLayout = ({ child, pageName, subText }) => {
     
   useEffect(() => {
-		document.title = 'Pineleaf Estates - ' + pageName
+		document.title = 'Wellthrix International - ' + pageName
 	}, [pageName])
     
   const location = useLocation();

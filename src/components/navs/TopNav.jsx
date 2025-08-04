@@ -7,7 +7,7 @@ const TopNav = ({ pageName, subText }) => {
   const [searchParam, setSearchParam] = useState('');
 
   const location = useLocation();
-  const dontShowSearchBar = ["/user/overview"].includes(location.pathname);
+  const showSearchBar = ["/user/transactions", "/user/rechargehistory"].includes(location.pathname);
 
   const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ const TopNav = ({ pageName, subText }) => {
             setSearchParam('');
           }}
           className={`gap-2 items-center border border-pryClr/50 rounded-full px-4 ${
-            dontShowSearchBar ? 'hidden' : 'md:!flex hidden'
+            showSearchBar ? 'md:!flex hidden' : 'hidden'
           }`}
         >
           <input

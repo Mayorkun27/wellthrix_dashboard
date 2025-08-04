@@ -1,13 +1,27 @@
-import logo from "./logo.png"
-import icon1 from "./icon1.png"
-import icon2 from "./icon2.png"
-import icon3 from "./icon3.png"
+import logo from "./logo.png";
+import icon1 from "./icon1.png";
+import icon2 from "./icon2.png";
+import icon3 from "./icon3.png";
+import digitalproduct1 from "./digitalproduct1.png";
+import digitalproduct2 from "./digitalproduct2.png";
+import digitalproduct3 from "./digitalproduct3.png";
+import mtnlogo from "./mtnlogo.png";
+import glologo from "./glologo.jpg";
+import airtellogo from "./airtellogo.png";
+import etisalat from "./etisalat.png";
 
 const assets = {
     logo,
     icon1,
     icon2,
-    icon3
+    icon3,
+    digitalproduct1,
+    digitalproduct2,
+    digitalproduct3,
+    mtnlogo,
+    glologo,
+    airtellogo,
+    etisalat,
 }
 
 export default assets;

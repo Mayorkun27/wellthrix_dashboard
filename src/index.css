@@ -26,7 +26,7 @@ body {
 }
 
 .styled-scrollbar::-webkit-scrollbar{
-    @apply w-1
+    @apply w-1 h-1
 }
 .styled-scrollbar::-webkit-scrollbar-thumb{
     @apply bg-pryClr/40 rounded-full
@@ -39,4 +39,8 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button{
+  @apply hidden
 }
