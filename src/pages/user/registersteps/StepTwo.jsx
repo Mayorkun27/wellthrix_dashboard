@@ -5,7 +5,7 @@ import { getCountryCallingCode, isValidPhoneNumber } from 'libphonenumber-js';
 
 const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
 
-      useEffect(() => {
+      useEffec(() => {
       window.scrollTo(0, 0);
     }, []);
 
