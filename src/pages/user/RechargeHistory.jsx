@@ -7,7 +7,7 @@ const RechargeHistory = () => {
   const [selectedType, setSelectedType] = useState('Airtime');
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-end">
         <select
           value={selectedType}
