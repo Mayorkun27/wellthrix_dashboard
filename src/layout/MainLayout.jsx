@@ -111,7 +111,7 @@ const MainLayout = ({ child, pageName, subText }) => {
             </button>
             <LeftNav setIsOpen={setIsOpen} />
         </div>
-        <div className='lg:w-3/4 w-full overflow-hidden bg-secClr pt-4'>
+        <div className='lg:w-3/4 w-full overflow-hidden bg-pryClr/20 pt-4'>
             {/* Top Nav */}
             <div className="flex gap-2 sticky top-0 z-10 items-center md:px-6 px-4">
                 <button
@@ -150,7 +150,7 @@ const MainLayout = ({ child, pageName, subText }) => {
                         initial="initial"
                         animate="animate"
                         exit="exit"
-                        className='made-container'
+                        className='made-container overflow-x-hidden'
                         variants={pageVariants}
                         style={{ minHeight: "100%", display: "flex", flexDirection: "column" }}
                     >

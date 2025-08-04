@@ -24,3 +24,10 @@ body {
 .no-scrollbar::-webkit-scrollbar{
     @apply hidden
 }
+
+.styled-scrollbar::-webkit-scrollbar{
+    @apply w-1
+}
+.styled-scrollbar::-webkit-scrollbar-thumb{
+    @apply bg-pryClr/40 rounded-full
+}
