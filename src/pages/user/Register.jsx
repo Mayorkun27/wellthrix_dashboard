@@ -20,7 +20,7 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full mx-auto py-6">
+    <div className="w-full mx-auto">
       <RegisterSteps currentStep={step} />
       
       <div>

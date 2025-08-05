@@ -12,7 +12,8 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
   const dropdownRef = useRef(null);
 
   const location = useLocation();
-  const dontShowSearchBar = ['/user/overview'].includes(location.pathname);
+  const showSearchBar = ["/user/transactions", "/user/rechargehistory"].includes(location.pathname);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
             setSearchParam('');
           }}
           className={`gap-2 items-center border border-pryClr/50 rounded-full px-4 ${
-            dontShowSearchBar ? 'hidden' : 'md:!flex hidden'
+            showSearchBar ? 'md:!flex hidden' : 'hidden'
           }`}
         >
           <input

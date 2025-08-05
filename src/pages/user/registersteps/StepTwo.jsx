@@ -5,7 +5,7 @@ import { getCountryCallingCode, isValidPhoneNumber } from 'libphonenumber-js';
 
 const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
 
-      useEffect(() => {
+    useEffect(() => {
       window.scrollTo(0, 0);
     }, []);
 
@@ -27,7 +27,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
     lastName: Yup.string().required('Last name is required'),
     dob: Yup.string()
       .required('Date of birth is required')
-      .matches(/^\d{2}\/\d{2}\/\d{2}$/, 'Must be in MM/DD/YY format'),
+      .matches(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in MM/DD/YYYY format'),
     gender: Yup.string().required('Gender is required'),
     country: Yup.string().required('Country is required'),
     state: Yup.string().required('State is required'),
@@ -180,7 +180,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
     let formattedValue = '';
     if (numbers.length > 0) formattedValue = numbers.slice(0, 2);
     if (numbers.length > 2) formattedValue += '/' + numbers.slice(2, 4);
-    if (numbers.length > 4) formattedValue += '/' + numbers.slice(4, 6);
+    if (numbers.length > 4) formattedValue += '/' + numbers.slice(4, 8);
     return formattedValue;
   };
 
@@ -246,7 +246,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
           {/* Date of Birth */}
           <div className='flex flex-col'>
             <label htmlFor='dob' className='text-sm font-medium text-gray-700 mb-1'>
-              Date of Birth (MM/DD/YY) {formik.touched.dob && formik.errors.dob && (
+              Date of Birth (MM/DD/YYYY) {formik.touched.dob && formik.errors.dob && (
                 <span className='text-red-500 text-xs'> - {formik.errors.dob}</span>
               )}
             </label>
@@ -257,8 +257,8 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
               value={formik.values.dob}
               onChange={handleDateChange}
               onBlur={formik.handleBlur}
-              placeholder='MM/DD/YY'
-              maxLength={8}
+              placeholder='MM/DD/YYYY'
+              maxLength={10}
               className={`h-12 px-4 py-2 border ${formik.touched.dob && formik.errors.dob ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             />
           </div>
