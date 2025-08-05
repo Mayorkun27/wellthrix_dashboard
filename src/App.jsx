@@ -8,6 +8,7 @@ import Digital from './pages/user/Digital'
 import Register from './pages/user/Register'
 import RechargeHistory from './pages/user/RechargeHistory'
 import Profile from './pages/user/Profile'
+import Products from './pages/user/Products'
 
 function App() {
   
@@ -21,6 +22,7 @@ function App() {
         <Route path='/user/register' element={<MainLayout pageName={"Register"} child={<Register />} />}/>
         <Route path='/user/rechargehistory' element={<MainLayout pageName={"Recharge History"} child={<RechargeHistory />} />}/>
         <Route path='/user/profile' element={<MainLayout pageName={"Profile"} child={<Profile />} />}/>
+        <Route path='/user/products' element={<MainLayout pageName={"Products"} child={<Products />} />}/>
       </Routes>
     </>
   )
