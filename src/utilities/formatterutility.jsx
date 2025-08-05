@@ -1,8 +1,8 @@
 import { TbCurrencyNaira } from "react-icons/tb"
 
-export const formatterUtility = (amount) => {
-    return <div className="flex items-center gap-1">
-            <TbCurrencyNaira size={20} />
+export const formatterUtility = (amount, noSign=false) => {
+    return <span className="inline-flex items-center">
+            <TbCurrencyNaira size={20} className={`${noSign && "hidden"}`} />
             <span>{amount.toLocaleString()}</span>
-        </div>
+        </span>
 }
