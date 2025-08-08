@@ -3,6 +3,7 @@ import { IoMdNotificationsOutline } from 'react-icons/io';
 import { GoSearch } from 'react-icons/go';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
 const options = ['Airtime', 'Data', 'Electricity'];
 
@@ -26,11 +27,16 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const { user } = useUser()
+    
+  const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
+  const splittedLastNameFirstLetter = user?.last_name.split("")[0]
+
   return (
     <div className="w-full flex gap-3 items-center justify-between">
     
       <div className="flex flex-col -leading-1">
-        <h3 className="lg:text-xl md:text-2xl text-lg font-semibold line-clamp-1">
+        <h3 className="lg:text-xl md:text-2xl text-lg font-semibold line-clamp-1 capitalize">
           {pageName}
         </h3>
         {subText && (
@@ -106,9 +112,9 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
         {/* Profile Link */}
         <Link
           to="/user/profile"
-          className="md:w-11 w-10 md:h-11 h-10 rounded-full border border-pryClr bg-white overflow-hidden flex items-center justify-center"
+          className="md:w-11 w-10 md:h-11 h-10 rounded-full border border-pryClr bg-white overflow-hidden capitalize flex items-center justify-center"
         >
-          <h3>DB</h3>
+          <h3>{`${splittedFirstNameFirstLetter}${splittedLastNameFirstLetter}`}</h3>
         </Link>
       </div>
     </div>

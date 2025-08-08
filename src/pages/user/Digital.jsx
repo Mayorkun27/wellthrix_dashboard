@@ -4,12 +4,22 @@ import AirtimePurchase from '../digitalpurchases/AirtimePurchase';
 import DataPurchase from '../digitalpurchases/DataPurchase';
 import ElectricityPurchase from '../digitalpurchases/ElectricityPurchase';
 import Modal from '../../components/modals/Modal';
+import { useUser } from '../../context/UserContext';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
+const API_URL = import.meta.env.VITE_API_BASE_URL
 
 const Digital = () => {
   const [selectedDigitalProduct, setSelectedDigitalProduct] = useState("airtime");
   const [showPinModal, setShowPinModal] = useState(false);
   const [pin, setPin] = useState(['', '', '', '']);
   const [formData, setFormData] = useState(null);
+  const [isloading, setIsLoading] = useState(false)
+
+  const { logout, token } = useUser();
+  const navigate = useNavigate()
 
   const digitalProducts = [
     { 
@@ -48,15 +58,40 @@ const Digital = () => {
     setShowPinModal(true);
   };
 
-  const handleTransactionSubmit = () => {
+  const handleTransactionSubmit = async () => {
+    const toastId = toast.loading(`Processing ${formData.serviceID} purchase...`)
     if (isPinComplete) {
-      console.log('Final Submission Data:', { ...formData, pin: pin.join('') });
-      // You can now use the `formData.type` to determine the endpoint
-      // e.g., `api.post(`/purchase/${formData.type}`, { ...formData, pin: pin.join('') });`
+      setIsLoading(true)
+      console.log('Final Submission Data:', { ...formData, pin: pin.join('')});
       
-      setShowPinModal(false);
-      setPin(['', '', '', '']);
-      setFormData(null);
+      try {
+        const response = await axios.post(`${API_URL}/api/airtime`, { ...formData, pin: pin.join('')}, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        console.log("transaction response", response)
+
+        if (response.status === 200) {
+          toast.success(response.data.message || `${formData.serviceID} Purchase successful`, { id: toastId })
+          setTimeout(() => {
+            navigate("/user/rechargehistory")
+          }, 2000)
+        }
+      } catch (error) {
+        if (error.response.data.message.toLowerCase() == "unauthenticated") {
+          logout()
+        }
+        console.error("An error occured initiating transaction", error)
+        toast.error(error.response.data.message || "An error occured initiating transaction", { id: toastId })
+      } finally {
+        setShowPinModal(false);
+        setPin(['', '', '', '']);
+        setFormData(null);
+        setIsLoading(false)
+      }
     }
   };
 
@@ -127,10 +162,10 @@ const Digital = () => {
             </div>
             <button
               onClick={handleTransactionSubmit}
-              disabled={!isPinComplete}
-              className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-full h-[50px] rounded-lg ${!isPinComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={!isPinComplete || isloading}
+              className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-full h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              Confirm
+              {isloading ? "Confirming..." : "Confirm"}
             </button>
           </div>
         </Modal>

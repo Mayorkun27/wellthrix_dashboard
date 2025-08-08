@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import RegisterSteps from './RegisterSteps';
 import StepOne from './registersteps/StepOne';
 import StepTwo from './registersteps/StepTwo';
@@ -10,9 +10,15 @@ import StepFive from './registersteps/StepFive';
 const Register = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
-  const navigate = useNavigate();
+  const [sessionId, setSessionId] = useState(null);
 
-  const nextStep = () => setStep(prev => prev + 1);
+  const handleNextStep = (newSessionId = null) => {
+    if (newSessionId) {
+      setSessionId(newSessionId);
+    }
+    setStep(prev => prev + 1);
+  };
+
   const prevStep = () => setStep(prev => prev - 1);
 
   const updateFormData = (newData) => {
@@ -24,11 +30,48 @@ const Register = () => {
       <RegisterSteps currentStep={step} />
       
       <div>
-        {step === 1 && <StepOne nextStep={nextStep} formData={formData} updateFormData={updateFormData} />}
-        {step === 2 && <StepTwo nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} />}
-        {step === 3 && <StepThree nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} />}
-        {step === 4 && <StepFour nextStep={nextStep} prevStep={prevStep} formData={formData} updateFormData={updateFormData} />}
-        {step === 5 && <StepFive prevStep={prevStep} formData={formData} />}
+        {step === 1 && (
+          <StepOne
+            nextStep={handleNextStep}
+            formData={formData}
+            updateFormData={updateFormData}
+          />
+        )}
+        {step === 2 && (
+          <StepTwo
+            nextStep={handleNextStep}
+            prevStep={prevStep}
+            formData={formData}
+            updateFormData={updateFormData}
+            sessionId={sessionId}          
+          />
+        )}
+        {step === 3 && (
+          <StepThree
+            nextStep={handleNextStep}
+            prevStep={prevStep}
+            formData={formData}
+            updateFormData={updateFormData}
+            sessionId={sessionId}
+          />
+        )}
+        {step === 4 && (
+          <StepFour
+            nextStep={handleNextStep}
+            prevStep={prevStep}
+            formData={formData}
+            updateFormData={updateFormData}
+            sessionId={sessionId}
+          />
+        )}
+        {step === 5 && (
+          <StepFive
+            prevStep={prevStep}
+            formData={formData}
+            updateFormData={updateFormData}
+            sessionId={sessionId}
+          />
+        )}
       </div>
     </div>
   );

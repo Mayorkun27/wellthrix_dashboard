@@ -3,6 +3,8 @@ import { FaArrowUpLong } from 'react-icons/fa6';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import assets from '../../assets/assests'; // Ensure this path is correct in your project
+import { useUser } from '../../context/UserContext';
+
 
 // Profile Component
 const Profile = () => {
@@ -10,6 +12,11 @@ const Profile = () => {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [banks, setBanks] = useState([]);
+  
+  const { user } = useUser()
+    
+  const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
+  const splittedLastNameFirstLetter = user?.last_name.split("")[0]
 
   // Fetch countries on component mount
   useEffect(() => {
@@ -49,28 +56,28 @@ const Profile = () => {
       <div className='w-full rounded-lg px-4 py-8 bg-pryClr/40 shadow-lg flex flex-col gap-6 md:flex-row'>
         <div className='flex-[4] flex flex-col gap-6 items-center'>
           <div className='w-52 h-52 rounded-full bg-[#D9D9D9] flex items-center justify-center'>
-            <p className='font-bold text-8xl'>OD</p>
+            <h3 className='font-bold uppercase text-8xl'>{`${splittedFirstNameFirstLetter}${splittedLastNameFirstLetter}`}</h3>
           </div>
           <div className='flex flex-col items-center'>
-            <p className='text-xl text-[#FFCC00] font-semibold md:text-2xl'>Odekunle Dorcas</p>
-            <p className='text-xl font-semibold md:text-xl'>@sinzu-Money</p>
+            <p className='text-xl textppryClr font-semibold md:text-2xl'>{user?.first_name}{user?.last_name}</p>
+            <p className='text-xl font-semibold md:text-xl'>@{user?.username}</p>
           </div>
         </div>
         <div className='flex-[6] border-black md:border-l-3 flex flex-col gap-4 md:px-6'>
           <div className='w-full border-b-3 border-white'>
-            <p className='md:text-2xl mb-2'><span className='font-semibold'>Email: </span>OdekunleDorcas@gmail.com</p>
+            <p className='md:text-2xl mb-2'><span className='font-semibold'>Email: </span>{user?.email}</p>
           </div>
           <div className='w-full border-b-3 border-white'>
-            <p className='md:text-2xl mb-2'><span className='font-semibold'>First Name: </span>Jacuzzi</p>
+            <p className='md:text-2xl mb-2'><span className='font-semibold'>First Name: </span>{user?.first_name}</p>
           </div>
           <div className='w-full border-b-3 border-white'>
-            <p className='md:text-2xl mb-2'><span className='font-semibold'>Last Name: </span>Sinzu</p>
+            <p className='md:text-2xl mb-2'><span className='font-semibold'>Last Name: </span>{user?.last_name}</p>
           </div>
           <div className='w-full border-b-3 border-white'>
-            <p className='md:text-2xl mb-2'><span className='font-semibold'>Username: </span>Pepe</p>
+            <p className='md:text-2xl mb-2'><span className='font-semibold'>Username: </span>{user?.username}</p>
           </div>
           <div className='w-full border-b-3 border-white flex justify-between items-center'>
-            <p className='md:text-2xl mb-2'><span className='font-semibold'>Package: </span>Gold</p>
+            <p className='md:text-2xl mb-2'><span className='font-semibold'>Package: </span>{user?.plan}</p>
             <div className='flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-2xl'>
               <p>Upgrade</p>
               <FaArrowUpLong />
@@ -86,7 +93,7 @@ const Profile = () => {
         {statItems.map((item) => (
           <div
             key={item.id}
-            className='w-full gap-1 flex flex-col items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-6 items-center justify-center text-center'
+            className='w-full gap-1 flex flex-col items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-6 justify-center text-center'
           >
             <img src={item.icon} className='w-24 mb-4' alt={item.title} />
             <p className='text-xl text-white md:text-xl'>{item.title}</p>
@@ -790,8 +797,8 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center py-8">
-      <div className="w-full max-w-4xl">
+    <div className="min-h-screen flex justify-center">
+      <div className="w-full">
         <div className="bg-white shadow-md rounded-lg">
           <div className="flex overflow-x-auto border-b border-gray-200 snap-x snap-mandatory">
             <button

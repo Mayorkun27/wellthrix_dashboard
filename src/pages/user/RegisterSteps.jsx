@@ -10,7 +10,7 @@ const RegisterSteps = ({ currentStep }) => {
   ];
 
   return (
-    <div className="w-full py-6 px-4 overflow-x-auto scrollbar-hide">
+    <div className="w-full pb-6 px-4 overflow-x-auto scrollbar-hide">
       <div className="flex items-center justify-between relative min-w-[600px] whitespace-nowrap">
         {steps.map((step, index) => (
           <React.Fragment key={step.number}>

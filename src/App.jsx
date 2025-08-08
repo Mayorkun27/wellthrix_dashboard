@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
+import { Toaster } from "sonner";
 import MainLayout from './layout/MainLayout'
 import Overview from './pages/user/Overview'
 import Network from './pages/user/Network'
@@ -9,20 +10,31 @@ import Register from './pages/user/Register'
 import RechargeHistory from './pages/user/RechargeHistory'
 import Profile from './pages/user/Profile'
 import Products from './pages/user/Products'
+import ManageAnnouncement from './pages/admin/ManageAnnouncement'
+import Login from './pages/auth/Login';
+import Cart from './pages/user/Cart';
+import { useUser } from './context/UserContext';
 
 function App() {
+
+  const { user } = useUser()
   
   return (
     <>
+      <Toaster />
       <Routes>
-        <Route path='/user/overview' element={<MainLayout pageName={"Good Morning, DORCAS ODEKUNLE"} subText={"Here’s your dashboard overview"} child={<Overview />} />}/>
+        <Route path='/login' element={<Login />} />
+
+        <Route path='/user/overview' element={<MainLayout pageName={`Good Morning, ${user?.first_name} ${user?.last_name}`} subText={"Here’s your dashboard overview"} child={<Overview />} />}/>
         <Route path='/user/network' element={<MainLayout pageName={"Networks"} child={<Network />} />}/>
         <Route path='/user/transactions' element={<MainLayout pageName={"Transactions"} child={<Transactions />} />}/>
-        <Route path='/user/digtal' element={<MainLayout pageName={"Digital"} child={<Digital />} />}/>
+        <Route path='/user/recharge' element={<MainLayout pageName={"Digital"} child={<Digital />} />}/>
         <Route path='/user/register' element={<MainLayout pageName={"Register"} child={<Register />} />}/>
         <Route path='/user/rechargehistory' element={<MainLayout pageName={"Recharge History"} child={<RechargeHistory />} />}/>
         <Route path='/user/profile' element={<MainLayout pageName={"Profile"} child={<Profile />} />}/>
         <Route path='/user/products' element={<MainLayout pageName={"Products"} child={<Products />} />}/>
+        <Route path='/user/products/cart' element={<MainLayout pageName={"Cart"} child={<Cart />} />}/>
+        <Route path='/admin/manageannouncement' element={<MainLayout pageName={"Manage Announcement"} child={<ManageAnnouncement />} />}/>
       </Routes>
     </>
   )

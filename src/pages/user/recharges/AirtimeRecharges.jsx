@@ -1,34 +1,55 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useUser } from "../../../context/UserContext";
+import axios from "axios";
+import { toast } from "sonner";
 
-const rechargeHistory = [
-  {
-    id: 1,
-    phone: "08012345678",
-    network: "MTN",
-    type: "VTU",
-    amount: "₦500",
-    orderId: "ORD123456",
-    date: "2025/08/01",
-  },
-  {
-    id: 2,
-    phone: "08123456789",
-    network: "Airtel",
-    type: "Share & Sell",
-    amount: "₦200",
-    orderId: "ORD123457",
-    date: "2025/08/01",
-  },
-];
+const API_URL = import.meta.env.VITE_API_BASE_URL
 
 const AirtimeRecharges = () => {
+
+  const { user, token } = useUser();
+  const [airtimeHistory, setAirtimeHistory] = useState([])
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(rechargeHistory.length / itemsPerPage);
-
+  
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = rechargeHistory.slice(startIndex, startIndex + itemsPerPage);
+  
+  useEffect(() => {
+    const fetchAirtimeHistory = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/users/${user?.id}/airtime`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        console.log("airtime response", response)
+  
+        if (response.status === 200 && response.data.success) {
+          toast.success("Airtime history fetched successfully!.");
+          setAirtimeHistory(response.data.data)
+        } else {
+          throw new Error(response.data.message || "Failed to fetch airtime history.");
+        }
+  
+      } catch (error) {
+        if (error.response?.data?.message?.includes("unauthenticated")) {
+          logout();
+        }
+        console.error("API submission error:", error);
+        toast.error(error.response?.data?.message || "An error occurred fetching airtime history!.");
+        setIsSubmitting(false);
+      }
+    }
+
+    fetchAirtimeHistory();
+  }, [user?.id, token])
+  
 
   return (
     <div className="shadow-sm rounded bg-white overflow-x-auto">
@@ -45,7 +66,7 @@ const AirtimeRecharges = () => {
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((item) => (
+          {airtimeHistory.map((item) => (
             <tr
               key={item.id}
               className="hover:bg-gray-50 text-sm border-b border-black/10 text-center"

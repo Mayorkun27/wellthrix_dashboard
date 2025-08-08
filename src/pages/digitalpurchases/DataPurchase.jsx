@@ -1,39 +1,87 @@
-import React from 'react'
+import React, { useState } from 'react'
 import assets from '../../assets/assests';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { IoIosCheckmark } from 'react-icons/io';
+import { useUser } from '../../context/UserContext';
+import axios from 'axios';
+import { toast } from 'sonner';
+
+const API_URL = import.meta.env.VITE_API_BASE_URL
 
 const DataPurchase = ({ onProceed }) => {
 
-    const earningsWalletBalance = 200
+    const [plansForAServiceProvider, setPlansForAServiceProvider] = useState([])
+    const [isFetchingPlans, setIsFetchingPlans] = useState(false)
+    const { user, token } = useUser();
+
+    const fetchPlansForASelection = async (selectedServiceId) => {
+        setIsFetchingPlans(true)
+        const toastId = toast.loading("Fetching Data plans");
+        try {
+            const response = await axios.get(`${API_URL}/api/data-plans/${selectedServiceId}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+
+            console.log("data fetch response", response)
+
+            if (response.status === 200) {
+                setPlansForAServiceProvider(response.data.content.varations)
+            }
+
+            toast.success("Plans fetched successfully", { id: toastId });
+        } catch (error) {
+            console.error("An error occured fetching data plans", error);
+            toast.error(error.response?.data?.message || "An error occurred fetching data plans", { id: toastId });
+        } finally {
+            setIsFetchingPlans(false)
+        }
+    }
 
     const formik = useFormik({
         initialValues: {
-            user_id: 5,
+            user_id: user?.id,
             transaction_type: "data",
             serviceID: "",
             phone: "",
             amount: "",
         },
+        enableReinitialize: true,
         validationSchema: Yup.object({
             serviceID: Yup.string()
                 .required("Service Provider is required"),
             phone: Yup.string()
-                .required("Phone Number is required"),
+                .when('serviceID', {
+                    is: (serviceID) => serviceID && serviceID.length > 0,
+                    then: (schema) => schema.required("Phone Number is required"),
+                    otherwise: (schema) => schema.notRequired(),
+                }),
             amount: Yup.number()
-                .min(0, "Amount to purchase must be greater than 0")
-                .max(earningsWalletBalance, "Insufficient balance!")
-                .required("Amount is required"),
+                .when('serviceID', {
+                    is: (serviceID) => serviceID && serviceID.length > 0,
+                    then: (schema) => schema
+                        .min(0, "Amount must be greater than 0")
+                        .max(user?.earning_wallet, "Insufficient balance!")
+                        .required("Amount is required"),
+                    otherwise: (schema) => schema.notRequired(),
+                }),
         }),
         onSubmit: (values) => {
+            console.log("data values", values)
             onProceed(values);
         }
     });
   
     const handleServiceProviderChange = (serviceID) => {
-        formik.setFieldValue("serviceID", serviceID, true);
+        formik.setFieldValue("phone", "");
+        formik.setFieldValue("amount", "");
+
+        formik.setFieldValue("serviceID", serviceID);
         formik.setFieldTouched("serviceID", true);
+
+        fetchPlansForASelection(serviceID);
     };
 
     return (
@@ -88,12 +136,22 @@ const DataPurchase = ({ onProceed }) => {
                         type="number" 
                         name='amount'
                         id='amount'
+                        defaultValue={"Select Data Plan"}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder='Amount in NGN'
-                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0'
+                        disabled={!formik.values.serviceID || isFetchingPlans}
+                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0 disabled:cursor-not-allowed disabled:opacity-50'
                     >
-                        <option selected disabled>Select Data Plan</option>
+                        <option disabled value={"Select Data Plan"}>Select Data Plan</option>
+                        {
+                            plansForAServiceProvider.map((plan, index) => (
+                                <option
+                                    key={`${plan.variation_code}${index}`}
+                                    // value={plan.variation_code}
+                                    value={plan.variation_amount}
+                                >{plan.name}</option>
+                            ))
+                        }
                     </select>
                     {formik.errors.amount && (<p className='text-red-800'>{formik.errors.amount}</p>)}
                 </div>
@@ -104,8 +162,9 @@ const DataPurchase = ({ onProceed }) => {
                         id='phone'
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        disabled={!formik.values.serviceID || isFetchingPlans}
                         placeholder='Phone Number'
-                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0'
+                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0 disabled:cursor-not-allowed disabled:opacity-50'
                     />
                     {formik.errors.phone && (<p className='text-red-800'>{formik.errors.phone}</p>)}
                 </div>

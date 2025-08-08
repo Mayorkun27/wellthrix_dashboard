@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import OverviewCards from '../../components/cards/OverviewCards'
 import { Link } from 'react-router-dom'
 import { MdOutlineAccountBalanceWallet, MdOutlineSdCard } from 'react-icons/md'
@@ -19,16 +19,29 @@ import Earning from './overviewsubpages/Earning'
 import EarningBonus from './overviewsubpages/EarningBonus'
 import IndirectBonus from './overviewsubpages/IndirectBonus'
 import Expenses from './overviewsubpages/Expenses'
+import { useUser } from '../../context/UserContext'
+import axios from 'axios'
+import { toast } from 'sonner'
+
+const API_URL = import.meta.env.VITE_API_BASE_URL
 
 const Overview = () => {
 
   const [performanceTab, setPerformanceTab] = useState("topearner")
   const [expensesAndExpensesTab, setExpensesAndExpensesTab] = useState("earning")
 
+  const [referrals, setReferrals] = useState([])
+
+  const { user, token, logout } = useUser()
+  
+  const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
+  const splittedLastNameFirstLetter = user?.last_name.split("")[0]
+
+
   const overviews = [
     {
       walletType: "E-Wallet",
-      amount: "300000",
+      amount: user?.e_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <MdOutlineAccountBalanceWallet />
         </div>,
@@ -37,8 +50,8 @@ const Overview = () => {
       path: "/user/history"
     },
     {
-      walletType: "Repurchase Wallet",
-      amount: "300000",
+      walletType: "Purchase Wallet",
+      amount: user?.purchased_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <IoWalletOutline />
         </div>,
@@ -47,8 +60,8 @@ const Overview = () => {
       path: "/user/history"
     },
     {
-      walletType: "Bonus Wallet",
-      amount: "25000000",
+      walletType: "Earnings Wallet",
+      amount: user?.earning_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <GiWallet />
         </div>,
@@ -58,7 +71,7 @@ const Overview = () => {
     },
     {
       walletType: "Incentive Wallet",
-      amount: "25000000",
+      amount: user?.incentive_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <BsWallet2 />
         </div>,
@@ -68,7 +81,7 @@ const Overview = () => {
     },
     {
       walletType: "Total Credit",
-      amount: "300000",
+      amount: user?.e_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandDeposit />
         </div>,
@@ -78,7 +91,7 @@ const Overview = () => {
     },
     {
       walletType: "Total Debit",
-      amount: "300000",
+      amount: "0",
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandWithdraw />
         </div>,
@@ -88,18 +101,41 @@ const Overview = () => {
     },
   ]
 
-  const referrals = [
-    {
-      name: "Adeleke Favour",
-      userName: "Mayorkun27",
-      createdAt: "25 July, 2025"
-    },
-    {
-      name: "Odekunle Tiwaloluwa",
-      userName: "DorcasTiwa28",
-      createdAt: "25 July, 2025"
-    },
-  ]
+  // const referrals = [
+  //   {
+  //     name: "Adeleke Favour",
+  //     userName: "Mayorkun27",
+  //     createdAt: "25 July, 2025"
+  //   },
+  //   {
+  //     name: "Odekunle Tiwaloluwa",
+  //     userName: "DorcasTiwa28",
+  //     createdAt: "25 July, 2025"
+  //   },
+  // ]
+
+  const fetchReferrals = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/referrals/sponsor-placement-tree`, {
+        headers: {
+          "Authorization" : `Bearer ${token}`,
+        }
+      })
+
+      console.log("My refs response", response)
+      
+    } catch (error) {
+      if (error.response.data.message.toLowerCase() == "unauthenticated") {
+        logout()
+      }
+      console.error("An error occured fetching referrals", error)
+      toast.error("An error occured fetching referrals")
+    }
+  }
+
+  useEffect(() => {
+    fetchReferrals();
+  }, [token])
 
   const digitalProducts = [
     {
@@ -159,7 +195,7 @@ const Overview = () => {
   ]
 
   return (
-    <div className='grid lg:grid-cols-6 grid-cols-1 gap-6 items-start'>
+    <div className='grid lg:grid-cols-6 grid-cols-1 gap-6 items-'>
       {/* Overviews */}
       <div className="lg:col-span-4 grid gap-4 md:grid-cols-2 grid-cols-1 lg:my-1">
         {
@@ -171,10 +207,10 @@ const Overview = () => {
       {/* Profile */}
       <div className="lg:col-span-2 flex lg:flex-col md:flex-row flex-col gap-4 items-center lg:justify-center justify-evenly lg:my-1">
         <div className="shadow-md lg:w-[150px] md:w-[250px] lg:h-[150px] md:h-[250px] w-[200px] h-[200px] rounded-full bg-accClr overflow-hidden flex items-center justify-center">
-          <h3 className='md:text-6xl text-6xl text-pryClr font-extrabold'>DB</h3>
+          <h3 className='md:text-6xl text-6xl text-pryClr font-extrabold capitalize'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
         </div>
         <div className="flex flex-col items-center">
-          <h3 className='font-bold'>@investor</h3>
+          <h3 className='font-bold'>@{user?.username}</h3>
           <p>Package: <span className='font-bold uppercase'>Crown</span></p>
           <Link to={"/user/profile"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
@@ -185,9 +221,19 @@ const Overview = () => {
           <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
           <div className="grid gap-6">
             {
-              referrals.map((referral, index) => (
-                <ReferralCards key={index} {...referral} />
-              ))
+              referrals.length <= 0 ? (
+                <div className='flex flex-col gap-4 items-center justify-center font-medium'>
+                  <h3>You dont have any referral yet!.</h3>
+                  <Link
+                    to={"/user/register"}
+                    className='bg-pryClr h-[45px] text-secClr rounded-lg shadow-sm text-sm flex items-center justify-center px-4'
+                  >Register a referral</Link>
+                </div>
+              ) : (
+                referrals.map((referral, index) => (
+                  <ReferralCards key={index} {...referral} />
+                ))
+              )
             }
           </div>
         </div>
@@ -196,7 +242,9 @@ const Overview = () => {
       <div className="lg:col-span-3 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
-          <AnnouncementBoard />
+          <div className="max-h-[20vh] overflow-y-scroll pe-2 styled-scrollbar">
+            <AnnouncementBoard />
+          </div>
         </div>
       </div>
       {/* Digital Products */}

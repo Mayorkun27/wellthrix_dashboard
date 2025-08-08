@@ -2,12 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { getCountryCallingCode, isValidPhoneNumber } from 'libphonenumber-js';
+import { useUser } from '../../../context/UserContext';
+import axios from 'axios';
+import { toast } from 'sonner';
 
-const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) => {
+
+  const { token, logout } = useUser()
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
 
   const [countries, setCountries] = useState([]);
@@ -19,20 +26,21 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
     cities: false
   });
   const [error, setError] = useState(null);
-  const [countryCodeMap, setCountryCodeMap] = useState({}); // Store country name to ISO code mapping
+  const [countryCodeMap, setCountryCodeMap] = useState({});
 
-  // Dynamic validation schema
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name is required'),
-    lastName: Yup.string().required('Last name is required'),
-    dob: Yup.string()
-      .required('Date of birth is required')
-      .matches(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in MM/DD/YYYY format'),
+    first_name: Yup.string().required('First name is required'),
+    last_name: Yup.string().required('Last name is required'),
+    date_of_birth: Yup.string()
+      .required('Date of birth is required'),
+      // .matches(/^\d{2}\/\d{2}\/\d{4}$/, 'Must be in MM/DD/YYYY format'),
     gender: Yup.string().required('Gender is required'),
     country: Yup.string().required('Country is required'),
     state: Yup.string().required('State is required'),
     city: Yup.string().required('City is required'),
-    stockist: Yup.string().required('Stockist is required'),
+    email: Yup.string()
+      .email('Must be a valid email address')
+      .required('Email is required'),
     mobile: Yup.string()
       .required('Mobile number is required')
       .test('valid-phone', 'Must be a valid phone number for the selected country', function (value) {
@@ -42,16 +50,14 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
         if (!isoCode) return false;
         return isValidPhoneNumber(value, isoCode);
       }),
-    email: Yup.string()
-      .email('Must be a valid email address')
-      .required('Email is required')
+    stockist: Yup.string().required('Stockist is required'),
   });
 
   const formik = useFormik({
     initialValues: {
-      firstName: formData.firstName || '',
-      lastName: formData.lastName || '',
-      dob: formData.dob || '',
+      first_name: formData.first_name || '',
+      last_name: formData.last_name || '',
+      date_of_birth: formData.date_of_birth || '',
       gender: formData.gender || '',
       country: formData.country || '',
       state: formData.state || '',
@@ -61,10 +67,39 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
       email: formData.email || ''
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
+      console.log("values to be posted", values)
+      setSubmitting(true);
       updateFormData(values);
-      nextStep();
-    }
+
+      try {
+        const response = await axios.post(`${API_URL}/api/registration/step-2`, values, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": `application/json`,
+            'Content-Type': 'application/json',
+            "X-Session-ID": sessionId,
+          }
+        });
+
+        console.log("step 2 response", response)
+
+        if (response.status === 200 && response.data.success) {
+          toast.success(response.data.message || "Step 2 data recorded successfully.");
+          nextStep();
+        } else {
+          throw new Error(response.data.message || "Step 2 API call failed.");
+        }
+      } catch (error) {
+        if (error.response?.data?.message?.includes("unauthenticated")) {
+          logout();
+        }
+        console.error("Step Two submission error:", error);
+        toast.error(error.response?.data?.message || "An error occurred submitting step 2 data.");
+      } finally {
+        setSubmitting(false);
+      }
+    },
   });
 
   // Fetch countries and ISO codes on component mount
@@ -175,19 +210,20 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
     }
   }, [formik.values.state, formik.values.country]);
 
-  const formatDate = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    let formattedValue = '';
-    if (numbers.length > 0) formattedValue = numbers.slice(0, 2);
-    if (numbers.length > 2) formattedValue += '/' + numbers.slice(2, 4);
-    if (numbers.length > 4) formattedValue += '/' + numbers.slice(4, 8);
-    return formattedValue;
-  };
+  // const formatDate = (value) => {
+  //   console.log("value", value)
+  //   const numbers = value.replace(/\D/g, '');
+  //   let formattedValue = '';
+  //   if (numbers.length > 0) formattedValue = numbers.slice(0, 2);
+  //   if (numbers.length > 2) formattedValue += '/' + numbers.slice(2, 4);
+  //   if (numbers.length > 4) formattedValue += '/' + numbers.slice(4, 8);
+  //   return formattedValue;
+  // };
 
-  const handleDateChange = (e) => {
-    const formattedValue = formatDate(e.target.value);
-    formik.setFieldValue('dob', formattedValue);
-  };
+  // const handleDateChange = (e) => {
+  //   const formattedValue = formatDate(e.target.value);
+  //   formik.setFieldValue('date_of_birth', formattedValue);
+  // };
 
   // Get dynamic placeholder for mobile input
   const getMobilePlaceholder = () => {
@@ -209,57 +245,57 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
         <div className='w-full grid grid-cols-1 md:grid-cols-2 gap-4'>
           {/* First Name */}
           <div className='flex flex-col'>
-            <label htmlFor='firstName' className='text-sm font-medium text-gray-700 mb-1'>
-              First Name {formik.touched.firstName && formik.errors.firstName && (
-                <span className='text-red-500 text-xs'> - {formik.errors.firstName}</span>
+            <label htmlFor='first_name' className='text-sm font-medium text-gray-700 mb-1'>
+              First Name {formik.touched.first_name && formik.errors.first_name && (
+                <span className='text-red-500 text-xs'> - {formik.errors.first_name}</span>
               )}
             </label>
             <input
               type='text'
-              id='firstName'
-              name='firstName'
-              value={formik.values.firstName}
+              id='first_name'
+              name='first_name'
+              value={formik.values.first_name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className={`h-12 px-4 py-2 border ${formik.touched.firstName && formik.errors.firstName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border ${formik.touched.first_name && formik.errors.first_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             />
           </div>
 
           {/* Last Name */}
           <div className='flex flex-col'>
-            <label htmlFor='lastName' className='text-sm font-medium text-gray-700 mb-1'>
-              Last Name {formik.touched.lastName && formik.errors.lastName && (
-                <span className='text-red-500 text-xs'> - {formik.errors.lastName}</span>
+            <label htmlFor='last_name' className='text-sm font-medium text-gray-700 mb-1'>
+              Last Name {formik.touched.last_name && formik.errors.last_name && (
+                <span className='text-red-500 text-xs'> - {formik.errors.last_name}</span>
               )}
             </label>
             <input
               type='text'
-              id='lastName'
-              name='lastName'
-              value={formik.values.lastName}
+              id='last_name'
+              name='last_name'
+              value={formik.values.last_name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className={`h-12 px-4 py-2 border ${formik.touched.lastName && formik.errors.lastName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border ${formik.touched.last_name && formik.errors.last_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             />
           </div>
 
           {/* Date of Birth */}
           <div className='flex flex-col'>
-            <label htmlFor='dob' className='text-sm font-medium text-gray-700 mb-1'>
-              Date of Birth (MM/DD/YYYY) {formik.touched.dob && formik.errors.dob && (
-                <span className='text-red-500 text-xs'> - {formik.errors.dob}</span>
+            <label htmlFor='date_of_birth' className='text-sm font-medium text-gray-700 mb-1'>
+              Date of Birth (MM/DD/YYYY) {formik.touched.date_of_birth && formik.errors.date_of_birth && (
+                <span className='text-red-500 text-xs'> - {formik.errors.date_of_birth}</span>
               )}
             </label>
             <input
-              type='text'
-              id='dob'
-              name='dob'
-              value={formik.values.dob}
-              onChange={handleDateChange}
+              type='date'
+              id='date_of_birth'
+              name='date_of_birth'
+              value={formik.values.date_of_birth}
+              onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               placeholder='MM/DD/YYYY'
               maxLength={10}
-              className={`h-12 px-4 py-2 border ${formik.touched.dob && formik.errors.dob ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border ${formik.touched.date_of_birth && formik.errors.date_of_birth ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             />
           </div>
 
@@ -303,7 +339,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
               }}
               onBlur={formik.handleBlur}
               disabled={loading.countries}
-              className={`h-12 px-4 py-2 border ${formik.touched.country && formik.errors.country ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${formik.touched.country && formik.errors.country ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             >
               <option value=''>{loading.countries ? 'Loading countries...' : 'Select Country'}</option>
               {countries.map((country) => (
@@ -331,7 +367,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
               }}
               onBlur={formik.handleBlur}
               disabled={!formik.values.country || loading.states}
-              className={`h-12 px-4 py-2 border ${formik.touched.state && formik.errors.state ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${formik.touched.state && formik.errors.state ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             >
               <option value=''>
                 {loading.states
@@ -364,7 +400,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               disabled={!formik.values.state || loading.cities}
-              className={`h-12 px-4 py-2 border ${formik.touched.city && formik.errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border disabled:opacity-50 disabled:cursor-not-allowed ${formik.touched.city && formik.errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             >
               <option value=''>
                 {loading.cities
@@ -437,32 +473,33 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData }) => {
               className={`h-12 px-4 py-2 border ${formik.touched.stockist && formik.errors.stockist ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
             >
               <option value=''>Select Stockist</option>
-              <option value='room1'>Room 1</option>
-              <option value='room2'>Room 2</option>
+              <option value='1'>Room 1</option>
+              <option value='2'>Room 2</option>
             </select>
           </div>
         </div>
+      
+        {/* Navigation Buttons */}
+        <div className='flex justify-between mt-4'>
+          <button
+            type='button'
+            onClick={prevStep}
+            className='text-xl bg-black hover:bg-black/80 rounded-lg cursor-pointer text-secClr px-6 py-3 transition-colors'
+          >
+            Back
+          </button>
+          <button
+            type='submit'
+            disabled={!formik.isValid || formik.isSubmitting}
+            className={`text-xl rounded-lg cursor-pointer text-white px-6 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
+            }`}
+          >
+            {formik.isSubmitting ? "Saving..." : "Next 2"}
+          </button>
+        </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className='flex justify-between mt-4'>
-        <button
-          type='button'
-          onClick={prevStep}
-          className='text-xl bg-gray-300 hover:bg-gray-400 rounded-xl text-gray-700 px-6 py-3 transition-colors'
-        >
-          Back
-        </button>
-        <button
-          type='submit'
-          disabled={!formik.isValid || formik.isSubmitting}
-          className={`text-xl rounded-xl text-white px-6 py-3 transition-colors ${
-            !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
-          }`}
-        >
-          Next
-        </button>
-      </div>
     </form>
   );
 };

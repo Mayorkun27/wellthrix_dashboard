@@ -33,7 +33,7 @@ const LeftNav = ({ setIsOpen }) => {
         {
             name: 'Digital',
             icon: <CgDigitalocean size={20} />,
-            path: '/user/digtal',
+            path: '/user/recharge',
             role: "user"
         },
         {

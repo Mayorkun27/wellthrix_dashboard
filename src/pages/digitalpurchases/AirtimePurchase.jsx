@@ -3,36 +3,51 @@ import assets from '../../assets/assests';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { IoIosCheckmark } from 'react-icons/io';
+import { useUser } from '../../context/UserContext';
 
 const AirtimePurchase = ({ onProceed }) => {
 
-    const earningsWalletBalance = 200
+    const { user } = useUser()
 
     const formik = useFormik({
         initialValues: {
-            user_id: 5,
+            user_id: user?.id,
             transaction_type: "airtime",
+            amount: "",
             serviceID: "",
             phone: "",
-            amount: "",
         },
+        enableReinitialize: true,
         validationSchema: Yup.object({
             serviceID: Yup.string()
                 .required("Service Provider is required"),
             phone: Yup.string()
-                .required("Phone Number is required"),
+                .when('serviceID', {
+                    is: (serviceID) => serviceID && serviceID.length > 0,
+                    then: (schema) => schema.required("Phone Number is required"),
+                    otherwise: (schema) => schema.notRequired(),
+                }),
             amount: Yup.number()
-                .min(0, "Amount to purchase must be greater than 0")
-                .max(earningsWalletBalance, "Insufficient balance!")
-                .required("Amount is required"),
+                .when('serviceID', {
+                    is: (serviceID) => serviceID && serviceID.length > 0,
+                    then: (schema) => schema
+                        .min(0, "Amount must be greater than 0")
+                        .max(user?.earning_wallet, "Insufficient balance!")
+                        .required("Amount is required"),
+                    otherwise: (schema) => schema.notRequired(),
+                }),
         }),
         onSubmit: (values) => {
+            console.log("airtime values", values)
             onProceed(values);
         }
     });
   
     const handleServiceProviderChange = (serviceID) => {
-        formik.setFieldValue("serviceID", serviceID, true);
+        formik.setFieldValue("phone", "");
+        formik.setFieldValue("amount", "");
+
+        formik.setFieldValue("serviceID", serviceID);
         formik.setFieldTouched("serviceID", true);
     };
 
@@ -90,8 +105,10 @@ const AirtimePurchase = ({ onProceed }) => {
                         id='amount'
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        value={formik.values.amount}
+                        disabled={!formik.values.serviceID}
                         placeholder='Amount in NGN'
-                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0'
+                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0 disabled:opacity-50 disabled:cursor-not-allowed'
                     />
                     {formik.errors.amount && (<p className='text-red-800'>{formik.errors.amount}</p>)}
                 </div>
@@ -102,8 +119,10 @@ const AirtimePurchase = ({ onProceed }) => {
                         id='phone'
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
+                        value={formik.values.phone}
+                        disabled={!formik.values.serviceID}
                         placeholder='Phone Number'
-                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0'
+                        className='bg-white h-[50px] indent-3 w-full rounded-md border-0 outline-0 disabled:opacity-50 disabled:cursor-not-allowed'
                     />
                     {formik.errors.phone && (<p className='text-red-800'>{formik.errors.phone}</p>)}
                 </div>

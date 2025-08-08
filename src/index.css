@@ -44,3 +44,37 @@ body {
 input[type="number"]::-webkit-inner-spin-button{
   @apply hidden
 }
+
+.thiscard{
+  box-shadow: 2px 2px 5px #0000001a,
+    -2px -2px 5px #0000001a;
+}
+.children-card {
+  position: relative;
+}
+
+.children-card.left-card::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: calc(50% + 32px);
+  height: 50px;
+  border: 1px solid #000000;
+  border-top-left-radius: 10px;
+  border-width: 2px 0px 0px 2px;
+  z-index: -1;
+}
+
+.children-card.right-card::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: 50%;
+  width: calc(50% + 32px);
+  height: 50px;
+  border: 1px solid #000000;
+  border-top-right-radius: 10px;
+  border-width: 2px 2px 0px 0px;
+  z-index: -1;
+}

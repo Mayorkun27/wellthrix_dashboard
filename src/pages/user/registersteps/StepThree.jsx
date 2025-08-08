@@ -1,23 +1,29 @@
 import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useUser } from '../../../context/UserContext';
+import axios from 'axios';
+import { toast } from 'sonner';
 
-const StepThree = ({ prevStep, nextStep, formData, updateFormData }) => {
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-      useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) => {
 
+  const { token, logout } = useUser()
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string().required('Username is required'),
     password: Yup.string()
       .required('Password is required')
       .min(8, 'Password must be at least 8 characters'),
-    confirmPassword: Yup.string()
+    password_confirmation: Yup.string()
       .required('Please confirm your password')
       .oneOf([Yup.ref('password'), null], 'Passwords must match'),
-    agreeToTerms: Yup.boolean()
+    terms_accepted: Yup.boolean()
       .required('You must agree to the terms and conditions')
       .oneOf([true], 'You must agree to the terms and conditions')
   });
@@ -26,13 +32,42 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData }) => {
     initialValues: {
       username: formData.username || '',
       password: formData.password || '',
-      confirmPassword: formData.confirmPassword || '',
-      agreeToTerms: formData.agreeToTerms || false
+      password_confirmation: formData.password_confirmation || '',
+      terms_accepted: formData.terms_accepted || false
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async ( values, { setSubmitting } ) => {
+      console.log("values to be posted", values)
+      setSubmitting(true);
       updateFormData(values);
-      nextStep();
+
+      try {
+        const response = await axios.post(`${API_URL}/api/registration/step-3`, values, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": `application/json`,
+            'Content-Type': 'application/json',
+            "X-Session-ID": sessionId,
+          }
+        });
+
+        console.log("step 3 response", response)
+
+        if (response.status === 200 && response.data.success) {
+          toast.success(response.data.message || "Step 3 data recorded successfully.");
+          nextStep();
+        } else {
+          throw new Error(response.data.message || "Step 3 API call failed.");
+        }
+      } catch (error) {
+        if (error.response?.data?.message?.includes("unauthenticated")) {
+          logout();
+        }
+        console.error("Step Three submission error:", error);
+        toast.error(error.response?.data?.message || "An error occurred submitting step 3 data.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   });
 
@@ -84,19 +119,19 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData }) => {
 
             {/* Confirm Password */}
             <div className='flex flex-col'>
-              <label htmlFor='confirmPassword' className='text-sm font-medium text-gray-700 mb-1'>
-                Confirm Password {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                  <span className='text-red-500 text-xs'> - {formik.errors.confirmPassword}</span>
+              <label htmlFor='password_confirmation' className='text-sm font-medium text-gray-700 mb-1'>
+                Confirm Password {formik.touched.password_confirmation && formik.errors.password_confirmation && (
+                  <span className='text-red-500 text-xs'> - {formik.errors.password_confirmation}</span>
                 )}
               </label>
               <input
                 type='password'
-                id='confirmPassword'
-                name='confirmPassword'
-                value={formik.values.confirmPassword}
+                id='password_confirmation'
+                name='password_confirmation'
+                value={formik.values.password_confirmation}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`h-12 px-4 py-2 border ${formik.touched.confirmPassword && formik.errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                className={`h-12 px-4 py-2 border ${formik.touched.password_confirmation && formik.errors.password_confirmation ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
               />
             </div>
           </div>
@@ -108,42 +143,43 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData }) => {
           <div className='flex items-center mt-2'>
             <input
               type='checkbox'
-              id='agreeToTerms'
-              name='agreeToTerms'
-              checked={formik.values.agreeToTerms}
+              id='terms_accepted'
+              name='terms_accepted'
+              checked={formik.values.terms_accepted}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className='h-5 w-5 rounded border-gray-300 text-pryClr focus:ring-pryClr'
+              className='h-5 w-5 rounded border-gray-300 text-pryClr focus:ring-pryClr accent-pryClr'
             />
-            <label htmlFor='agreeToTerms' className='ml-2 text-sm text-gray-700'>
+            <label htmlFor='terms_accepted' className='ml-2 text-sm text-gray-700'>
               I agree to the terms and conditions
-              {formik.touched.agreeToTerms && formik.errors.agreeToTerms && (
-                <span className='text-red-500 text-xs'> - {formik.errors.agreeToTerms}</span>
+              {formik.touched.terms_accepted && formik.errors.terms_accepted && (
+                <span className='text-red-500 text-xs'> - {formik.errors.terms_accepted}</span>
               )}
             </label>
           </div>
         </div>
+      
+        {/* Navigation Buttons */}
+        <div className='flex justify-between mt-4'>
+          <button
+            type='button'
+            onClick={prevStep}
+            className='text-xl bg-black hover:bg-black/80 rounded-lg cursor-pointer text-secClr px-6 py-3 transition-colors'
+          >
+            Back
+          </button>
+          <button
+            type='submit'
+            disabled={!formik.isValid || formik.isSubmitting}
+            className={`text-xl rounded-lg cursor-pointer text-white px-6 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
+            }`}
+          >
+            {formik.isSubmitting ? "Saving..." : "Next 3"}
+          </button>
+        </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className='flex justify-between mt-4'>
-        <button
-          type='button'
-          onClick={prevStep}
-          className='text-xl bg-gray-300 hover:bg-gray-400 rounded-xl text-gray-700 px-6 py-3 transition-colors'
-        >
-          Back
-        </button>
-        <button
-          type='submit'
-          disabled={!formik.isValid || formik.isSubmitting}
-          className={`text-xl rounded-xl text-white px-6 py-3 transition-colors ${
-            !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
-          }`}
-        >
-          Next
-        </button>
-      </div>
     </form>
   );
 };
