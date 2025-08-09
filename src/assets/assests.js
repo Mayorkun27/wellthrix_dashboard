@@ -13,9 +13,14 @@ import pic1 from "./pic1.png"
 import pic2 from "./pic2.png"
 import pic3 from "./pic3.png"
 import pic4 from "./pic4.png"
-
+import depositfunds from "./depositfunds.png"
+import depwal from "./depositwallet.png"
+import mark from "./mark.png"
 const assets = {
     logo,
+    depositfunds,
+    depwal,
+    mark,
     icon1,
     icon2,
     icon3,
