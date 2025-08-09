@@ -1,56 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useUser } from "../../../context/UserContext";
 
-const electricityHistory = [
-  {
-    id: 1,
-    provider: "IKEDC",
-    token: "G5W2",
-    plan: "1 month",
-    amount: "₦20,000",
-  },
-  {
-    id: 2,
-    provider: "KAEDCO",
-    token: "G5W2",
-    plan: "2 month",
-    amount: "₦30,500",
-  },
-  // Add more items for testing pagination
-  {
-    id: 3,
-    provider: "EKEDC",
-    token: "G6R4",
-    plan: "1 month",
-    amount: "₦21,000",
-  },
-  {
-    id: 4,
-    provider: "IBEDC",
-    token: "B1Z7",
-    plan: "3 month",
-    amount: "₦45,000",
-  },
-  {
-    id: 5,
-    provider: "PHEDC",
-    token: "Y8W9",
-    plan: "2 month",
-    amount: "₦31,500",
-  },
-];
 
-const ITEMS_PER_PAGE = 3;
 
 const ElectricityRecharges = () => {
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(electricityHistory.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const { user, token, logout } = useUser();
+  const [electricityHistory, setElectricityHistory] = useState([])
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(electricityHistory.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedItems = electricityHistory.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + itemsPerPage
   );
+
+  useEffect(() => {
+    const fetchDataHistory = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/users/${user?.id}/elec`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        console.log("elec response", response)
+  
+        if (response.status === 200 && response.data.success) {
+          toast.success("elec history fetched successfully!.");
+          setElectricityHistory(response.data.data)
+        } else {
+          throw new Error(response.data.message || "Failed to fetch elec history.");
+        }
+  
+      } catch (error) {
+        if (error.response?.data?.message?.includes("unauthenticated")) {
+          logout();
+        }
+        console.error("API submission error:", error);
+        toast.error(error.response?.data?.message || "An error occurred fetching elec history!.");
+        setIsSubmitting(false);
+      }
+    }
+
+    fetchDataHistory();
+  }, [user?.id, token])
 
   return (
     <div className="space-y-4">

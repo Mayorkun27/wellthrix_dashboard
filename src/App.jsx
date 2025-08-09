@@ -14,6 +14,8 @@ import ManageAnnouncement from './pages/admin/ManageAnnouncement'
 import Login from './pages/auth/Login';
 import Cart from './pages/user/Cart';
 import { useUser } from './context/UserContext';
+import Withdraw from './pages/user/Withdraw';
+import Deposit from './pages/user/Deposit';
 
 function App() {
 
@@ -28,6 +30,8 @@ function App() {
         <Route path='/user/overview' element={<MainLayout pageName={`Good Morning, ${user?.first_name} ${user?.last_name}`} subText={"Here’s your dashboard overview"} child={<Overview />} />}/>
         <Route path='/user/network' element={<MainLayout pageName={"Networks"} child={<Network />} />}/>
         <Route path='/user/transactions' element={<MainLayout pageName={"Transactions"} child={<Transactions />} />}/>
+        <Route path='/user/deposit' element={<MainLayout pageName={"Deposit"} child={<Deposit />} />}/>
+        <Route path='/user/withdraw' element={<MainLayout pageName={"Withdraw"} child={<Withdraw />} />}/>
         <Route path='/user/recharge' element={<MainLayout pageName={"Digital"} child={<Digital />} />}/>
         <Route path='/user/register' element={<MainLayout pageName={"Register"} child={<Register />} />}/>
         <Route path='/user/rechargehistory' element={<MainLayout pageName={"Recharge History"} child={<RechargeHistory />} />}/>

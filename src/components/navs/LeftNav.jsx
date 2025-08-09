@@ -31,6 +31,18 @@ const LeftNav = ({ setIsOpen }) => {
             role: "user"
         },
         {
+            name: 'Deposit',
+            icon: <PiCardsThreeFill size={20} />,
+            path: '/user/deposit',
+            role: "user"
+        },
+        {
+            name: 'Withdraw',
+            icon: <PiCardsThreeFill size={20} />,
+            path: '/user/withdraw',
+            role: "user"
+        },
+        {
             name: 'Digital',
             icon: <CgDigitalocean size={20} />,
             path: '/user/recharge',

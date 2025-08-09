@@ -8,15 +8,15 @@ const API_URL = import.meta.env.VITE_API_BASE_URL
 
 const AirtimeRecharges = () => {
 
-  const { user, token } = useUser();
+  const { user, token, logout } = useUser();
   const [airtimeHistory, setAirtimeHistory] = useState([])
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(rechargeHistory.length / itemsPerPage);
+  const totalPages = Math.ceil(airtimeHistory.length / itemsPerPage);
   
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = rechargeHistory.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = airtimeHistory.slice(startIndex, startIndex + itemsPerPage);
   
   useEffect(() => {
     const fetchAirtimeHistory = async () => {
@@ -66,7 +66,7 @@ const AirtimeRecharges = () => {
           </tr>
         </thead>
         <tbody>
-          {airtimeHistory.map((item) => (
+          {currentItems.map((item) => (
             <tr
               key={item.id}
               className="hover:bg-gray-50 text-sm border-b border-black/10 text-center"
