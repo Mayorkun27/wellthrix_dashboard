@@ -25,19 +25,48 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
   const [selectedPackage, setSelectedPackage] = useState(formData.selectedPackage || null);
   const [sponsor, setSponsor] = useState(formData.sponsor || '');
   const [placement, setPlacement] = useState(formData.placement || '');
-  const [leg, setleg] = useState(formData.leg || '');
+  const [leg, setLeg] = useState(formData.leg || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [packages, setPackages] = useState([]);
 
-  const packages = [
-    { id: 1, name: "Spark Package", price: "10,500", currency: "NGN", pointValue: "8PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <LuSparkle className="text-3xl" />, link: "/login" },
-    { id: 2, name: "Rise Package", price: "28,000", currency: "NGN", pointValue: "24PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <AiOutlineRise className="text-3xl" />, link: "/login" },
-    { id: 3, name: "Star Package", price: "44,000", currency: "NGN", pointValue: "40PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <FaRegStar className="text-3xl" />, link: "/login" },
-    { id: 4, name: "Super Package", price: "98,000", currency: "NGN", pointValue: "80PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <IoShieldCheckmarkOutline className="text-3xl" />, link: "/login" },
-    { id: 5, name: "Thrive Package", price: "264,000", currency: "NGN", pointValue: "240PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <CgArrowTopRight className="text-3xl" />, link: "/login" },
-    { id: 6, name: "Thrix Package", price: "528,000", currency: "NGN", pointValue: "480PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <VscGraph className="text-3xl" />, link: "/login" },
-    { id: 7, name: "Crown Package", price: "1,100,000", currency: "NGN", pointValue: "1,000PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <LuCrown className="text-3xl" />, link: "/login" },
-  ];
+  // const packages = [
+  //   { id: 1, name: "Spark Package", price: "10,500", currency: "NGN", pointValue: "8PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <LuSparkle className="text-3xl" />, link: "/login" },
+  //   { id: 2, name: "Rise Package", price: "28,000", currency: "NGN", pointValue: "24PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <AiOutlineRise className="text-3xl" />, link: "/login" },
+  //   { id: 3, name: "Star Package", price: "44,000", currency: "NGN", pointValue: "40PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <FaRegStar className="text-3xl" />, link: "/login" },
+  //   { id: 4, name: "Super Package", price: "98,000", currency: "NGN", pointValue: "80PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <IoShieldCheckmarkOutline className="text-3xl" />, link: "/login" },
+  //   { id: 5, name: "Thrive Package", price: "264,000", currency: "NGN", pointValue: "240PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <CgArrowTopRight className="text-3xl" />, link: "/login" },
+  //   { id: 6, name: "Thrix Package", price: "528,000", currency: "NGN", pointValue: "480PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <VscGraph className="text-3xl" />, link: "/login" },
+  //   { id: 7, name: "Crown Package", price: "1,100,000", currency: "NGN", pointValue: "1,000PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <LuCrown className="text-3xl" />, link: "/login" },
+  // ];
+
+  const fetchPackages = async () => {
+    setIsLoading(true)
+    try {
+      const response = await axios.get(`${API_URL}/api/plans`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      })
+
+      console.log("Packages response", response)
+      
+    } catch (error) {
+      if (error.response?.data?.message?.includes("unauthenticated")) {
+        logout();
+      }
+      console.error("Step Two submission error:", error);
+      toast.error(error.response?.data?.message || "An error occurred submitting step 2 data.");
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchPackages()
+  }, [token])
 
   const handleSelectPackage = (pkg) => {
     setSelectedPackage(pkg);
@@ -126,10 +155,11 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
   };
 
   const handlePositionSelection = (selection) => {
-    setleg(selection)
+    setLeg(selection)
+    updateFormData({ ...formData, leg: selection });
   }
 
-  const isFormValid = selectedPackage && sponsor.trim() !== '' && placement.trim() !== '';
+  const isFormValid = selectedPackage && leg && sponsor.trim() !== '' && placement.trim() !== '';
 
   return (
     <div className='w-full flex flex-col gap-4 mt-6'>
@@ -251,7 +281,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
               ${(!isFormValid || isSubmitting) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-pryClrDark'}
             `}
           >
-            {isSubmitting ? 'Loading...' : 'Next 1'}
+            {isSubmitting ? 'Loading...' : 'Next'}
           </button>
         </div>
       </form>

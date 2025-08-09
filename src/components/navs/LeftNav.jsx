@@ -2,7 +2,8 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { MdOutlineDashboard } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
-import { PiCardsThreeFill, PiNetwork } from 'react-icons/pi';
+import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
+import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
 import { FaPlugCircleBolt } from 'react-icons/fa6';
@@ -25,21 +26,21 @@ const LeftNav = ({ setIsOpen }) => {
             role: "user"
         },
         {
-            name: 'Transactions',
-            icon: <PiCardsThreeFill size={20} />,
-            path: '/user/transactions',
-            role: "user"
-        },
-        {
             name: 'Deposit',
-            icon: <PiCardsThreeFill size={20} />,
+            icon: <BiMoneyWithdraw size={20} />,
             path: '/user/deposit',
             role: "user"
         },
         {
             name: 'Withdraw',
-            icon: <PiCardsThreeFill size={20} />,
+            icon: <PiHandDeposit size={20} />,
             path: '/user/withdraw',
+            role: "user"
+        },
+        {
+            name: 'Transactions',
+            icon: <PiCardsThreeFill size={20} />,
+            path: '/user/transactions',
             role: "user"
         },
         {
