@@ -35,8 +35,8 @@ const Overview = () => {
   const { user, token, logout, refreshUser } = useUser()
 
   useEffect(() => {
-    refreshUser()
-  }, [])
+    refreshUser(token)
+  }, [token])
   
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
