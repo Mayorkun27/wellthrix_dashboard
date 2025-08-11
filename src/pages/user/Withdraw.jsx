@@ -1,5 +1,8 @@
 import React from "react";
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 const Withdraw = () => {
   return (
     <div className="space-y-4">

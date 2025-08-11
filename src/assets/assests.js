@@ -17,8 +17,12 @@ import depositfunds from "./depositfunds.png"
 import depwal from "./depositwallet.png"
 import mark from "./mark.png"
 import check from "./check.png"
+import fileup from "./fileup.png"
+import testi from "./testi.jpg"
 const assets = {
     logo,
+    fileup,
+    testi,
     depositfunds,
     depwal,
     mark,
