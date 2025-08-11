@@ -80,7 +80,11 @@ const Transfer = () => {
             amount: Yup.number()
                 .required("Amount is required")
                 .min(1, "Amount must be greater than 0")
-                .max(user?.e_wallet, "Insufficient balance!"),
+                .when('from', {
+                    is: 'e_wallet',
+                    then: (schema) => schema.max(user?.e_wallet, 'Insufficient E-Wallet balance!'),
+                    otherwise: (schema) => schema.max(user?.earning_wallet, 'Insufficient Earning Wallet balance!')
+                }),
             from: Yup.string()
                 .required("Wallet to transfer from is required"),
             to: Yup.string()
@@ -92,7 +96,7 @@ const Transfer = () => {
             console.log("pin", pin)
 
             try {
-                const response = await axios.post(`${API_URL}/api/wallet/funds`, {...values, pin: pin.join('') }, {
+                const response = await axios.post(`${API_URL}/api/wallet/funds`, { ...values, pin: pin.join('') }, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                     }
@@ -170,6 +174,7 @@ const Transfer = () => {
                         >
                             <option value="" disabled>Select target wallet</option>
                             <option value="e_wallet">E-Wallet</option>
+                            <option value="earning_wallet">Earning Wallet</option>
                         </select>
                         {formik.touched.from && formik.errors.from && (
                             <div className='text-red-500 text-sm'>{formik.errors.from}</div>

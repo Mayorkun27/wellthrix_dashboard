@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
 import { useUser } from "../../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
@@ -14,10 +13,7 @@ const ElectricityRecharges = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
-    const [totalElecTrnx, setTotalElecTrnx] = useState(0);
     const [perPage, setPerPage] = useState(5);
-
-    const initialFetchDone = useRef(false);
 
     const fetchelecHistory = async () => {
         setIsLoading(true);
@@ -36,11 +32,10 @@ const ElectricityRecharges = () => {
             console.log("elec response", response)
 
             if (response.status === 200 && response.data.ok) {
-                const { data, current_page, last_page, total, per_page } = response.data.data;
+                const { data, current_page, last_page, per_page } = response.data.data;
                 setElecHistory(data);
                 setCurrentPage(current_page);
                 setLastPage(last_page);
-                setTotalElecTrnx(total);
                 setPerPage(per_page);
             } else {
                 throw new Error(response.data.message || "Failed to fetch data history.");

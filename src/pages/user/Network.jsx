@@ -1,10 +1,44 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { BsChevronDown, BsChevronRight } from 'react-icons/bs';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
+import { CiMaximize1, CiMinimize1 } from "react-icons/ci";
 
 const Network = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGeneration, setSelectedGeneration] = useState('all');
   const [expandedNodes, setExpandedNodes] = useState(new Set(['root']));
+  const [canvaScale, setCanvaScale] = useState(100);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const canvaRef = useRef(null);
+
+  const handleCanvaScaleReduction = () => {
+    if (canvaScale > 10) {
+      setCanvaScale(canvaScale - 10);
+    }
+  };
+
+  const handleCanvaScaleIncrement = () => {
+    if (canvaScale < 100) {
+      setCanvaScale(canvaScale + 10);
+    }
+  };
+
+  const handleMaximize = () => {
+    if (!document.fullscreenElement) {
+        // If not in full screen, request full screen for the canvaRef element
+        if (canvaRef.current) {
+            canvaRef.current.requestFullscreen().then(() => {
+                setIsFullScreen(true);
+            });
+        }
+    } else {
+        // If in full screen, exit full screen
+        document.exitFullscreen().then(() => {
+            setIsFullScreen(false);
+        });
+    }
+  };
 
   const referralData = {
     id: 'root',
@@ -167,10 +201,49 @@ const Network = () => {
   };
 
   return (
-    <div className='bg-white rounded-xl shadow-md p-8 h-[calc(100dvh-(44px+16px+48px))] mb-2 overflow-auto no-scrollbar'>
-      <div className="w-fit scale-50 min-w-full mx-auto">
+    <div ref={canvaRef} className='bg-white rounded-xl shadow-md p-8 h-[calc(100dvh-(44px+16px+48px))] mb-2 overflow-auto no-scrollbar'>
+      <div 
+        className={`w-fit min-w-full mx-auto`}
+        style={{ transform: `scale(${canvaScale / 100})`, transformOrigin: 'top center' }}
+      >
         <TreeNode node={referralData} />
       </div>
+      <div className="absolute w-max right-5 bottom-5 flex bg-gray-100 border border-black/20 rounded-md overflow-hidden">
+        <button
+          type='button'
+          className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'
+          title='Decrease canva size'
+          disabled={canvaScale === 30}
+          onClick={handleCanvaScaleReduction}
+        >
+          <FaMinus />
+        </button>
+        <button
+          type='button'
+          className='w-10 h-10 text-xs flex items-center justify-center border-x border-black/20 cursor-pointer'
+          title='Increase canva size'
+          disabled
+        >
+          {canvaScale + "%"}
+        </button>
+        <button
+          type='button'
+          className='w-10 h-10 flex items-center justify-center border-x border-black/20 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'
+          title='Increase canva size'
+          disabled={canvaScale === 100}
+          onClick={handleCanvaScaleIncrement}
+        >
+          <FaPlus />
+        </button>
+        <button
+          type='button'
+          className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer font-extrabold'
+          title={`${isFullScreen ? "Minimize" : "Maximize"} canva`}
+          onClick={handleMaximize}
+        >
+          {!isFullScreen ? <CiMaximize1 /> : <CiMinimize1 />}
+        </button>
+      </div>
     </div>
   )
 }

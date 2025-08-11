@@ -16,13 +16,13 @@ const FilterDropdown = ({ options, selectedType, setSelectedType }) => {
   }, []);
 
   return (
-    <div className="relative w-40" ref={dropdownRef}>
+    <div className="relative w-40 cursor-pointer" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-full flex items-center justify-between border border-pryClr/50 rounded-full px-4 py-2 bg-transparent text-sm text-black/80"
       >
-        {selectedType}
+        <span className='w-11/12 line-clamp-1 text-start'>{selectedType + " History"}</span>
         {isOpen ? (
           <FaChevronUp className="text-pryClr/50 text-xs" />
         ) : (
@@ -39,11 +39,11 @@ const FilterDropdown = ({ options, selectedType, setSelectedType }) => {
                 setSelectedType(option);
                 setIsOpen(false);
               }}
-              className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
+              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
                 option === selectedType ? 'bg-gray-50 font-medium' : ''
               }`}
             >
-              {option}
+              {`${option}`}
             </li>
           ))}
         </ul>

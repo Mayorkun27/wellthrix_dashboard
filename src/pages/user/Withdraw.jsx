@@ -1,6 +1,26 @@
 import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup"
+import { useUser } from "../../context/UserContext";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Withdraw = () => {
+
+  const { user } = useUser
+
+  const formik = useFormik({
+    initialValues: {
+      user_id: user?.id || "",
+      amount: "",
+      bank_name: user?.bank_name || "",
+      account_number: user?.bank_name || "",
+      account_name: user?.bank_name || "",
+      email: user?.email || "",
+      withdraw_from: "",
+    }
+  })
+
   return (
     <div className="space-y-4">
       <div className="shadow-sm rounded bg-white overflow-x-auto p-8">
@@ -14,7 +34,6 @@ const Withdraw = () => {
               Bank Name
             </label>
             <input
-            required
               type="text"
               id=""
               name=""
@@ -30,7 +49,6 @@ const Withdraw = () => {
               Account Name
             </label>
             <input
-            required
               type="text"
               id=""
               name=""
@@ -48,7 +66,6 @@ const Withdraw = () => {
               Amount
             </label>
             <input
-            required
               type="number"
               id=""
               name=""
@@ -64,7 +81,6 @@ const Withdraw = () => {
               Description
             </label>
             <input
-            required
               type="text"
               id=""
               name=""
@@ -73,13 +89,13 @@ const Withdraw = () => {
             />
             </div>
           </div>
-           <div className="text-center">
+            <div className="text-center">
             <button
               
               className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-[300px] h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
             >withdraw
             </button>
-           </div>
+            </div>
         </form>
       </div>
     </div>

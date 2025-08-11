@@ -23,6 +23,7 @@ import ManageContactRequests from './pages/admin/ManageContactRequests';
 import ProductUpload from './pages/admin/ProductUpload';
 import ManageTestimonials from './pages/admin/ManageTestimonials';
 import ManageTransactions from './pages/admin/ManageTransactions';
+import AuthRedirect from './pages/auth/AuthRedirect';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
       <Toaster />
       <Routes>
         <Route path='/login' element={<Login />} />
+        <Route path='/auth-redirect' element={<AuthRedirect />} />
 
         <Route path='/user/overview' element={<MainLayout pageName={`Good Morning, ${user?.first_name} ${user?.last_name}`} subText={"Here’s your dashboard overview"} child={<Overview />} />}/>
         <Route path='/user/network' element={<MainLayout pageName={"Networks"} child={<Network />} />}/>

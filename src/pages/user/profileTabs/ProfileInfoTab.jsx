@@ -1,0 +1,106 @@
+import React, { useState, useEffect } from 'react';
+import { FaArrowUpLong } from 'react-icons/fa6';
+import assets from '../../../assets/assests';
+import { useUser } from '../../../context/UserContext';
+
+const API_URL = import.meta.env.VITE_API_BASE_URL
+
+const ProfileInfoTab = () => {
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [banks, setBanks] = useState([]);
+  
+  const { user } = useUser()
+    
+  const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
+  const splittedLastNameFirstLetter = user?.last_name.split("")[0]
+
+  // Fetch countries on component mount
+  useEffect(() => {
+    fetch('https://countriesnow.space/api/v0.1/countries')
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          console.error('Error fetching countries:', data.msg);
+          return;
+        }
+        console.log('Countries fetched:', data.data);
+        setCountries(data.data || []);
+      })
+      .catch(error => console.error('Error fetching countries:', error));
+  }, []);
+
+  // Mock bank data
+  useEffect(() => {
+    const mockBanks = [
+      { id: 1, name: 'Bank of America' },
+      { id: 2, name: 'Chase Bank' },
+      { id: 3, name: 'Wells Fargo' },
+      { id: 4, name: 'Citibank' },
+    ];
+    setBanks(mockBanks);
+  }, []);
+
+  const statItems = [
+    { id: 1, icon: assets.pic1, title: 'Personal PV', value: '500' },
+    { id: 2, icon: assets.pic2, title: 'Group PV', value: '700' },
+    { id: 3, icon: assets.pic3, title: 'Left Camry', value: '800' },
+    { id: 4, icon: assets.pic4, title: 'Right Camry', value: '200' },
+  ];
+
+  return (
+    <div className='w-full flex flex-col gap-6'>
+      <div className='w-full rounded-lg px-4 py-8 bg-pryClr/40 shadow-lg flex flex-col items-center gap-6 md:flex-row'>
+        <div className='flex-[4] flex flex-col gap-4 items-center p-2'>
+          <div className='w-52 h-52 rounded-full bg-[#D9D9D9] flex items-center justify-center'>
+            <h3 className='font-extrabold uppercase text-8xl'>{`${splittedFirstNameFirstLetter}${splittedLastNameFirstLetter}`}</h3>
+          </div>
+          <div className='flex flex-col items-center'>
+            <p className='text-xl font-bold text-center leading-6 md:text-2xl'>{user?.first_name} {user?.last_name}</p>
+            <p className='text-xl text-black/80 font-semibold md:text-lg'>@{user?.username}</p>
+          </div>
+        </div>
+        <div className='flex-[6] border-black md:border-l-3 flex flex-col gap-4 md:px-6 py-2'>
+          <div className='w-full border-b-3 border-white'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Email: </span>{user?.email}</p>
+          </div>
+          <div className='w-full border-b-3 border-white'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>First Name: </span>{user?.first_name}</p>
+          </div>
+          <div className='w-full border-b-3 border-white'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Last Name: </span>{user?.last_name}</p>
+          </div>
+          <div className='w-full border-b-3 border-white'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Username: </span>{user?.username}</p>
+          </div>
+          <div className='w-full border-b-3 border-white flex justify-between items-center'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Package: </span>{user?.plan}</p>
+            <div className='flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg'>
+              <p>Upgrade</p>
+              <FaArrowUpLong />
+            </div>
+          </div>
+          <div className='w-full border-b-3 border-white'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Current Rank: </span>No Rank Achieved</p>
+          </div>
+        </div>
+      </div>
+
+      <div className='w-full rounded-lg py-8 md:pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+        {statItems.map((item) => (
+          <div
+            key={item.id}
+            className='w-full gap-1 flex flex-col items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-6 justify-center text-center'
+          >
+            <img src={item.icon} className='w-24 mb-4' alt={item.title} />
+            <p className='text-xl text-white md:text-xl'>{item.title}</p>
+            <p className='text-5xl md:text-5xl'>{item.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ProfileInfoTab;
