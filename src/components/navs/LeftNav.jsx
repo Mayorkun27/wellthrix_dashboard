@@ -115,6 +115,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/admin/allusers',
             role: "admin"
         },
+        {
+            name: 'Stockist',
+            icon: <GrAnnounce size={20} />,
+            path: '/user/managestockist',
+            role: ["user", "admin"]
+        },
     ];
 
     return (
