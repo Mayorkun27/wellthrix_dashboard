@@ -3,68 +3,55 @@ import assets from "../../assets/assests";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-const ProductUpload = () => {
+const ManagePackage = () => {
   return (
     <div className="space-y-4">
       <div className="shadow-sm rounded bg-white overflow-x-auto p-8">
+        <h3 className="md:text-3xl text-2xl tracking-[-0.1em] mb-4 font-semibold text-black/80">
+          Create New Package
+        </h3>
         <form action="">
           <div className="flex lg:flex-row lg:gap-20 gap-5 flex-col">
             <div className="w-full">
               <label htmlFor="text" className=" text-[16px] font-medium mb-4">
-                Product Name
+                Package Name
               </label>
               <input
                 required
                 type="text"
-                id=""
-                name=""
                 placeholder=""
                 className="w-full px-4 py-2 border border-pryClr rounded-md"
               />
             </div>
             <div className="w-full">
               <label htmlFor="text" className=" text-[16px] font-medium mb-4">
-                Price
-              </label>
-              <input
-                required
-                type="text"
-                id=""
-                name=""
-                placeholder=""
-                className="w-full px-4 py-2 border border-pryClr rounded-md"
-              />
-            </div>
-          </div>
-          <div className="flex lg:flex-row lg:gap-20 gap-5 flex-col mt-5 ">
-            <div className="w-full">
-              <label htmlFor="number" className=" text-[16px] font-medium mb-4">
                 Point Value
               </label>
               <input
                 required
-                type="number"
-                id=""
-                name=""
+                type="text"
                 placeholder=""
                 className="w-full px-4 py-2 border border-pryClr rounded-md"
               />
             </div>
+          </div>
+
+          <div className="flex lg:flex-row lg:gap-20 gap-5 flex-col mt-5 ">
             <div className="w-full">
-              <label htmlFor="text" className=" text-[16px] font-medium mb-4">
-                Description (Optional)
+              <label htmlFor="number" className=" text-[16px] font-medium mb-4">
+                Amount
               </label>
               <input
+                required
                 type="text"
-                id=""
-                name=""
-                placeholder=""
-                className="w-full px-4 py-2 border border-pryClr rounded-md "
+                id="amount"
+                placeholder="₦0.00"
+                className="w-full px-4 py-2 border border-pryClr rounded-md"
               />
             </div>
           </div>
 
-          <div className="space-y-1 mt-8 mb-">
+          <div className="space-y-1 mt-8">
             <label className="text-[16px] font-medium mb-4" htmlFor="message">
               Image
             </label>
@@ -87,17 +74,16 @@ const ProductUpload = () => {
               </label>
             </div>
           </div>
+
           <div className="text-center">
-            <button
-              
-              className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-[300px] h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
-            >Upload Product
+            <button className="mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-[300px] h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+              Upload Package
             </button>
-           </div>
+          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default ProductUpload;
+export default ManagePackage;

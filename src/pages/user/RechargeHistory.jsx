@@ -56,7 +56,7 @@ const RechargeHistory = ({ selectedType, setSelectedType }) => {
         </div>
       </div>
 
-      {/* Show each section based on selectedType */}
+
       {selectedType === 'Airtime' && <AirtimeRecharges />}
       {selectedType === 'Data' && <DataRecharges />}
       {selectedType === 'Electricity' && <ElectricityRecharges />}
