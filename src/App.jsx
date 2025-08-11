@@ -23,6 +23,7 @@ import ManageContactRequests from './pages/admin/ManageContactRequests';
 import ProductUpload from './pages/admin/ProductUpload';
 import ManageTestimonials from './pages/admin/ManageTestimonials';
 import ManageTransactions from './pages/admin/ManageTransactions';
+import Stockist from './pages/stockist/Stockist';
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
         <Route path='/admin/managecontacts' element={<MainLayout pageName={"Manage Contacts"} child={<ManageContactRequests />} />}/>
         <Route path='/admin/managepackages' element={<MainLayout pageName={"Packages"} child={<ManagePackages />} />}/>
         <Route path='/admin/allusers' element={<MainLayout pageName={"Users"} child={<AllUsers />} />}/>
+        <Route path='/user/managestockist' element={<MainLayout pageName={"Stockist"} child={<Stockist />} />}/>
       </Routes>
     </>
   )
