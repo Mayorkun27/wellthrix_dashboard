@@ -18,11 +18,12 @@ import Withdraw from './pages/user/Withdraw';
 import Deposit from './pages/user/Deposit';
 import Transfer from './pages/user/Transfer';
 import AllUsers from './pages/admin/users/AllUsers';
-import ManagePackages from './pages/admin/ManagePackages';
+import ManagePackage from './pages/admin/ManagePackage';
 import ManageContactRequests from './pages/admin/ManageContactRequests';
 import ProductUpload from './pages/admin/ProductUpload';
 import ManageTestimonials from './pages/admin/ManageTestimonials';
 import ManageTransactions from './pages/admin/ManageTransactions';
+import Stockist from './pages/stockist/Stockist';
 import AuthRedirect from './pages/auth/AuthRedirect';
 
 function App() {
@@ -49,12 +50,14 @@ function App() {
         <Route path='/user/products' element={<MainLayout pageName={"Products"} child={<Products />} />}/>
         <Route path='/user/products/cart' element={<MainLayout pageName={"Cart"} child={<Cart />} />}/>
         <Route path='/admin/manageannouncement' element={<MainLayout pageName={"Manage Announcement"} child={<ManageAnnouncement />} />}/>
-        <Route path='/admin/managetestimonials' element={<MainLayout pageName={"Testimonials"} child={<ManageTestimonials />} />}/>
+        <Route path='/admin/managetestimonials' element={<MainLayout pageName={"Create Testimonials"} child={<ManageTestimonials />} />}/>
         <Route path='/admin/managetransactions' element={<MainLayout pageName={"Transactions"} child={<ManageTransactions />} />}/>
         <Route path='/admin/uploadproduct' element={<MainLayout pageName={"Upload Products"} child={<ProductUpload />} />}/>
         <Route path='/admin/managecontacts' element={<MainLayout pageName={"Manage Contacts"} child={<ManageContactRequests />} />}/>
-        <Route path='/admin/managepackages' element={<MainLayout pageName={"Packages"} child={<ManagePackages />} />}/>
+        <Route path='/admin/managepackages' element={<MainLayout pageName={"Create New Package"} child={<ManagePackage />} />}/>
+        
         <Route path='/admin/allusers' element={<MainLayout pageName={"Users"} child={<AllUsers />} />}/>
+        <Route path='/user/managestockist' element={<MainLayout pageName={"Stockist"} child={<Stockist />} />}/>
       </Routes>
     </>
   )
