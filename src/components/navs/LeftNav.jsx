@@ -8,7 +8,7 @@ import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
 import { FaPlugCircleBolt } from 'react-icons/fa6';
 import { GiShoppingBag } from 'react-icons/gi';
-import { GrAnnounce } from "react-icons/gr";
+import { GrAnnounce, GrTransaction } from "react-icons/gr";
 
 const LeftNav = ({ setIsOpen }) => {
 
@@ -35,6 +35,12 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Withdraw',
             icon: <PiHandDeposit size={20} />,
             path: '/user/withdraw',
+            role: "user"
+        },
+        {
+            name: 'Transfer Funds',
+            icon: <GrTransaction size={20} />,
+            path: '/user/transfer',
             role: "user"
         },
         {
@@ -71,6 +77,42 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Announcement',
             icon: <GrAnnounce size={20} />,
             path: '/admin/manageannouncement',
+            role: "admin"
+        },
+        {
+            name: 'Testimonials',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/managetestimonials',
+            role: "admin"
+        },
+        {
+            name: 'Product Upload',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/uploadproduct',
+            role: "admin"
+        },
+        {
+            name: 'Contact Input',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/managecontacts',
+            role: "admin"
+        },
+        {
+            name: 'Transaction',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/managetransactions',
+            role: "admin"
+        },
+        {
+            name: 'Packages',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/managepackages',
+            role: "admin"
+        },
+        {
+            name: 'Users',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/allusers',
             role: "admin"
         },
     ];

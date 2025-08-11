@@ -32,7 +32,11 @@ const Overview = () => {
 
   const [referrals, setReferrals] = useState([])
 
-  const { user, token, logout } = useUser()
+  const { user, token, logout, refreshUser } = useUser()
+
+  useEffect(() => {
+    refreshUser()
+  }, [])
   
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
@@ -47,7 +51,7 @@ const Overview = () => {
         </div>,
       buttonText: "Fund Wallet",
       buttonType: 1,
-      path: "/user/history"
+      path: "/user/deposit"
     },
     {
       walletType: "Purchase Wallet",
@@ -57,7 +61,7 @@ const Overview = () => {
         </div>,
       buttonText: "Purchase Now",
       buttonType: 1,
-      path: "/user/history"
+      path: "/user/products"
     },
     {
       walletType: "Earnings Wallet",

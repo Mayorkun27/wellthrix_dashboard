@@ -16,6 +16,13 @@ import Cart from './pages/user/Cart';
 import { useUser } from './context/UserContext';
 import Withdraw from './pages/user/Withdraw';
 import Deposit from './pages/user/Deposit';
+import Transfer from './pages/user/Transfer';
+import AllUsers from './pages/admin/users/AllUsers';
+import ManagePackages from './pages/admin/ManagePackages';
+import ManageContactRequests from './pages/admin/ManageContactRequests';
+import ProductUpload from './pages/admin/ProductUpload';
+import ManageTestimonials from './pages/admin/ManageTestimonials';
+import ManageTransactions from './pages/admin/ManageTransactions';
 
 function App() {
 
@@ -32,6 +39,7 @@ function App() {
         <Route path='/user/transactions' element={<MainLayout pageName={"Transactions"} child={<Transactions />} />}/>
         <Route path='/user/deposit' element={<MainLayout pageName={"Deposit"} child={<Deposit />} />}/>
         <Route path='/user/withdraw' element={<MainLayout pageName={"Withdraw"} child={<Withdraw />} />}/>
+        <Route path='/user/transfer' element={<MainLayout pageName={"Transfer"} child={<Transfer />} />}/>
         <Route path='/user/recharge' element={<MainLayout pageName={"Digital"} child={<Digital />} />}/>
         <Route path='/user/register' element={<MainLayout pageName={"Register"} child={<Register />} />}/>
         <Route path='/user/rechargehistory' element={<MainLayout pageName={"Recharge History"} child={<RechargeHistory />} />}/>
@@ -39,6 +47,12 @@ function App() {
         <Route path='/user/products' element={<MainLayout pageName={"Products"} child={<Products />} />}/>
         <Route path='/user/products/cart' element={<MainLayout pageName={"Cart"} child={<Cart />} />}/>
         <Route path='/admin/manageannouncement' element={<MainLayout pageName={"Manage Announcement"} child={<ManageAnnouncement />} />}/>
+        <Route path='/admin/managetestimonials' element={<MainLayout pageName={"Testimonials"} child={<ManageTestimonials />} />}/>
+        <Route path='/admin/managetransactions' element={<MainLayout pageName={"Transactions"} child={<ManageTransactions />} />}/>
+        <Route path='/admin/uploadproduct' element={<MainLayout pageName={"Upload Products"} child={<ProductUpload />} />}/>
+        <Route path='/admin/managecontacts' element={<MainLayout pageName={"Manage Contacts"} child={<ManageContactRequests />} />}/>
+        <Route path='/admin/managepackages' element={<MainLayout pageName={"Packages"} child={<ManagePackages />} />}/>
+        <Route path='/admin/allusers' element={<MainLayout pageName={"Users"} child={<AllUsers />} />}/>
       </Routes>
     </>
   )

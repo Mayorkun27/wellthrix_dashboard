@@ -16,6 +16,7 @@ import pic4 from "./pic4.png"
 import depositfunds from "./depositfunds.png"
 import depwal from "./depositwallet.png"
 import mark from "./mark.png"
+import check from "./check.png"
 const assets = {
     logo,
     depositfunds,
@@ -35,6 +36,7 @@ const assets = {
     pic2,
     pic3,
     pic4,
+    check,
 }
 
 export default assets;
