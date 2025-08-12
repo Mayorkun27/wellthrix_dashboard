@@ -89,7 +89,6 @@ const Digital = () => {
       } finally {
         setShowPinModal(false);
         setPin(['', '', '', '']);
-        setFormData(null);
         setIsLoading(false)
       }
     }

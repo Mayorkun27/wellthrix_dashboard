@@ -10,43 +10,71 @@ export const UserProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
 
-  const [dashboardMetrics, setDashboardMetrics] = useState({
-    no_properties: 0,
-    no_purchases: 0,
-    no_users: 0,
-    total_balance: "0.00",
-    total_bonus: "0.00",
-  });
+  const [miscellanousDetails, setMiscellanousDetails] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
-    const storedMetrics = localStorage.getItem("dashboardMetrics");
+    const storedMiscellanousDetails = localStorage.getItem("miscellanousDetails");
       // console.log("storedToken", storedToken)
     if (storedToken && storedUser) {
       const parsedUser = JSON.parse(storedUser);
+
       setToken(storedToken);
       setUser(parsedUser);
       setRole(parsedUser?.role || null);
     }
 
-    if (storedMetrics) { // Parse and set stored metrics
-      setDashboardMetrics(JSON.parse(storedMetrics));
+    if (storedMiscellanousDetails) {
+      setMiscellanousDetails(JSON.parse(storedMiscellanousDetails));
     }
   }, []);
 
-  const login = (token, user, metrics) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    setToken(token);
-    setUser(user);
-    setRole(user?.role || null);
+  const login = async (authToken) => {
+    localStorage.setItem("token", authToken);
+    setToken(authToken);
 
-    if (metrics) {
-      localStorage.setItem("dashboardMetrics", JSON.stringify(metrics));
-      setDashboardMetrics(metrics);
-    }  
+    // No user data in login response → must fetch from /me
+    await refreshUser(authToken);
   };
+
+  const refreshUser = async (authToken = token) => {
+    if (!authToken) {
+      console.log("No token found")
+      return;
+    };
+
+    try {
+      const response = await axios.get(`${API_URL}/api/me`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+
+      console.log("response", response)
+
+      const updatedUser = response.data.data.user;
+      const updatedPlanDetails = response.data.data.plan_details || null;
+      const updatedStockistDetails = response.data.data.stockist_details || null;
+
+      const miscDetails = [
+        { planDetails: updatedPlanDetails },
+        { stockistDetails: updatedStockistDetails },
+      ];
+
+      // Update state
+      setUser(updatedUser);
+      setRole(updatedUser?.role || null);
+      setMiscellanousDetails(miscDetails);
+
+      // Persist
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      localStorage.setItem("miscellanousDetails", JSON.stringify(miscDetails));
+
+    } catch (err) {
+      console.error("Failed to refresh user:", err);
+    }
+  };
+
+
 
   const isLoggedIn = !!token;
 
@@ -63,6 +91,8 @@ export const UserProvider = ({ children }) => {
       setToken(null);
       localStorage.removeItem("user");
       setUser(null);
+      localStorage.removeItem("miscellanousDetails");
+      setMiscellanousDetails([]);
       toast.success("Logged out successfully")
       setTimeout(() => {
         window.location.href = "https://wellthrixinternational.com/#/login";
@@ -73,27 +103,9 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const refreshUser = async (token) => {
-    try {
-      const response = await axios.get(`${API_URL}/api/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      console.log("refresh response", response)
-
-      const updatedUser = response.data.data;
-
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setRole(updatedUser?.role || null);
-
-    } catch (err) {
-      console.error("Failed to refresh user:", err);
-    }
-  };
 
   return (
-    <UserContext.Provider value={{ user, token, role, setToken, setUser, login, logout, isLoggedIn, refreshUser, dashboardMetrics }}>
+    <UserContext.Provider value={{ user, token, role, setToken, setUser, login, logout, isLoggedIn, refreshUser, miscellanousDetails }}>
       {children}
     </UserContext.Provider>
   );

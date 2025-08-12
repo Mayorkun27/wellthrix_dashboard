@@ -1,16 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdOutlineDashboard } from 'react-icons/md';
+import { MdChat, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
-import { FaPlugCircleBolt } from 'react-icons/fa6';
+import { FaPlugCircleBolt, FaUsers } from 'react-icons/fa6';
 import { GiShoppingBag } from 'react-icons/gi';
 import { GrAnnounce, GrTransaction } from "react-icons/gr";
+import { TbTruckDelivery } from 'react-icons/tb';
+import { VscPackage } from 'react-icons/vsc';
+import { useUser } from '../../context/UserContext';
 
 const LeftNav = ({ setIsOpen }) => {
+
+    const { user } = useUser()
 
     const navItems = [
         {
@@ -81,48 +86,50 @@ const LeftNav = ({ setIsOpen }) => {
         },
         {
             name: 'Testimonials',
-            icon: <GrAnnounce size={20} />,
+            icon: <MdChat size={20} />,
             path: '/admin/managetestimonials',
             role: "admin"
         },
         {
             name: 'Product Upload',
-            icon: <GrAnnounce size={20} />,
+            icon: <MdOutlineFileUpload size={20} />,
             path: '/admin/uploadproduct',
             role: "admin"
         },
         {
             name: 'Contact Input',
-            icon: <GrAnnounce size={20} />,
+            icon: <MdOutlineContactMail size={20} />,
             path: '/admin/managecontacts',
             role: "admin"
         },
         {
             name: 'Transaction',
-            icon: <GrAnnounce size={20} />,
+            icon: <GrTransaction size={20} />,
             path: '/admin/managetransactions',
             role: "admin"
         },
         {
             name: 'Packages',
-            icon: <GrAnnounce size={20} />,
+            icon: <VscPackage size={20} />,
             path: '/admin/managepackages',
             role: "admin"
         },
        
         {
             name: 'Users',
-            icon: <GrAnnounce size={20} />,
+            icon: <FaUsers size={20} />,
             path: '/admin/allusers',
             role: "admin"
         },
         {
             name: 'Stockist',
-            icon: <GrAnnounce size={20} />,
+            icon: <TbTruckDelivery size={20} />,
             path: '/user/managestockist',
             role: ["user", "admin"]
         },
     ];
+
+    // const filteredLinks = navItems.filter(navItem => navItem.role === user?.role || (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
 
     return (
       <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full py-4 md:pt-4 pt-8 flex flex-col gap-'>
@@ -131,6 +138,7 @@ const LeftNav = ({ setIsOpen }) => {
         </div>
         <ul className='lg:mt-5 mt-8 flex flex-col gap-3 pb-2 border-b border-secClr/20 h-3/4 overflow-y-scroll no-scrollbar'>
             {
+                // filteredLinks.map(({ name, icon, path }, index) => (
                 navItems.map(({ name, icon, path }, index) => (
                     <NavLink
                         to={path}

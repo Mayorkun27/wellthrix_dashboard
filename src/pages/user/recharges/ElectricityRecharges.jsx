@@ -100,7 +100,7 @@ const ElectricityRecharges = () => {
                         })
                     ) : (
                         <tr>
-                            <td colSpan="7" className="text-center p-8">No data recharge history found.</td>
+                            <td colSpan="7" className="text-center p-8">No electricity history found.</td>
                         </tr>
                     )}
                 </tbody>
