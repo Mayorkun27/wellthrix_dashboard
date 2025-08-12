@@ -34,7 +34,6 @@ export const UserProvider = ({ children }) => {
     localStorage.setItem("token", authToken);
     setToken(authToken);
 
-    // No user data in login response → must fetch from /me
     await refreshUser(authToken);
   };
 
