@@ -7,7 +7,9 @@ import { useUser } from '../../context/UserContext';
 import ProfileInfoTab from './profileTabs/ProfileInfoTab';
 import PasswordResetTab from './profileTabs/PasswordResettab';
 import PinResetTab from './profileTabs/PinResetTab';
-import PersonalDetailsEditTab from './profileTabs/PersonalDetailsEditTab';
+import PersonalDetailsForm from './profileTabs/PersonalDetailsForm';
+import ContactDetailsForm from './profileTabs/ContactDetailsForm';
+import BankDetailsForm from './profileTabs/BankDetailsForm';
 
 
 // Main Dashboard Component
@@ -23,46 +25,64 @@ const Dashboard = () => {
       case 'pin':
         return <PinResetTab />;
       case 'personal':
-        return <PersonalDetailsEditTab />;
+        return <PersonalDetailsForm />;
+      case 'contact':
+        return <ContactDetailsForm />
+      case 'bank':
+        return <BankDetailsForm />
       default:
-        return <ProfileInfoTab />;
+        return <PersonalDetailsForm />;
     }
   };
 
   return (
     <div className="min-h-screen flex justify-center">
-      <div className="w-full">
-        <div className="bg-white shadow-md rounded-lg">
-          <div className="flex overflow-x-auto border-b border-gray-200 snap-x snap-mandatory">
-            <button
-              className={`flex-1 py-6 px-4 text-center font-medium text-base sm:text-lg cursor-pointer snap-center ${activeTab === 'profile' ? 'border-b-2 border-pryClr text-pryClr font-bold' : 'text-pryClr hover:text-pryClr/70'
-                }`}
-              onClick={() => setActiveTab('profile')}
-            >
-              Profile
-            </button>
-            <button
-              className={`flex-1 py-6 px-4 text-center font-medium text-base sm:text-lg cursor-pointer snap-center ${activeTab === 'password' ? 'border-b-2 border-pryClr text-pryClr font-bold' : 'text-pryClr hover:text-pryClr/70'
-                }`}
-              onClick={() => setActiveTab('password')}
-            >
-              Password Reset
-            </button>
-            <button
-              className={`flex-1 py-6 px-4 text-center font-medium text-base sm:text-lg cursor-pointer snap-center ${activeTab === 'pin' ? 'border-b-2 border-pryClr text-pryClr font-bold' : 'text-pryClr hover:text-pryClr/70'
-                }`}
-              onClick={() => setActiveTab('pin')}
-            >
-              Pin Reset
-            </button>
-            <button
-              className={`flex-1 py-6 px-4 text-center font-medium text-base sm:text-lg cursor-pointer snap-center ${activeTab === 'personal' ? 'border-b-2 border-pryClr text-pryClr font-bold' : 'text-pryClr hover:text-pryClr/70'
-                }`}
-              onClick={() => setActiveTab('personal')}
-            >
-              Personal Details
-            </button>
-          </div>
+      <div className="w-full space-y-6">
+        <div className="flex items-center gap-10 overflow-x-auto snap-x snap-mandatory hr-scroll py-4 rounded-xl bg-white px-6">
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'profile' ? 'text-pryClr border-b-2 font-bold border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('profile')}
+          >
+            Profile
+          </button>
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'password' ? 'text-pryClr border-b-2 font-bold border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('password')}
+          >
+            Password Reset
+          </button>
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'pin' ? 'text-pryClr border-b-2 font-bold border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('pin')}
+          >
+            Pin Reset
+          </button>
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'personal' ? 'text-pryClr border-b-2 border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('personal')}
+          >
+            Personal Details
+          </button>
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'contact' ? 'text-pryClr border-b-2 border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('contact')}
+          >
+            Contact Details
+          </button>
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'bank' ? 'text-pryClr border-b-2 border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('bank')}
+          >
+            Bank Details
+          </button>
+        </div>
+        <div className="bg-white shadow-md rounded-xl">
           <div className="p-6">{renderContent()}</div>
         </div>
       </div>

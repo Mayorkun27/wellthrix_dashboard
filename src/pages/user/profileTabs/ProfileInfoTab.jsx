@@ -2,45 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { FaArrowUpLong } from 'react-icons/fa6';
 import assets from '../../../assets/assests';
 import { useUser } from '../../../context/UserContext';
+import { useLocation } from 'react-router-dom';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+const PS_SK = import.meta.env.VITE_PAYSTACK_SECRET_KEY;
 
 const ProfileInfoTab = () => {
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [banks, setBanks] = useState([]);
+  const searchParams = new URLSearchParams(useLocation().search);
+  const comeToEditBank = searchParams.get("setbank");
   
   const { user } = useUser()
-    
+  
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
-
-  // Fetch countries on component mount
-  useEffect(() => {
-    fetch('https://countriesnow.space/api/v0.1/countries')
-      .then(response => response.json())
-      .then(data => {
-        if (data.error) {
-          console.error('Error fetching countries:', data.msg);
-          return;
-        }
-        console.log('Countries fetched:', data.data);
-        setCountries(data.data || []);
-      })
-      .catch(error => console.error('Error fetching countries:', error));
-  }, []);
-
-  // Mock bank data
-  useEffect(() => {
-    const mockBanks = [
-      { id: 1, name: 'Bank of America' },
-      { id: 2, name: 'Chase Bank' },
-      { id: 3, name: 'Wells Fargo' },
-      { id: 4, name: 'Citibank' },
-    ];
-    setBanks(mockBanks);
-  }, []);
 
   const statItems = [
     { id: 1, icon: assets.pic1, title: 'Personal PV', value: '500' },
