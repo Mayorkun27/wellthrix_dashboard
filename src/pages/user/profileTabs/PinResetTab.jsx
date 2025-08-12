@@ -20,15 +20,15 @@ const PinResetTab = () => {
     },
     validationSchema: Yup.object({
         old_pin: Yup.string()
-            .required('Current password is required')
-            .min(4, 'Password must be at least 4 characters'),
+            .required('Current pin is required')
+            .min(4, 'Pin must be at least 4 characters'),
         new_pin: Yup.string()
-            .required('New password is required')
-            .min(4, 'Password must be at least 4 characters')
-            .notOneOf([Yup.ref('old_pin')], 'New password must be different from current'),
+            .required('New pin is required')
+            .max(4, 'Pin must not be more than 4 characters')
+            .notOneOf([Yup.ref('old_pin')], 'New pin must be different from current'),
         confirm_new_pin: Yup.string()
-            .required('Please confirm your password')
-            .oneOf([Yup.ref('new_pin')], 'Passwords must match'),
+            .required('Please confirm your pin')
+            .oneOf([Yup.ref('new_pin')], 'Pins must match'),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       console.log('values to be Submitted:', values);
@@ -41,9 +41,9 @@ const PinResetTab = () => {
                 }
             });
 
-            console.log("password reset response", response)
+            console.log("pin reset response", response)
 
-            if (response.status === 200 && response.data.ok) {
+            if (response.status === 200 && response.data.success) {
                 toast.success(response.data.message || `Pin updated successfully`);
             } else {
                 throw new Error(response.data.message || "An error occurred updating pin.");
@@ -67,7 +67,7 @@ const PinResetTab = () => {
     <div className="flex flex-col justify-center">
       <div className="sm:rounded-lg">
         <form onSubmit={formik.handleSubmit} className="space-y-6">
-          <div>
+          <div className="space-y-2">
             <label htmlFor="old_pin" className="block text-sm font-medium text-black">
               Current Pin
             </label>
@@ -75,11 +75,12 @@ const PinResetTab = () => {
                 id="old_pin"
                 name="old_pin"
                 type={"text"}
-                autoComplete="current-password"
+                autoComplete="current-pin"
                 className="appearance-none block w-full px-3 py-3 border border-pryClr/30 rounded-md focus:outline-none pr-10"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.old_pin}
+                maxLength={4}
             />
             {formik.touched.old_pin && formik.errors.old_pin ? (
             <div className="mt-1 text-sm text-red-600">
@@ -87,7 +88,7 @@ const PinResetTab = () => {
             </div>
             ) : null}
           </div>
-          <div>
+          <div className="space-y-2">
             <label htmlFor="new_pin" className="block text-sm font-medium text-black">
               New Pin
             </label>
@@ -100,6 +101,7 @@ const PinResetTab = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.new_pin}
+                maxLength={4}
             />
             {formik.touched.new_pin && formik.errors.new_pin ? (
             <div className="mt-1 text-sm text-red-600">
@@ -107,7 +109,7 @@ const PinResetTab = () => {
             </div>
             ) : null}
           </div>
-          <div>
+          <div className="space-y-2">
             <label htmlFor="confirm_new_pin" className="block text-sm font-medium text-black">
               Confirm New Pin
             </label>
@@ -120,6 +122,7 @@ const PinResetTab = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.confirm_new_pin}
+                maxLength={4}
             />
             {formik.touched.confirm_new_pin && formik.errors.confirm_new_pin ? (
             <div className="mt-1 text-sm text-red-600">
@@ -151,7 +154,7 @@ const PinResetTab = () => {
                   Processing...
                 </>
               ) : (
-                'Reset Password'
+                'Reset pin'
               )}
             </button>
           </div>

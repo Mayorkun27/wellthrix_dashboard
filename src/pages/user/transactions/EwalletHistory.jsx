@@ -96,7 +96,7 @@ const EwalletHistory = () => {
                         })
                     ) : (
                         <tr>
-                            <td colSpan="7" className="text-center p-8">No airtime recharge history found.</td>
+                            <td colSpan="7" className="text-center p-8">No e-wallet history found.</td>
                         </tr>
                     )}
                 </tbody>

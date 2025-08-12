@@ -11,6 +11,8 @@ import { FiSearch } from 'react-icons/fi';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useUser } from '../../../context/UserContext';
+import { formatterUtility } from '../../../utilities/Formatterutility';
+import { GiFire } from 'react-icons/gi';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -20,7 +22,6 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
   }, []);
 
   const { token, logout } = useUser();
-  console.log("token from context", token)
 
   const [selectedPackage, setSelectedPackage] = useState(formData.selectedPackage || null);
   const [sponsor, setSponsor] = useState(formData.sponsor || '');
@@ -28,18 +29,10 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
   const [leg, setLeg] = useState(formData.leg || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchchingSponsor, setIsFetchchingSponsor] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [packages, setPackages] = useState([]);
-
-  // const packages = [
-  //   { id: 1, name: "Spark Package", price: "10,500", currency: "NGN", pointValue: "8PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <LuSparkle className="text-3xl" />, link: "/login" },
-  //   { id: 2, name: "Rise Package", price: "28,000", currency: "NGN", pointValue: "24PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <AiOutlineRise className="text-3xl" />, link: "/login" },
-  //   { id: 3, name: "Star Package", price: "44,000", currency: "NGN", pointValue: "40PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <FaRegStar className="text-3xl" />, link: "/login" },
-  //   { id: 4, name: "Super Package", price: "98,000", currency: "NGN", pointValue: "80PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <IoShieldCheckmarkOutline className="text-3xl" />, link: "/login" },
-  //   { id: 5, name: "Thrive Package", price: "264,000", currency: "NGN", pointValue: "240PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <CgArrowTopRight className="text-3xl" />, link: "/login" },
-  //   { id: 6, name: "Thrix Package", price: "528,000", currency: "NGN", pointValue: "480PV", iconColor: "text-accClr", buttonColor: "bg-accClr hover:bg-pryClrDark", icon: <VscGraph className="text-3xl" />, link: "/login" },
-  //   { id: 7, name: "Crown Package", price: "1,100,000", currency: "NGN", pointValue: "1,000PV", iconColor: "text-pryClr", buttonColor: "bg-pryClr hover:bg-pryClrDark", icon: <LuCrown className="text-3xl" />, link: "/login" },
-  // ];
+  const [searchResult, setSearchResult] = useState([]);
 
   const fetchPackages = async () => {
     setIsLoading(true)
@@ -51,16 +44,45 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
         }
       })
 
-      console.log("Packages response", response)
+      if (response.status === 200) {
+        setPackages(response.data.data.data || []);
+      }
       
     } catch (error) {
       if (error.response?.data?.message?.includes("unauthenticated")) {
         logout();
       }
-      console.error("Step Two submission error:", error);
-      toast.error(error.response?.data?.message || "An error occurred submitting step 2 data.");
+      console.error("Packages retrieve error:", error);
+      toast.error(error.response?.data?.message || "An error occurred retrieving packages.");
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchSponsorsAndDownlines = async (filterTerm) => {
+    setIsFetchchingSponsor(true)
+    try {
+      const response = await axios.get(`${API_URL}/api/referrals/downlines`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json"
+        }
+      })
+
+      console.log("searchResult response", response)
+
+      if (response.status === 200) {
+        setSearchResult(response.data.data || []);
+      }
+      
+    } catch (error) {
+      if (error.response?.data?.message?.includes("unauthenticated")) {
+        logout();
+      }
+      console.error("Failed to fetch downlines and sponsors:", error);
+      toast.error(error.response?.data?.message || "An error occurred fetching downlines and sponsors.");
+    } finally {
+      setIsFetchchingSponsor(false)
     }
   }
 
@@ -175,18 +197,25 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
                 Sponsor
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiSearch className="h-5 w-5 text-pryClr" />
-                </div>
                 <input
                   type="text"
                   id="spot"
                   name="spot"
                   placeholder="Search for a sponsor"
-                  className="block w-full h-12 pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-pryClr focus:border-pryClr"
-                  onChange={(e) => setSponsor(e.target.value)}
+                  className="block w-full h-12 indent-3 pr-13 py-2 border border-gray-300 rounded-lg outline-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onChange={(e) => {
+                    setSponsor(e.target.value);
+                    fetchSponsorsAndDownlines(e.target.value);
+                  }}
                   value={sponsor}
                 />
+                <button 
+                  type='button'
+                  className="absolute inset-y-0 right-1 w-[45px] h-[90%] top-1/2 -translate-y-1/2 rounded-lg flex bg-pryClr items-center justify-center cursor-pointer"
+                  onClick={() => {}}
+                >
+                  <FiSearch className="text-secClr text-xl" />
+                </button>
               </div>
             </div>
 
@@ -195,18 +224,23 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
                 Placement
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiSearch className="h-5 w-5 text-pryClr" />
-                </div>
                 <input
                   type="text"
                   id="placement"
                   name="placement"
                   placeholder="Search for placement"
-                  className="block w-full h-12 pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-pryClr focus:border-pryClr"
+                  className="block w-full h-12 indent-3 pr-13 py-2 border border-gray-300 rounded-lg outline-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   onChange={(e) => setPlacement(e.target.value)}
-                  value={placement}
+                  disabled={!sponsor}
+                  value={!sponsor ? "Enter sponsor first" : placement}
                 />
+                <button 
+                  type='button'
+                  className="absolute inset-y-0 right-1 w-[45px] h-[90%] top-1/2 -translate-y-1/2 rounded-lg flex bg-pryClr items-center justify-center cursor-pointer"
+                  onClick={() => {}}
+                >
+                  <FiSearch className="text-secClr text-xl" />
+                </button>
               </div>
             </div>
 
@@ -217,11 +251,13 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
               <div className="relative flex items-center gap-6">
                 <button
                   type='button'
+                  disabled={!sponsor || !placement}
                   onClick={() => handlePositionSelection("left")}
                   className={`w-full h-12 border-2 border-pryClr cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-lg ${leg === "left" ? "bg-pryClr text-secClr" : "bg-transparent text-black"} transition-all duration-500`}  
                 >Left</button>
                 <button
                   type='button'
+                  disabled={!sponsor || !placement}
                   onClick={() => handlePositionSelection("right")}
                   className={`w-full h-12 border-2 border-pryClr cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-lg ${leg === "right" ? "bg-pryClr text-secClr" : "bg-transparent text-black"} transition-all duration-500`}  
                 >Right</button>
@@ -233,42 +269,66 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
 
       <form onSubmit={handleRegInit} className='w-full flex flex-col gap-4 md:gap-6 rounded-2xl bg-white shadow-xl px-4 md:px-6 py-6'>
         <div>
-          <p className='text-xl md:text-2xl font-bold text-gray-800'>Pick Your Products</p>
+          <p className='text-xl md:text-2xl font-bold text-gray-800'>Pick Your Package</p>
         </div>
 
         <div className="w-full">
           <div className="w-full overflow-x-auto pb-4 scrollbar-hide">
-            <div className="flex gap-6 w-max px-4">
-              {packages.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  onClick={() => handleSelectPackage(pkg)}
-                  className={`
-                    w-72 rounded-3xl px-6 py-8 flex flex-col gap-6 bg-white text-black cursor-pointer
-                    border-2 ${selectedPackage?.id === pkg.id ? 'border-pryClr' : 'border-black/10'}
-                    transition-all hover:shadow-lg
-                  `}
-                >
-                  <div className="flex justify-between items-center">
-                    <p className="text-xl font-bold">{pkg.name}</p>
-                    <div className={pkg.iconColor}>{pkg.icon}</div>
-                  </div>
-                  <div className="flex flex-col gap-1 text-left">
-                    <p className="font-bold text-4xl">
-                      {pkg.price}
-                      <span className="text-base font-normal">{pkg.currency}</span>
-                    </p>
-                    <p className="text-sm">Point Value: {pkg.pointValue}</p>
-                  </div>
-                  <div>
-                    <div className={`w-full text-white ${pkg.buttonColor} flex items-center justify-center gap-2 py-2 px-4 rounded-lg transition-colors`}>
-                      <BsArrowRight className="w-6 h-6" />
-                      <span className="font-medium text-lg">Get Started</span>
+            {
+              isLoading ? (
+                <div className='border-4 border-t-transparent animate-spin mx-auto rounded-full w-[100px] h-[100px]'></div>
+              ) : (
+                <div className="flex gap-6 w-max pe-4">
+                  {packages.map((pkg, index) => (
+                    <div
+                      key={pkg.id}
+                      onClick={() => handleSelectPackage(pkg)}
+                      className={`
+                        w-72 rounded-3xl p-6 flex flex-col gap-3 bg-white text-black cursor-pointer
+                        border-2 ${selectedPackage?.id === pkg.id ? 'border-pryClr' : 'border-black/10'}
+                        transition-all hover:shadow-lg
+                      `}
+                    >
+                      <div className="flex justify-between items-center">
+                        <p className="text-xl font-bold capitalize">{pkg.name} package</p>
+                        <div className={`${index % 2 === 0 ? "text-accClr" : "text-pryClr"}`}>
+                          {
+                            pkg.name == "spark" 
+                              ? <LuSparkle className="text-3xl" /> 
+                              : pkg.name == "rise" 
+                                ? <AiOutlineRise className="text-3xl" />
+                                : pkg.name == "star" 
+                                  ? <FaRegStar className="text-3xl" />
+                                  : pkg.name == "super" 
+                                    ? <IoShieldCheckmarkOutline className="text-3xl" />
+                                    : pkg.name == "thrive" 
+                                      ? <CgArrowTopRight className="text-3xl" />
+                                      : pkg.name == "thrix" 
+                                        ? <VscGraph className="text-3xl" />
+                                        : pkg.name == "crown" 
+                                          ? <LuCrown className="text-3xl" />
+                                          : <GiFire className="text-3xl" />
+                          }
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1 text-left">
+                        <p className={`font-bold text-4xl ${index % 2 === 0 ? "text-accClr" : "text-pryClr"}`}>
+                          {formatterUtility(Number(pkg.price))}
+                          <span className="text-base font-normal">NGN</span>
+                        </p>
+                        <p className="text-sm">Point Value: {pkg.point_value}pv</p>
+                      </div>
+                      <div hidden>
+                        <div className={`w-full text-white ${index % 2 === 0 ? "bg-accClr" : "bg-pryClr"} flex items-center justify-center gap-2 py-2 px-4 rounded-lg transition-colors`}>
+                          <BsArrowRight className="w-6 h-6" />
+                          <span className="font-medium text-lg">Get Started</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )
+            }
           </div>
         </div>
 

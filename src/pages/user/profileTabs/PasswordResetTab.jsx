@@ -46,7 +46,7 @@ const PasswordResetTab = () => {
 
             console.log("password reset response", response)
 
-            if (response.status === 200 && response.data.ok) {
+            if (response.status === 200 && response.data.success) {
                 toast.success(response.data.message || `Password updated successfully`);
             } else {
                 throw new Error(response.data.message || "An error occurred updating password.");
