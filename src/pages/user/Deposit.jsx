@@ -68,7 +68,7 @@ const Deposit = () => {
 
         if (response.status === 201 && response.data.ok) {
           toast.success(response.data.message || `Deposit initiated successfully`);
-          refreshUser(token);
+          refreshUser();
 
           if (response.data.authorization_url) {
             toast.info("Redirecting you to the payment gateway...");

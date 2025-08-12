@@ -81,7 +81,7 @@ const PurchaseWalletHistory = () => {
                                     className="hover:bg-gray-50 text-sm border-b border-black/10 text-center"
                                 >
                                     <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
-                                    <td className="p-4 capitalize">{item.transaction_type.includes("deposit") ? "Deposit" : item.transaction_type.includes("fund_purchase") && "From E-wallet" || "-"}</td>
+                                    <td className="p-4 capitalize">{item.fund_wallets[0]?.from.includes("e_wallet") ? "From E-wallet" : item.fund_wallets[0]?.from.includes("earning_wallet") && "From Earning Wallet" || "-"}</td>
                                     <td className="p-4">{formatterUtility(item.amount) || "-"}</td>
                                     <td className="p-4 capitalize">
                                         <div className={`w-[100px] py-2 ${item.status === "success" ? "bg-[#dff7ee]/80 text-pryclr" : item.status === "failed" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>

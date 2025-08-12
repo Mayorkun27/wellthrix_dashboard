@@ -29,6 +29,8 @@ const AirtimeRecharges = () => {
                 }
             });
 
+            console.log("airtime History Response:", response);
+
             if (response.status === 200 && response.data.ok) {
                 const { data, current_page, last_page, per_page } = response.data.data;
                 setAirtimeHistory(data);
@@ -84,7 +86,7 @@ const AirtimeRecharges = () => {
                                     <td className="p-4">{item.phone || "-"}</td>
                                     <td className="p-4">{item.network || "-"}</td>
                                     <td className="p-4 capitalize">{item.transaction_type || "-"}</td>
-                                    <td className="p-4">{formatterUtility(item.amount) || "-"}</td>
+                                    <td className="p-4">{formatterUtility(Number(item.amount)) || "-"}</td>
                                     <td className="p-4 capitalize">
                                         <div className={`w-[100px] py-2 ${item.status === "success" ? "bg-[#dff7ee]/80 text-pryclr" : item.status === "failed" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
                                             {item.status === "success" ? "Successful" : item.status === "failed" ? "Failed" : "Pending"}

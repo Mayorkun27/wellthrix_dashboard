@@ -95,10 +95,24 @@ const Transfer = () => {
             setSubmitting(true)
             console.log("pin", pin)
 
+            let endpoint = "";
+            if (values.from === "e_wallet") {
+                endpoint = "wallet/funds"
+            } else if (values.from === "earning_wallet") {
+                endpoint = "earning/fund/initiate"
+            } else {
+                toast.error("Invalid from wallet selected");
+                setSubmitting(false)
+                return;
+            }
+
+            console.log("sending req to endpoint", API_URL+"/api/"+endpoint)
+
             try {
-                const response = await axios.post(`${API_URL}/api/wallet/funds`, { ...values, pin: pin.join('') }, {
+                const response = await axios.post(`${API_URL}/api/${endpoint}`, { ...values, pin: pin.join('') }, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
+                        "Accept": "application/json",
                     }
                 });
 

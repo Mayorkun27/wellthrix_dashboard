@@ -29,7 +29,7 @@ const AnnouncementBoard = () => {
             console.log("announcement fetch response", response)
 
             if (response.status === 200 && response.data.status === "success") {
-                setAnnouncements(response.data.data.data)
+                setAnnouncements(response.data.data.data || [])
             }
         } catch (error) {
             if (error.response.data.message.toLowerCase() == "unauthenticated") {
@@ -82,9 +82,9 @@ const AnnouncementBoard = () => {
             <div className="h-full">
                 {
                     announcements.length <= 0 ? (
-                        <>
-                            <h3>No announcement found</h3>
-                        </>
+                        <div className="h-[5vh]">
+                            <h3>You are all caught up!.</h3>
+                        </div>
                     ) : (
                         announcements.map((announcement, index) => (
                             <AnnouncementList

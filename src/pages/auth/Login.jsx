@@ -15,7 +15,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const { logout, refreshUser } = useUser()
+  const { logout, login, refreshUser } = useUser()
 
   const navigate = useNavigate()
   
@@ -40,26 +40,39 @@ const Login = () => {
 
         console.log("response", response)
 
-        if (response.status === 200) {
-            const { token, role } = response.data
-            localStorage.setItem("token", token)
-            await refreshUser(token)
-            // const encrypted = encryptToken(token);
-            // login(token, user);
-            toast.success('Login successful');
+        // if (response.status === 200) {
+        //     const { token, role } = response.data
+        //     localStorage.setItem("token", token)
+        //     await refreshUser(token)
+        //     // const encrypted = encryptToken(token);
+        //     // login(token, user);
+        //     toast.success('Login successful');
+        //     setTimeout(() => {
+        //         toast("Redirecting to dashboard...");
+        //         setTimeout(() => {
+        //             role === "admin" ? navigate(`/user/overview`) : navigate('/user/overview');
+        //         }, 2000);
+        //     }, 1000);
+        // }  
+
+       if (response.status === 200) {
+          const { token } = response.data;
+          await login(token);
+
+          toast.success('Login successful');
+          setTimeout(() => {
+            toast("Redirecting to dashboard...");
             setTimeout(() => {
-                toast("Redirecting to dashboard...");
-                setTimeout(() => {
-                    role === "admin" ? navigate(`/user/overview`) : navigate('/user/overview');
-                }, 2000);
-            }, 1000);
-        }  
+              navigate('/user/overview');
+            }, 2000);
+          }, 1000);
+        }
       } catch (err) {
         console.error('Error during logging in:', err);
         if (axios.isAxiosError(err) && err.response && err.response.status === 401) {
           toast.error(err.response.data.message || 'Validation error. Please check your inputs.');
         } else {
-          toast.error('An unexpected error occurred while logging in. ' + err.message);
+          toast.error('An unexpected error occurred while logging in. ' + err?.response?.data?.message || "Please try again later.");
           console.error('Error during logging in:', err);
         }
       } finally {
