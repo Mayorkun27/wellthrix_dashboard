@@ -68,7 +68,7 @@ const Deposit = () => {
 
         if (response.status === 201 && response.data.ok) {
           toast.success(response.data.message || `Deposit initiated successfully`);
-          refreshUser(token);
+          refreshUser();
 
           if (response.data.authorization_url) {
             toast.info("Redirecting you to the payment gateway...");
@@ -185,7 +185,7 @@ const Deposit = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               placeholder={`${"₦"} 0.00`}
-              className="w-full px-4 h-[50px] border border-pryClr rounded-md mt-2 outline-0"
+              className="w-full px-4 h-[50px] border border-pryClr/30 rounded-md mt-2 outline-0"
             />
             {formik.touched.amount && formik.errors.amount && (
               <p className="text-red-600">{formik.errors.amount}</p>
@@ -199,7 +199,7 @@ const Deposit = () => {
                 </label>
                 <input
                   type="file"
-                  className="w-full px-4 py-3 border border-pryClr rounded-md mt-2 outline-0"
+                  className="w-full px-4 py-3 border border-pryClr/30 rounded-md mt-2 outline-0"
                   id="proof_of_payment"
                   name="proof_of_payment"
                   onChange={(event) => {
