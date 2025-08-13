@@ -6,7 +6,7 @@ import { useUser } from '../../context/UserContext';
 import FilterDropdown from '../../utilities/FilterDropdown';
 
 const optionsRecharge = ['Airtime', 'Data', 'Electricity'];
-const optionsTransactions = ['E-Wallet', 'Purchase Wallet', 'Earnings Wallet', 'Incentive Wallet'];
+const optionsTransactions = ['E-Wallet', 'Purchase Wallet', 'Earnings Wallet', 'Incentive Wallet', 'Withdraw History'];
 
 const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
   const [searchParam, setSearchParam] = React.useState('');

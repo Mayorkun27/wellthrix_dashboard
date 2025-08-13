@@ -120,21 +120,21 @@ const Deposit = () => {
           walletType={"E-Wallet"}
         />
       </div>
-      <div className="shadow-sm rounded-xl bg-white overflow-x-auto p-8">
-        <h1 className="text-[22px] font-semibold">Deposit Funds</h1>
+      <div className="shadow-sm rounded-xl bg-white overflow-x-auto md:p-8 p-6">
+        <h1 className="text-[22px] font-semibold md:flex hidden">Deposit Funds</h1>
         <form onSubmit={(e) => { e.preventDefault(); setShowPinModal(true); }}>
-          <p className="text-black mt-6 mb-3 font-medium">Deposit Method</p>
-          <div className="flex gap-4">
+          <p className="text-black md:mt-6 mb-3 font-medium">Deposit Method</p>
+          <div className="flex md:flex-row flex-col gap-4">
             {/* Paystack Option */}
             <div
               onClick={() => formik.setFieldValue("payment_method", "paystack")}
-              className={`flex-1 bg-pryClr/20 px-4 py-8 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
-                <MdPayment className={"text-4xl text-pryClr"} />
+                <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
                 <div>
-                  <p className="text-[14px] font-medium">Paystack</p>
-                  <p className="text-[12px]">
+                  <p className="md:text-[14px] text-xs font-medium">Paystack</p>
+                  <p className="md:text-[12px] text-[10px]">
                     Pay securely with your card or bank account
                   </p>
                 </div>
@@ -150,13 +150,13 @@ const Deposit = () => {
             {/* Manual Payment Option */}
             <div
               onClick={() => formik.setFieldValue("payment_method", "manual")}
-              className={`flex-1 bg-pryClr/20 px-4 py-8 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
-                <MdPayment className={"text-4xl text-pryClr"} />
+                <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
                 <div>
-                  <p className="text-[14px] font-medium">Manual</p>
-                  <p className="text-[12px]">
+                  <p className="md:text-[14px] text-xs font-medium">Manual</p>
+                  <p className="md:text-[12px] text-[10px]">
                     Pay via bank transfer and upload proof
                   </p>
                 </div>
