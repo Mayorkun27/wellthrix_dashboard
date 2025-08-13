@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { useUser } from "../../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
-import PaginationControls from "../../../utilities/PaginationControls";
-import { formatISODateToCustom, formatterUtility } from "../../../utilities/Formatterutility";
+import PaginationControls from "../../utilities/PaginationControls";
+import { formatISODateToCustom, formatterUtility } from "../../utilities/Formatterutility";
 import { FaTrashAlt } from "react-icons/fa";
-import Modal from "../../../components/modals/Modal";
-import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
+import Modal from "../../components/modals/Modal";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
+import { useUser } from "../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-const AllUsers = () => {
+const ManageLoyalties = () => {
     const { user, token, logout } = useUser();
-    const [allUsers, setAllUsers] = useState([]);
+    const [eligibleUsers, setEligibleUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [bonusToPay, setBonusToPay] = useState(null);
 
-    const fetchAllUsers = async () => {
+    const fetchEligibleUsers = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_URL}/api/users`, {
+            const response = await axios.get(`${API_URL}/api/loyalty/eligible-users`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -34,45 +34,45 @@ const AllUsers = () => {
                 }
             });
 
-            console.log("all users Response:", response);
+            console.log("eligible users Response:", response);
 
             if (response.status === 200 && response.data.success) {
                 const { data, current_page, last_page, per_page } = response.data.data;
-                setAllUsers(data);
+                setEligibleUsers(data);
                 setCurrentPage(current_page);
                 setLastPage(last_page);
                 setPerPage(per_page);
             } else {
-                throw new Error(response.data.message || "Failed to fetch all users.");
+                throw new Error(response.data.message || "Failed to fetch eligible users.");
             }
         } catch (error) {
             if (error.response?.data?.message?.includes("unauthenticated")) {
                 logout();
             }
             console.error("API submission error:", error);
-            toast.error(error.response?.data?.message || "An error occurred fetching all users!.");
+            toast.error(error.response?.data?.message || "An error occurred fetching eligible users!.");
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAllUsers();
+        fetchEligibleUsers();
     }, [user?.id, token, currentPage]);
 
-    const handleDeleteUser = async (user) => {
-        setShowDeleteModal(true);
-        setUserToDelete(user);
+    const handleConfirmPayout = async (user) => {
+        setShowConfirmModal(true);
+        setBonusToPay(user);
     };
 
-    const confirmDelete = async () => {
-        if (!userToDelete.id) return;
+    const confirmPayout = async () => {
+        if (!bonusToPay.id) return;
 
-        const toastId = toast.loading("Deleting user...");
-        setShowDeleteModal(false);
+        const toastId = toast.loading("Reimbursing loyalty bonus...");
+        setShowConfirmModal(false);
 
         try {
-            const response = await axios.delete(`${API_URL}/api/deleteuser/${userToDelete.id}`, {
+            const response = await axios.put(`${API_URL}/api/loyalty/pay/${bonusToPay.id}`, {}, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -80,19 +80,19 @@ const AllUsers = () => {
             });
 
             if (response.status === 200) {
-                toast.success(response.data.message || "User deleted successfully", { id: toastId });
-                fetchAllUsers();
+                toast.success(response.data.message || "Reimbursed loyalty bonus successfully", { id: toastId });
+                fetchEligibleUsers();
             } else {
-                throw new Error(response.data.message || "Failed to delete user.");
+                throw new Error(response.data.message || "Failed to reimburse loyalty bonus.");
             }
         } catch (error) {
             if (error.response?.data?.message?.includes("unauthenticated")) {
                 logout();
             }
-            console.error("user deletion error:", error);
-            toast.error(error.response?.data?.message || "An error occurred deleting the user.", { id: toastId });
+            console.error("Reimbursement error:", error);
+            toast.error(error.response?.data?.message || "Failed to reimburse loyalty bonus.", { id: toastId });
         } finally {
-            setUserToDelete(null);
+            setBonusToPay(null);
         }
     };
 
@@ -116,8 +116,8 @@ const AllUsers = () => {
                         <tr>
                             <td colSpan="8" className="text-center p-8">Loading...</td>
                         </tr>
-                    ) : allUsers.length > 0 ? (
-                        allUsers.map((item, index) => {
+                    ) : eligibleUsers.length > 0 ? (
+                        eligibleUsers.map((item, index) => {
                             const serialNumber = (currentPage - 1) * perPage + (index + 1);
                             return (
                                 <tr
@@ -141,7 +141,7 @@ const AllUsers = () => {
                                         <button
                                             type="button"
                                             title={`Delete ${item.username}`}
-                                            onClick={() => handleDeleteUser(item)}
+                                            onClick={() => handleConfirmPayout(item)}
                                             className="text-red-600 hover:text-red-700 cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto"
                                         >
                                             <FaTrashAlt />
@@ -158,7 +158,7 @@ const AllUsers = () => {
                 </tbody>
             </table>
 
-            {!isLoading && allUsers.length > 0 && (
+            {!isLoading && eligibleUsers.length > 0 && (
                 <div className="flex justify-center items-center gap-2 p-4">
                     <PaginationControls
                         currentPage={currentPage}
@@ -168,12 +168,12 @@ const AllUsers = () => {
                 </div>
             )}
 
-            {showDeleteModal && (
-                <Modal onClose={() => setShowDeleteModal(false)}>
+            {showConfirmModal && (
+                <Modal onClose={() => setShowConfirmModal(false)}>
                     <ConfirmationDialog 
-                        message={`Are you sure you want to delete ${userToDelete?.username}? This action cannot be undone.`}
-                        onConfirm={confirmDelete}
-                        onCancel={() => setShowDeleteModal(false)}
+                        message={`Are you sure you want to payout ${formatterUtility(Number(bonusToPay?.amount))} to ${bonusToPay?.username}? This action cannot be undone.`}
+                        onConfirm={confirmPayout}
+                        onCancel={() => setShowConfirmModal(false)}
                     />
                 </Modal>
             )}
@@ -181,4 +181,4 @@ const AllUsers = () => {
     );
 };
 
-export default AllUsers;
+export default ManageLoyalties;

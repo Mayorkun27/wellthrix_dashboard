@@ -25,6 +25,7 @@ import ManageTestimonials from './pages/admin/ManageTestimonials';
 import ManageTransactions from './pages/admin/ManageTransactions';
 import Stockist from './pages/stockist/Stockist';
 import AuthRedirect from './pages/auth/AuthRedirect';
+import ManageLoyalties from './pages/admin/ManageLoyalties';
 
 function App() {
 
@@ -49,15 +50,17 @@ function App() {
         <Route path='/user/profile' element={<MainLayout pageName={"Profile"} child={<Profile />} />}/>
         <Route path='/user/products' element={<MainLayout pageName={"Products"} child={<Products />} />}/>
         <Route path='/user/products/cart' element={<MainLayout pageName={"Cart"} child={<Cart />} />}/>
+
+        <Route path='/stockist/managestockist' element={<MainLayout pageName={"Stockist"} child={<Stockist />} />}/>
+
         <Route path='/admin/manageannouncement' element={<MainLayout pageName={"Manage Announcement"} child={<ManageAnnouncement />} />}/>
         <Route path='/admin/managetestimonials' element={<MainLayout pageName={"Create Testimonials"} child={<ManageTestimonials />} />}/>
         <Route path='/admin/managetransactions' element={<MainLayout pageName={"Transactions"} child={<ManageTransactions />} />}/>
         <Route path='/admin/uploadproduct' element={<MainLayout pageName={"Upload Products"} child={<ProductUpload />} />}/>
         <Route path='/admin/managecontacts' element={<MainLayout pageName={"Manage Contacts"} child={<ManageContactRequests />} />}/>
         <Route path='/admin/managepackages' element={<MainLayout pageName={"Create New Package"} child={<ManagePackage />} />}/>
-        
         <Route path='/admin/allusers' element={<MainLayout pageName={"Users"} child={<AllUsers />} />}/>
-        <Route path='/user/managestockist' element={<MainLayout pageName={"Stockist"} child={<Stockist />} />}/>
+        <Route path='/admin/loyaltybonus' element={<MainLayout pageName={"Loyalty Bonus"} child={<ManageLoyalties />} />}/>
       </Routes>
     </>
   )
