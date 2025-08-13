@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import PaginationControls from "../../utilities/PaginationControls";
 import { FaEye, FaTrash } from "react-icons/fa";
+import { useUser } from "../../context/UserContext";
 
 const ManageContactRequests = () => {
+  const { token } = useUser();
   const API_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [currentPage, setCurrentPage] = useState(1);
   const [contacts, setContacts] = useState([]);
@@ -10,11 +14,11 @@ const ManageContactRequests = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [contactToDelete, setContactToDelete] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const rowsPerPage = 5;
 
-  // Fallback contacts in case API fails
+  // Fallback contacts
   const fallbackContacts = [
     {
       id: "001",
@@ -35,71 +39,88 @@ const ManageContactRequests = () => {
   ];
 
   // Fetch all contacts with retry mechanism
-  useEffect(() => {
-    const fetchContacts = async (retries = 3, delay = 1000) => {
-      try {
-        setLoading(true);
-        setError(null);
+  const fetchContacts = async (retries = 1, delay = 1000) => {
+    if (!token) {
+      setError("Please log in to access contacts.");
+      setContacts(fallbackContacts);
+      setLoading(false);
+      toast.error("Please log in to access contacts.", {
+        duration: 3000,
+      });
+      setTimeout(() => {
+        window.location.href = "https://wellthrixinternational.com/#/login";
+      }, 3000);
+      return;
+    }
 
-        // Validate API_URL
-        if (!API_URL) {
-          throw new Error("API base URL is not defined. Check your .env file.");
-        }
-        let token = '10|K6MqIw4swBgL0RUnlBNXfTt7ELlYQXxRQ5mmSJt2cc695556'
-        // Set up AbortController for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    try {
+      setLoading(true);
+      setError(null);
 
-        const response = await fetch(`${API_URL}/api/contact`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const responsejson = await response.json();
-        const data = responsejson.data || responsejson; // Handle different response structures
-        console.log("Fetched contacts:", data); // Debugging log
-
-        // Validate response format (expecting array)
-        if (!Array.isArray(data)) {
-          throw new Error("Invalid response format: Expected an array of contacts");
-        }
-
-        // Map data to ensure consistent field names
-        const mappedData = data.map((contact) => ({
-          id: contact.id,
-          first_name: contact.first_name,
-          last_name: contact.last_name,
-          phone: contact.phone,
-          email: contact.email,
-          message: contact.message,
-        }));
-
-        setContacts(mappedData);
-      } catch (err) {
-        console.error("Fetch error:", err.message); // Debugging log
-        if (retries > 0 && err.name !== "AbortError") {
-          // Retry on failure (except timeout)
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          return fetchContacts(retries - 1, delay * 2); // Exponential backoff
-        }
-        setError(err.message || "Failed to fetch contacts");
-        setContacts(fallbackContacts); // Use fallback data
-      } finally {
-        setLoading(false);
+      if (!API_URL) {
+        throw new Error("API base URL is not defined. Check your .env file.");
       }
-    };
 
+      const response = await axios.get(`${API_URL}/api/contact`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 5000,
+      });
+
+      const data = response.data.data || response.data;
+      console.log("Fetched contacts:", data);
+
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid response format: Expected an array of contacts");
+      }
+
+      const mappedData = data.map((contact) => ({
+        id: contact.id,
+        first_name: contact.first_name,
+        last_name: contact.last_name,
+        phone: contact.phone,
+        email: contact.email,
+        message: contact.message,
+      }));
+
+      setContacts(mappedData);
+    } catch (err) {
+      console.error("Fetch error:", err.message, err.response?.data);
+      let errorMessage = "Failed to fetch contacts. Please try again later.";
+      if (err.response?.status === 401) {
+        errorMessage = "Unauthorized: Please log in again.";
+        toast.error(errorMessage, { duration: 3000 });
+        setTimeout(() => {
+          window.location.href = "https://wellthrixinternational.com/#/login";
+        }, 3000);
+      } else if (err.response?.status === 500) {
+        errorMessage = "Server error: Please contact support.";
+        toast.error(errorMessage, { duration: 3000 });
+      } else if (err.code === "ECONNABORTED") {
+        errorMessage = "Request timed out. Please try again.";
+        toast.error(errorMessage, { duration: 3000 });
+      } else {
+        toast.error(errorMessage, { duration: 3000 });
+      }
+
+      if (retries > 0 && err.code !== "ECONNABORTED") {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return fetchContacts(retries - 1, delay * 2);
+      }
+
+      setError(errorMessage);
+      setContacts(fallbackContacts);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch contacts on mount or token change
+  useEffect(() => {
     fetchContacts();
-  }, [API_URL]);
+  }, [API_URL, token]);
 
   const totalPages = Math.ceil(contacts.length / rowsPerPage);
 
@@ -108,59 +129,95 @@ const ManageContactRequests = () => {
     return contacts.slice(start, start + rowsPerPage);
   }, [currentPage, contacts]);
 
-  // Handle View action: Fetch contact details by ID
+  // Handle View action
   const handleView = async (id) => {
+    if (!token) {
+      setError("Please log in to view contact details.");
+      toast.error("Please log in to view contact details.", { duration: 3000 });
+      setTimeout(() => {
+        window.location.href = "https://wellthrixinternational.com/#/login";
+      }, 3000);
+      return;
+    }
+
     try {
       setError(null);
-      const response = await fetch(`${API_URL}/api/contact/${id}`, {
-        method: "GET",
+      const response = await axios.get(`${API_URL}/api/contact/${id}`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch contact details: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Fetched contact details:", data); // Debugging log
+      const data = response.data.data || response.data;
+      console.log("Fetched contact details:", data);
       setSelectedContact(data);
       setShowViewModal(true);
     } catch (err) {
-      console.error("View error:", err.message); // Debugging log
-      setError(err.message || "Failed to fetch contact details");
+      console.error("View error:", err.message, err.response?.data);
+      let errorMessage = "Failed to fetch contact details.";
+      if (err.response?.status === 401) {
+        errorMessage = "Unauthorized: Please log in again.";
+        toast.error(errorMessage, { duration: 3000 });
+        setTimeout(() => {
+          window.location.href = "https://wellthrixinternational.com/#/login";
+        }, 3000);
+      } else if (err.response?.status === 500) {
+        errorMessage = "Server error: Please contact support.";
+        toast.error(errorMessage, { duration: 3000 });
+      } else {
+        toast.error(errorMessage, { duration: 3000 });
+      }
+      setError(errorMessage);
     }
   };
 
   // Handle Delete action: Show confirmation modal
   const handleDeletePrompt = (id) => {
+    if (!token) {
+      setError("Please log in to delete contacts.");
+      toast.error("Please log in to delete contacts.", { duration: 3000 });
+      setTimeout(() => {
+        window.location.href = "https://wellthrixinternational.com/#/login";
+      }, 3000);
+      return;
+    }
     setContactToDelete(id);
     setShowDeleteModal(true);
   };
 
-  // Confirm Delete action: Send DELETE request
+  // Confirm Delete action
   const confirmDelete = async () => {
     try {
       setError(null);
-      const response = await fetch(`${API_URL}/api/contact/${contactToDelete}`, {
-        method: "DELETE",
+      const response = await axios.delete(`${API_URL}/api/contact/${contactToDelete}`, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to delete contact: ${response.status}`);
-      }
-
-      console.log(`Deleted contact with ID: ${contactToDelete}`); // Debugging log
+      console.log(`Deleted contact with ID: ${contactToDelete}`, response.data);
       setContacts(contacts.filter((contact) => contact.id !== contactToDelete));
       setShowDeleteModal(false);
       setContactToDelete(null);
+      toast.success("Contact deleted successfully", { duration: 3000 });
     } catch (err) {
-      console.error("Delete error:", err.message); // Debugging log
-      setError(err.message || "Failed to delete contact");
+      console.error("Delete error:", err.message, err.response?.data);
+      let errorMessage = "Failed to delete contact.";
+      if (err.response?.status === 401) {
+        errorMessage = "Unauthorized: Please log in again.";
+        toast.error(errorMessage, { duration: 3000 });
+        setTimeout(() => {
+          window.location.href = "https://wellthrixinternational.com/#/login";
+        }, 3000);
+      } else if (err.response?.status === 500) {
+        errorMessage = "Server error: Please contact support.";
+        toast.error(errorMessage, { duration: 3000 });
+      } else {
+        toast.error(errorMessage, { duration: 3000 });
+      }
+      setError(errorMessage);
       setShowDeleteModal(false);
     }
   };
@@ -168,16 +225,23 @@ const ManageContactRequests = () => {
   return (
     <div className="shadow-sm rounded bg-white overflow-x-auto">
       {loading ? (
-        <div className="text-center p-8">Loading...</div>
-      ) : error ? (
-        <div className="text-center p-8 text-red-600">
-          {error}
-          <div className="mt-2 text-sm text-gray-600">
-            Using fallback data due to API failure.
-          </div>
-        </div>
+        <div className="text-center p-8">Loading contacts...</div>
       ) : (
         <>
+          {error && (
+            <div className="text-center p-4 text-red-600">
+              {error}
+              <div className="mt-2 text-sm text-gray-600">
+                Using fallback data due to API failure.
+                <button
+                  onClick={() => fetchContacts()}
+                  className="ml-2 text-pryClr hover:text-pryClr/50 underline"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
           <table className="w-full">
             <thead>
               <tr className="text-black/70 text-[12px] uppercase border-b border-black/20 whitespace-nowrap">
@@ -245,7 +309,7 @@ const ManageContactRequests = () => {
 
       {/* View Contact Modal */}
       {showViewModal && selectedContact && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 relative">
             <button
               onClick={() => setShowViewModal(false)}
@@ -268,7 +332,7 @@ const ManageContactRequests = () => {
             </button>
             <div className="text-center p-4 mt-4">
               <h2 className="text-xl font-bold text-pryClr">Contact Details</h2>
-              <div className="mt-4 text-left text-sm">
+              <div className="mt-4 text-left flex flex-col gap-3 text-sm">
                 <p><strong>ID:</strong> {selectedContact.id}</p>
                 <p><strong>First Name:</strong> {selectedContact.first_name}</p>
                 <p><strong>Last Name:</strong> {selectedContact.last_name}</p>

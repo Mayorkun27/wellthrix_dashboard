@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ProductCards from '../../components/cards/ProductCards'
 import assets from '../../assets/assests'
 import { Link } from 'react-router-dom'
@@ -11,123 +11,53 @@ const API_URL = import.meta.env.VITE_API_BASE_URL
 const Products = () => {
   const { token, logout } = useUser()
   const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const fetchProducts = async () => {
+    setLoading(true)
     try {
-      const response = await axios.get(`${API_URL}/api/products`, {
+      const response = await axios.get(`${API_URL}/api/allproducts`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
       })
 
       if (response.status === 200) {
-        setProducts(response.data.products)
-        toast.error(response.data.message || "Products fetched successfully!")
+        setProducts(response.data.products || response.data) // Handle different response structures
+        toast.success("Products loaded successfully!")
       }
 
     } catch (error) {
-      if (error.response.data.message.toLowerCase() == "unauthenticated") {
+      console.error("Error fetching products:", error)
+      
+      if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
         logout()
+        toast.error("Session expired. Please login again.")
+      } else {
+        toast.error(error.response?.data?.message || "Error loading products")
       }
-        console.error("An error occured posting announcements", error)
-        toast.error("An error occured posting announcements")
-      } finally {
-        setTimeout(() => {
-            setSubmitting(false)
-        }, 2000);
-      }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const physicalProducts = [
-    {
-        image: assets.product1,
-        name: "Vitorep Herbal Drink 750ml",
-        price: "20000",
-        pv: "16",
-        purchaseCondition: false,
-        path: "/products/vitorepherbal",
-    },
-    {
-        image: assets.product2,
-        name: "Vitorep Fruit Powder",
-        price: "18000",
-        pv: "16",
-        purchaseCondition: false,
-        path: "/products/vitorepfruit",
-    },
-    {
-        image: assets.product3,
-        name: "Amandla",
-        price: "14000",
-        pv: "12",
-        purchaseCondition: false,
-        path: "/products/amandla",
-    },
-    {
-        image: assets.product4,
-        name: "Femed Herbal Capsule",
-        price: "14000",
-        pv: "12",
-        purchaseCondition: false,
-        path: "/products/femed",
-    },
-    {
-        image: assets.product5,
-        name: "Paigo Oil",
-        price: "10500",
-        pv: "8",
-        purchaseCondition: true,
-        path: "/products/paigo",
-    },
-    {
-        image: assets.product6,
-        name: "Chandar Coffe",
-        price: "15000",
-        pv: "13",
-        purchaseCondition: true,
-        path: "/products/chandarcoffee",
-    },
-    {
-        image: assets.product7,
-        name: "Fertiboom Herbal Capsule",
-        price: "14000",
-        pv: "12",
-        purchaseCondition: false,
-        path: "/products/fertiboom",
-    },
-    {
-        image: assets.product8,
-        name: "Gold Syrup",
-        price: "10500",
-        pv: "8",
-        purchaseCondition: false,
-        path: "/products/golddate",
-    },
-    {
-        image: assets.product9,
-        name: "Uptiflush",
-        price: "14000",
-        pv: "12",
-        purchaseCondition: false,
-        path: "/products/uptiflush",
-    },
-    {
-        image: assets.product1,
-        name: "Vitorep Herbal Drink 330ml",
-        price: "10500",
-        pv: "8",
-        purchaseCondition: false,
-        path: "/products/vitorepherbal",
-    },
-    {
-        image: assets.product10,
-        name: "Dahome Capsules",
-        price: "14000",
-        pv: "12",
-        purchaseCondition: false,
-        path: "/products/dahome",
-    },
-  ]
+  // Load products when component mounts
+  useEffect(() => {
+    if (token) {
+      fetchProducts()
+    }
+  }, [token])
+
+  // Use only API products
+  const displayProducts = products
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-lg">Loading products...</div>
+      </div>
+    )
+  }
 
   return (
     <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-6 pb-2'>
@@ -139,11 +69,16 @@ const Products = () => {
           View cart
         </Link>
       </div>
-      {
-        physicalProducts.map((product, index) => (
-          <ProductCards key={index} product={product} />
+      
+      {displayProducts.length > 0 ? (
+        displayProducts.map((product, index) => (
+          <ProductCards key={product.id || index} product={product} />
         ))
-      }
+      ) : (
+        <div className="lg:col-span-3 md:col-span-2 text-center py-8">
+          <p className="text-gray-500">No products available</p>
+        </div>
+      )}
     </div>
   )
 }
