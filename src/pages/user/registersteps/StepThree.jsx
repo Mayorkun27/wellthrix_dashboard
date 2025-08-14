@@ -187,7 +187,7 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
               !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
             }`}
           >
-            {formik.isSubmitting ? "Saving..." : "Next 3"}
+            {formik.isSubmitting ? "Saving..." : "Next"}
           </button>
         </div>
       </div>

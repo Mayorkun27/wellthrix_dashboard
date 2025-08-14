@@ -174,7 +174,7 @@ const StepFour = ({ prevStep, nextStep, formData, sessionId }) => {
             onClick={handleProceed}
             className='thissguyyy text-xl rounded-lg cursor-pointer text-white px-6 py-3 transition-colors bg-pryClr hover:bg-pryClrDark'
           >
-            Next yh
+            Next
           </button>
         </div>
       </div>

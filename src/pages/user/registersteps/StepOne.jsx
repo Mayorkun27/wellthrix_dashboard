@@ -295,6 +295,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
                   const value = e.target.value.replace(/^@/, '');
                   setSponsor(value);
                   setSponsorId(null);
+                  console.log("sponsor value", value)
                   debouncedFetchSponsorsAndDownlines(value, 'sponsor');
                 }}
                 value={sponsor ? `@${sponsor}` : ''}
@@ -313,7 +314,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
                 {sponsorResults.map((result) => (
                   <li
                     key={result?.user.id}
-                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    className="p-2 hover:bg-gray-100 cursor-pointer text-xs"
                     onClick={() => handleSponsorSelect(result.user)}
                   >
                     @{result?.user.username} ({result?.user.fullname})
@@ -340,6 +341,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
                   const value = e.target.value.replace(/^@/, '');
                   setPlacement(value);
                   setPlacementId(null);
+                  console.log("placement value", value)
                   debouncedFetchSponsorsAndDownlines(value, 'placement', sponsorId);
                 }}
                 disabled={!sponsorId}
@@ -359,7 +361,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
                 {placementResults.map((result) => (
                   <li
                     key={result.user.id}
-                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    className="p-2 hover:bg-gray-100 cursor-pointer text-xs"
                     onClick={() => handlePlacementSelect(result.user)}
                   >
                     @{result.user.username} ({result.user.fullname})

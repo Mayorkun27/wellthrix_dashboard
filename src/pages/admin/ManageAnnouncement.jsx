@@ -56,7 +56,6 @@ const ManageAnnouncement = () => {
             } finally {
                 setTimeout(() => {
                     setSubmitting(false)
-                    resetForm()
                 }, 2000);
             }
         }

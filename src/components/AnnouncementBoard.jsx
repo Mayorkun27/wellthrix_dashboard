@@ -78,11 +78,11 @@ const AnnouncementBoard = () => {
     }
 
     return (
-        <div>
+        <>
             <div className="h-full">
                 {
                     announcements.length <= 0 ? (
-                        <div className="h-[5vh]">
+                        <div className="h-[7vh] flex items-center justify-center">
                             <h3>You are all caught up!.</h3>
                         </div>
                     ) : (
@@ -123,7 +123,7 @@ const AnnouncementBoard = () => {
                     </div>
                 </Modal>
             )}
-        </div>
+        </>
     );
 };
 

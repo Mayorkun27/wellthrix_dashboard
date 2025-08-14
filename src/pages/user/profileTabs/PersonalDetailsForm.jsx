@@ -13,27 +13,27 @@ const PersonalDetailsForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      firstName: user?.first_name || "",
-      lastName: user?.last_name || "",
+      first_name: user?.first_name || "",
+      last_name: user?.last_name || "",
       gender: user?.gender || "",
-      dob: user?.dob || "",
+      date_of_birth: user?.date_of_birth || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
-      firstName: Yup.string()
+      first_name: Yup.string()
         .required("First Name is required"),
-      lastName: Yup.string()
+      last_name: Yup.string()
         .required("Last Name is required"),
       gender: Yup.string()
         .required("Gender is required"),
-      dob: Yup.date()
+      date_of_birth: Yup.date()
         .required("Date of Birth is required")
         .max(new Date(), "Date of Birth cannot be in the future"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       setSubmitting(true);
       try {
-        await axios.post(`${API_URL}/api/user/personal-details`, values, {
+        await axios.put(`${API_URL}/api/profile/updatePersonal`, values, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Personal details updated successfully!");
@@ -61,36 +61,36 @@ const PersonalDetailsForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Form fields for personal details */}
           <div className="space-y-2">
-            <label htmlFor="firstName" className="block text-sm">First Name</label>
+            <label htmlFor="first_name" className="block text-sm">First Name</label>
             <input
-              id="firstName"
-              name="firstName"
+              id="first_name"
+              name="first_name"
               type="text"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.firstName}
+              value={formik.values.first_name}
               className="p-2 w-full border border-pryClr/20 h-[50px] outline-0 rounded-md"
             />
-            {formik.touched.firstName && formik.errors.firstName ? (
+            {formik.touched.first_name && formik.errors.first_name ? (
               <div className="mt-1 text-sm text-red-600">
-                {formik.errors.firstName}
+                {formik.errors.first_name}
               </div>
             ) : null}
           </div>
           <div className="space-y-2">
-            <label htmlFor="lastName" className="block text-sm">Last Name</label>
+            <label htmlFor="last_name" className="block text-sm">Last Name</label>
             <input
-              id="lastName"
-              name="lastName"
+              id="last_name"
+              name="last_name"
               type="text"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.lastName}
+              value={formik.values.last_name}
               className="p-2 w-full border border-pryClr/20 h-[50px] outline-0 rounded-md"
             />
-            {formik.touched.lastName && formik.errors.lastName ? (
+            {formik.touched.last_name && formik.errors.last_name ? (
               <div className="mt-1 text-sm text-red-600">
-                {formik.errors.lastName}
+                {formik.errors.last_name}
               </div>
             ) : null}
           </div>
@@ -116,19 +116,19 @@ const PersonalDetailsForm = () => {
             ) : null}
           </div>
           <div className="space-y-2">
-            <label htmlFor="dob" className="block text-sm">Date of Birth</label>
+            <label htmlFor="date_of_birth" className="block text-sm">Date of Birth</label>
             <input
-              id="dob"
-              name="dob"
+              id="date_of_birth"
+              name="date_of_birth"
               type="date"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.dob}
+              value={formik.values.date_of_birth}
               className="p-2 w-full border border-pryClr/20 h-[50px] outline-0 rounded-md"
             />
-            {formik.touched.dob && formik.errors.dob ? (
+            {formik.touched.date_of_birth && formik.errors.date_of_birth ? (
               <div className="mt-1 text-sm text-red-600">
-                {formik.errors.dob}
+                {formik.errors.date_of_birth}
               </div>
             ) : null}
           </div>

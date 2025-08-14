@@ -7,6 +7,8 @@ import { useUser } from "../../context/UserContext";
 import PaginationControls from "../../utilities/PaginationControls";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import assets from "../../assets/assests";
+import Modal from "../../components/modals/Modal";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "";
 
@@ -492,15 +494,12 @@ const ManageTestimonials = () => {
               {error && (
                 <div className="text-center p-4 text-red-600">
                   {error}
-                  <div className="mt-2 text-sm text-gray-600">
-                    Using fallback data due to API failure.
-                    <button
-                      onClick={() => fetchTestimonials()}
-                      className="ml-2 text-pryClr hover:text-pryClr/50 underline"
-                    >
-                      Retry
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => fetchTestimonials()}
+                    className="ml-2 text-pryClr hover:text-pryClr/50 underline"
+                  >
+                    Retry
+                  </button>
                 </div>
               )}
               <table className="w-full">
@@ -576,49 +575,17 @@ const ManageTestimonials = () => {
           )}
 
           {showDeleteModal && (
-            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 pointer-events-none">
-              <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 relative pointer-events-auto">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-                <div className="text-center p-4 mt-4">
-                  <h2 className="text-xl font-bold text-pryClr">Confirm Delete</h2>
-                  <p className="text-sm mt-2">
-                    Are you sure you want to delete this testimonial?
-                  </p>
-                  <div className="flex justify-center gap-4 mt-6">
-                    <button
-                      onClick={confirmDelete}
-                      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    >
-                      Yes, Delete
-                    </button>
-                    <button
-                      onClick={() => setShowDeleteModal(false)}
-                      className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Modal
+              onClose={() => setShowDeleteModal(false)} 
+              className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 pointer-events-none"
+            >
+              <ConfirmationDialog 
+                title="Confirm Delete"
+                message={"Are you sure you want to delete this testimonial?"}
+                onConfirm={confirmDelete}
+                onCancel={() => setShowDeleteModal(false)}
+              />
+            </Modal>
           )}
         </div>
       </div>

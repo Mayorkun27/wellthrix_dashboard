@@ -94,6 +94,9 @@ input[type="number"]::-webkit-inner-spin-button{
 .disabledForNow{
   @apply pointer-events-none relative overflow-hidden
 }
+.disabledforNow2{
+  @apply pointer-events-none line-through
+}
 .disabledForNow::after{
   content: "Coming soon";
   @apply absolute inset-0 bg-black/50 flex items-center justify-center text-secClr text-2xl font-bold
