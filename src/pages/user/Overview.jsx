@@ -32,7 +32,7 @@ const Overview = () => {
 
   const [referrals, setReferrals] = useState([])
 
-  const { user, token, logout, refreshUser } = useUser()
+  const { user, token, logout, refreshUser, miscellanousDetails } = useUser()
 
   useEffect(() => {
     if (token) {
@@ -106,19 +106,6 @@ const Overview = () => {
       path: "/user/transactions"
     },
   ]
-
-  // const referrals = [
-  //   {
-  //     name: "Adeleke Favour",
-  //     userName: "Mayorkun27",
-  //     createdAt: "25 July, 2025"
-  //   },
-  //   {
-  //     name: "Odekunle Tiwaloluwa",
-  //     userName: "DorcasTiwa28",
-  //     createdAt: "25 July, 2025"
-  //   },
-  // ]
 
   const fetchReferrals = async () => {
     try {
@@ -227,35 +214,37 @@ const Overview = () => {
           <Link to={"/upgradepackage"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
-      {/* New Refs */}
-      <div className="lg:col-span-3 lg:my-1">
-        <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm max-h-[45vh]">
-          <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
-          <div className="grid gap-6">
-            {
-              referrals.length <= 0 ? (
-                <div className='flex flex-col gap-4 items-center justify-center font-medium'>
-                  <h3>You dont have any referral yet!.</h3>
-                  <Link
-                    to={"/user/register"}
-                    className='bg-pryClr h-[45px] text-secClr rounded-lg shadow-sm text-sm flex items-center justify-center px-4'
-                  >Register a referral</Link>
-                </div>
-              ) : (
-                referrals.map((referral, index) => (
-                  <ReferralCards key={index} {...referral} />
-                ))
-              )
-            }
+      <div className="flex items-center lg:col-span-6 gap-6 border h-[40vh]">
+        {/* New Refs */}
+        <div className="lg:my-1 w-1/2 h-full border">
+          <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
+            <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
+            <div className="grid gap-4">
+              {
+                referrals.length <= 0 ? (
+                  <div className='flex flex-col gap-4 items-center justify-center font-medium'>
+                    <h3>You dont have any referral yet!.</h3>
+                    <Link
+                      to={"/user/register"}
+                      className='bg-pryClr h-[45px] text-secClr rounded-lg shadow-sm text-sm flex items-center justify-center px-4'
+                    >Register a referral</Link>
+                  </div>
+                ) : (
+                  referrals.map((referral, index) => (
+                    <ReferralCards key={index} {...referral} />
+                  ))
+                )
+              }
+            </div>
           </div>
         </div>
-      </div>
-      {/* Announcement Board */}
-      <div className="lg:col-span-3 lg:my-1">
-        <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm">
-          <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
-          <div className="max-h-[33vh] overflow-y-scroll pe-2 styled-scrollbar">
-            <AnnouncementBoard />
+        {/* Announcement Board */}
+        <div className="lg:my-1 w-1/2">
+          <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm">
+            <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
+            <div className="max-h-[33vh] overflow-y-scroll pe-2 styled-scrollbar">
+              <AnnouncementBoard />
+            </div>
           </div>
         </div>
       </div>

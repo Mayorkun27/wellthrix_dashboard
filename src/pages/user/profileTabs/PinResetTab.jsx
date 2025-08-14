@@ -34,32 +34,38 @@ const PinResetTab = () => {
       console.log('values to be Submitted:', values);
       setSubmitting(true)
 
-        try {
-            const response = await axios.post(`${API_URL}/api/profile/change-pin`, values, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                }
-            });
+      const intPayLoad = {
+        user_id: values.user_id,
+        old_pin: values.old_pin,
+        new_pin: Number(values.new_pin),
+      }
 
-            console.log("pin reset response", response)
+      try {
+          const response = await axios.post(`${API_URL}/api/profile/change-pin`, intPayLoad, {
+              headers: {
+                  "Authorization": `Bearer ${token}`,
+              }
+          });
 
-            if (response.status === 200 && response.data.success) {
-                toast.success(response.data.message || `Pin updated successfully`);
-            } else {
-                throw new Error(response.data.message || "An error occurred updating pin.");
-            }
-            
-        } catch (error) {
-            if (error.response?.data?.message?.toLowerCase() === "unauthenticated") {
-                logout();
-            }
-            console.error("An error occurred updating pin", error);
-            toast.error(error.response?.data?.message || "An error occurred updating pin");
-        } finally {
-            setTimeout(() => {
-                setSubmitting(false);
-            }, 2000);
-        }
+          console.log("pin reset response", response)
+
+          if (response.status === 200 && response.data.success) {
+              toast.success(response.data.message || `Pin updated successfully`);
+          } else {
+              throw new Error(response.data.message || "An error occurred updating pin.");
+          }
+          
+      } catch (error) {
+          if (error.response?.data?.message?.toLowerCase() === "unauthenticated") {
+              logout();
+          }
+          console.error("An error occurred updating pin", error);
+          toast.error(error.response?.data?.message || "An error occurred updating pin");
+      } finally {
+          setTimeout(() => {
+              setSubmitting(false);
+          }, 2000);
+      }
     },
   });
 

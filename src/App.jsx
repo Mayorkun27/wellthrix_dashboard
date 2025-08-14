@@ -28,6 +28,7 @@ import AuthRedirect from './pages/auth/AuthRedirect';
 import ManageLoyalties from './pages/admin/ManageLoyalties';
 import AdminOverview from './pages/admin/AdminOverview';
 import UpgradePackage from './pages/user/UpgradePackage';
+import Ranking from './pages/admin/Ranking';
 
 function App() {
 
@@ -65,6 +66,7 @@ function App() {
         <Route path='/admin/managepackages' element={<MainLayout pageName={"Create New Package"} child={<ManagePackage />} />}/>
         <Route path='/admin/allusers' element={<MainLayout pageName={"Users"} child={<AllUsers />} />}/>
         <Route path='/admin/loyaltybonus' element={<MainLayout pageName={"Loyalty Bonus"} child={<ManageLoyalties />} />}/>
+        <Route path='/admin/ranking' element={<MainLayout pageName={"Ranking"} child={<Ranking />} />}/>
         <Route path='/upgradepackage' element={<MainLayout pageName={"Upgrade Package"} child={<UpgradePackage />} />}/>
       </Routes>
     </>

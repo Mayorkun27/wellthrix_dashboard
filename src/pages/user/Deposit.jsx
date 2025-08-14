@@ -34,10 +34,24 @@ const Deposit = () => {
       email: Yup.string().email("Invalid email format").required("Email is required"),
       proof_of_payment: Yup.mixed()
         .when('payment_method', {
-          is: (payment_method) => payment_method && payment_method === "manual",
+          is: "manual",
           then: (schema) => schema
-            .required('Proof of payment is required'),
-            otherwise: (schema) => schema.notRequired()
+            .required('Proof of payment is required')
+            .test(
+              'fileType',
+              'Unsupported file format. Only JPG, JPEG, and PNG are allowed.',
+              (value) => {
+                return value && (value.type === 'image/jpeg' || value.type === 'image/png');
+              }
+            )
+            .test(
+              'fileSize',
+              'File size is too large. Max size is 5MB.',
+              (value) => {
+                return value && value.size <= 5 * 1024 * 1024;
+              }
+            ),
+          otherwise: (schema) => schema.notRequired().nullable(),
         }),
       payment_method: Yup.string()
         .oneOf(['manual', 'paystack'], 'Invalid payment method')
@@ -206,6 +220,7 @@ const Deposit = () => {
                 </label>
                 <input
                   type="file"
+                  accept=".jpg,.jpeg,.png"
                   className="w-full px-4 py-3 border border-pryClr/30 rounded-md mt-2 outline-0"
                   id="proof_of_payment"
                   name="proof_of_payment"

@@ -10,7 +10,8 @@ const ProductCards = ({ product }) => {
 
     const [selectedProduct, setSelectedProduct] = useState(null)
     const dollarRate = 1000;
-    const isAvailable = product.in_stock > product.total_sold
+    const isAvailable = Number(product.in_stock) > Number(product.total_sold)
+    const unitLeft = Number(product.in_stock) - Number(product.total_sold)
 
     const { dispatch } = useCart();
 
@@ -33,13 +34,14 @@ const ProductCards = ({ product }) => {
                 <div className="md:mt-4 mt-6 lg:h-[calc(100%-215px)] md:h-[calc(100%-220px)] flex flex-col justify-between">
                     <div className="leading-1">
                         <h3 className="font-bold text-base text-pryClr capitalize">{product.product_name}</h3>
-                        {product.price && (
+                        <div className="flex items-center justify-between">
                             <div className="font-semibold text-[#EC3030CC] flex md:items-start items-center md:pb-0 pb-1 gap-2 md:text-sm">
                                 <span>{formatterUtility(Number(product.price))}</span>
                                 <span>&#40;&#36;{formatterUtility(Number(product.price / dollarRate), true)}&#41;</span>
                                 <span>- {product.product_pv}PV</span>
                             </div>
-                        )}
+                            <span className="text-xs font-medium">Quantity: {unitLeft <= 0 ? "0" : unitLeft}</span>
+                        </div>
                         {purchaseCondition && (
                             <small className="font-semibold text-[10px] text-pryClr">
                                 Available Only on Repurchase

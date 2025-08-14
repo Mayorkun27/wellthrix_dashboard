@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty } from 'react-icons/md';
+import { MdChat, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
@@ -15,7 +15,7 @@ import { useUser } from '../../context/UserContext';
 
 const LeftNav = ({ setIsOpen }) => {
 
-    const { user } = useUser()
+    const { user, logout } = useUser()
 
     const navItems = [
         {
@@ -139,12 +139,11 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
     ];
-    console.log("user?.role", user?.role)
 
     const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
 
     return (
-      <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full py-4 md:pt-4 pt-8 flex flex-col gap-'>
+      <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full md:pt-4 pt-8 flex flex-col gap-'>
         <div className="flex items-center justify-center">
             <img src={assets.logo} alt="Wellthrix logo" className='w-2/5' />
         </div>
@@ -168,6 +167,14 @@ const LeftNav = ({ setIsOpen }) => {
                 ))
             }
         </ul>
+        <button
+            type="button"
+            onClick={logout}
+            className='flex items-center gap-2 cursor-pointer justify-start m-4 text-secClr font-semibold'
+        >
+            <MdLogout />
+            <span>Logout</span>
+        </button>
       </div>
     );
 };

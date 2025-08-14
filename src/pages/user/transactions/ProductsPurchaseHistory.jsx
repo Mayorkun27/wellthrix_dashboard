@@ -71,7 +71,7 @@ const ProductsPurchaseHistory = () => {
                                     className="hover:bg-gray-50 text-sm border-b border-black/10 text-center"
                                 >
                                     <td className="p-3">{String(index).padStart(3, "0")}</td>
-                                    <td className="p-4 capitalize">{item.ref_no  || "-"}</td>
+                                    <td className="p-4 text-xs whitespace-nowrap capitalize">{item.ref_no  || "-"}</td>
                                     <td className="p-4">{formatterUtility(item.amount) || "-"}</td>
                                     <td className="p-4 capitalize">
                                         <div className={`w-[100px] py-2 ${item.order.delivery === "success" ? "bg-[#dff7ee]/80 text-pryclr" : item.order.delivery === "failed" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>

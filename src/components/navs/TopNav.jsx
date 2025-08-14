@@ -74,23 +74,30 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
 
         <Link 
           to={"/user/overview"}
-          type="button">
+          type="button"
+          className='md:inline-flex hidden'
+        >
           <IoMdNotificationsOutline className="text-pryClr md:text-3xl text-2xl" />
         </Link>
 
-        <Link
-          to={"/user/products/cart"}
-          className='relative'
-        >
-          <HiOutlineShoppingCart className="text-pryClr md:text-3xl text-2xl" />
-          {cartItems.length > 0 && (
-            <span
-              className="absolute -top-1 -right-1.5 bg-red-500 text-white text-xs font-semibold rounded-full min-w-[1.25rem] h-5 px-1 flex items-center justify-center"
-            >
-              {cartItems.length > 9 ? '9+' : cartItems.length}
-            </span>
-          )}
-        </Link>
+       {
+        user?.role === "user" && (
+          <Link
+            to={"/user/products/cart"}
+            className='relative'
+          >
+            <HiOutlineShoppingCart className="text-pryClr md:text-3xl text-2xl" />
+            {cartItems.length > 0 && (
+              <span
+                className="absolute -top-1 -right-1.5 bg-red-500 text-white text-xs font-semibold rounded-full min-w-[1.25rem] h-5 px-1 flex items-center justify-center"
+              >
+                {cartItems.length > 9 ? '9+' : cartItems.length}
+              </span>
+            )}
+          </Link>
+        )
+       }
+
 
         <Link
           to="/user/profile"

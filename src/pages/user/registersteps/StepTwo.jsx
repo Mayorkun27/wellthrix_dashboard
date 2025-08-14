@@ -233,7 +233,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
           }
         })
 
-        console.log(response)
+        console.log("stockists response",response)
         if (response.status === 200 && response.data.success) {
           console.log(response.data.data.data)
           setStockists(response.data.data.data)
@@ -519,7 +519,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
               <option value='' disabled>Select Stockist</option>
               {
                 stockists.map((item) => (
-                  <option value={item.id}>{item.name} at {item.location}</option>
+                  <option key={item.id} value={item.id}>{item.username} at {item.address1}</option>
                 ))
               }
             </select>
@@ -542,7 +542,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
               !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
             }`}
           >
-            {formik.isSubmitting ? "Saving..." : "Next 2"}
+            {formik.isSubmitting ? "Saving..." : "Next"}
           </button>
         </div>
       </div>
