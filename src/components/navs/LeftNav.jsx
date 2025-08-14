@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { MdChat, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
-import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
+import { PiCardsThreeFill, PiHandDeposit, PiNetwork, PiRanking } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
@@ -112,6 +112,12 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Product Upload',
             icon: <MdOutlineFileUpload size={20} />,
             path: '/admin/uploadproduct',
+            role: ["admin"]
+        },
+        {
+            name: 'Ranking',
+            icon: <PiRanking size={20} />,
+            path: '/admin/ranking',
             role: ["admin"]
         },
         {
