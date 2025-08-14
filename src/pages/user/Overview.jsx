@@ -224,7 +224,7 @@ const Overview = () => {
         <div className="flex flex-col items-center">
           <h3 className='font-bold'>@{user?.username}</h3>
           <p>Package: <span className='font-bold uppercase'>Crown</span></p>
-          <Link to={"/user/profile"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
+          <Link to={"/upgradepackage"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
       {/* New Refs */}

@@ -60,11 +60,12 @@ function App() {
         <Route path='/admin/manageannouncement' element={<MainLayout pageName={"Manage Announcement"} child={<ManageAnnouncement />} />}/>
         <Route path='/admin/managetestimonials' element={<MainLayout pageName={"Create Testimonials"} child={<ManageTestimonials />} />}/>
         <Route path='/admin/managetransactions' element={<MainLayout pageName={"Transactions"} child={<ManageTransactions />} />}/>
-        <Route path='/admin/uploadproduct' element={<MainLayout pageName={"Upload Products"} child={<ProductUpload />} />}/>
+        <Route path='/admin/uploadproduct' element={<MainLayout pageName={"Manage Products"} child={<ProductUpload />} />}/>
         <Route path='/admin/managecontacts' element={<MainLayout pageName={"Manage Contacts"} child={<ManageContactRequests />} />}/>
         <Route path='/admin/managepackages' element={<MainLayout pageName={"Create New Package"} child={<ManagePackage />} />}/>
         <Route path='/admin/allusers' element={<MainLayout pageName={"Users"} child={<AllUsers />} />}/>
         <Route path='/admin/loyaltybonus' element={<MainLayout pageName={"Loyalty Bonus"} child={<ManageLoyalties />} />}/>
+        <Route path='/upgradepackage' element={<MainLayout pageName={"Upgrade Package"} child={<UpgradePackage />} />}/>
       </Routes>
     </>
   )
