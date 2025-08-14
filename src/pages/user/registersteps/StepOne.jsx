@@ -269,7 +269,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
   const isFormValid = selectedPackage &&
     Number(selectedPackage.price) <= Number(user.e_wallet) &&
     leg &&
-    availableLegs.available_legs.includes(leg) &&
+    (availableLegs.can_place_right || availableLegs.can_place_left) &&
     sponsorId &&
     placementId;
 

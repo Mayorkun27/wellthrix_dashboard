@@ -31,6 +31,8 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
   });
   const [error, setError] = useState(null);
   const [countryCodeMap, setCountryCodeMap] = useState({});
+  const [stockists, setStockists] = useState([]);
+  const [isFetchingStockists, setIsFetchingStockists] = useState(false);
 
   const validationSchema = Yup.object().shape({
     first_name: Yup.string().required('First name is required'),
@@ -220,6 +222,36 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
       formik.setFieldValue('city', '');
     }
   }, [formik.values.state, formik.values.country]);
+
+  useEffect(() => {
+    const fetchStockist = async () => {
+      setIsFetchingStockists(true)
+      try {
+        const response = await axios.get(`${API_URL}/api/stockists`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        })
+
+        console.log(response)
+        if (response.status === 200 && response.data.success) {
+          console.log(response.data.data.data)
+          setStockists(response.data.data.data)
+        }
+        
+      } catch (error) {
+        if (error.response.data.message.toLowerCase() == "unauthenticated") {
+          logout()
+        }
+        console.error("An error occured fetching stockists", error)
+        toast.error("An error occured fetching stockists")
+      } finally {
+        setIsFetchingStockists(false)
+      }
+    }
+
+    fetchStockist()
+  }, [])
 
   // const formatDate = (value) => {
   //   console.log("value", value)
@@ -478,14 +510,18 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
             <select
               id='stockist'
               name='stockist'
-              value={formik.values.stockist}
+              value={formik.values.stockist || ""}
+              disabled={isFetchingStockists}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className={`h-12 px-4 py-2 border ${formik.touched.stockist && formik.errors.stockist ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+              className={`h-12 px-4 py-2 border ${formik.touched.stockist && formik.errors.stockist ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              <option value=''>Select Stockist</option>
-              <option value='1'>Room 1</option>
-              <option value='2'>Room 2</option>
+              <option value='' disabled>Select Stockist</option>
+              {
+                stockists.map((item) => (
+                  <option value={item.id}>{item.name} at {item.location}</option>
+                ))
+              }
             </select>
           </div>
         </div>

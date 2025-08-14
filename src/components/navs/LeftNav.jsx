@@ -25,6 +25,12 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["user"]
         },
         {
+            name: 'Dashboard',
+            icon: <MdOutlineDashboard size={20} />,
+            path: '/admin/overview',
+            role: ["admin"]
+        },
+        {
             name: 'Users',
             icon: <FaUsers size={20} />,
             path: '/admin/allusers',
@@ -85,6 +91,12 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["user"]
         },
         {
+            name: 'Transaction',
+            icon: <GrTransaction size={20} />,
+            path: '/admin/managetransactions',
+            role: ["admin"]
+        },
+        {
             name: 'Announcement',
             icon: <GrAnnounce size={20} />,
             path: '/admin/manageannouncement',
@@ -106,12 +118,6 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Contact Input',
             icon: <MdOutlineContactMail size={20} />,
             path: '/admin/managecontacts',
-            role: ["admin"]
-        },
-        {
-            name: 'Transaction',
-            icon: <GrTransaction size={20} />,
-            path: '/admin/managetransactions',
             role: ["admin"]
         },
         {
@@ -151,6 +157,7 @@ const LeftNav = ({ setIsOpen }) => {
                         key={index}
                         className={({ isActive }) => `
                             flex items-center md:ps-18 ps-24 gap-3 font-medium border-l-10 border-transparent text-white transition-all duration-300 hover:border-secClr hover:bg-secClr/30 px-4 py-3 cursor-pointer text-base
+                            ${name.toLowerCase() === "stockist" && user?.plan !== 7 && "line-through pointer-events-none opacity-50"}
                             ${isActive ? 'bg-secClr/30 !border-secClr text-white' : ''}
                         `}
                         onClick={() => setIsOpen(false)}

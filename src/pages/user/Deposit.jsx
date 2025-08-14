@@ -174,6 +174,11 @@ const Deposit = () => {
           {formik.touched.payment_method && formik.errors.payment_method && (
             <p className="text-red-600">{formik.errors.payment_method}</p>
           )}
+          <div className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium">
+            <h3>Bank Name: <span className="font-bold">ZENITH BANK</span></h3>
+            <h3>Account Number: <span className="font-bold">1310212712</span></h3>
+            <h3>Account Name: <span className="font-bold">WELLTHRIX INTERNATIONAL LTD</span></h3>
+          </div>
           <div className="w-full mt-5">
             <label htmlFor="amount" className="text-[16px] font-medium">
               Amount

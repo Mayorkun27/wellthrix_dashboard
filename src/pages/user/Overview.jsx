@@ -71,9 +71,9 @@ const Overview = () => {
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <GiWallet />
         </div>,
-      buttonText: "Withdraw/Transfer",
+      buttonText: "Transfer",
       buttonType: 1,
-      path: "/user/history"
+      path: "/user/transfer"
     },
     {
       walletType: "Incentive Wallet",
@@ -81,9 +81,9 @@ const Overview = () => {
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <BsWallet2 />
         </div>,
-      buttonText: "",
+      buttonText: "Withdraw",
       buttonType: 1,
-      path: "/user/history"
+      path: "/user/withdraw"
     },
     {
       walletType: "Total Credit",

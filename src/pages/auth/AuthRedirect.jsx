@@ -34,14 +34,14 @@ const AuthRedirect = () => {
         localStorage.setItem("token", token);
 
         // Get user
-        const res = await axios.get(`${API_URL}/api/user`, {
+        const res = await axios.get(`${API_URL}/api/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         console.log("res on auth", res)
         console.log("token on auth", token)
 
-        const user = res.data;
+        const user = res.data.data.user;
 
         // Save to localStorage & context
         localStorage.setItem("user", JSON.stringify(user));
@@ -51,7 +51,7 @@ const AuthRedirect = () => {
         // Redirect
         // setLoadingMessage("Login successful, redirecting...");
         setTimeout(() => {
-          navigate(user?.role === "admin" ? "/user/overview" : "/user/overview");
+          navigate(user?.role === "admin" ? "/admin/overview" : "/user/overview");
         }, 1000);
       } catch (error) {
         console.error("Verification failed", error);

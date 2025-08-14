@@ -56,14 +56,14 @@ const Login = () => {
         // }  
 
        if (response.status === 200) {
-          const { token } = response.data;
+          const { token, role } = response.data;
           await login(token);
 
           toast.success('Login successful');
           setTimeout(() => {
             toast("Redirecting to dashboard...");
             setTimeout(() => {
-              navigate('/user/overview');
+              role === "admin" ? navigate(`/admin/overview`) : navigate('/user/overview');
             }, 2000);
           }, 1000);
         }
