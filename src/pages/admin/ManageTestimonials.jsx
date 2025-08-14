@@ -11,7 +11,7 @@ import assets from "../../assets/assests";
 const API_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const ManageTestimonials = () => {
-  const { token } = useUser();
+  const { token, loading: contextLoading } = useUser(); // Added contextLoading
   const [currentPage, setCurrentPage] = useState(1);
   const [testimonials, setTestimonials] = useState([]);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
@@ -61,6 +61,7 @@ const ManageTestimonials = () => {
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
       if (!token) {
+        setError("Please log in to submit testimonials.");
         toast.error("Please log in to submit testimonials.", { duration: 3000 });
         setTimeout(() => {
           window.location.hash = '#/login';
@@ -94,7 +95,6 @@ const ManageTestimonials = () => {
           timeout: 10000,
         });
 
-        // Fallback to /api/testimonial if /api/testimonial fails with ERR_NETWORK
         if (response?.code === "ERR_NETWORK") {
           console.log("Retrying with alternative endpoint: /api/testimonial");
           url = selectedTestimonial
@@ -121,7 +121,6 @@ const ManageTestimonials = () => {
           { duration: 3000 }
         );
 
-        // Refresh testimonials after create/update
         await fetchTestimonials();
         resetForm();
         setSelectedTestimonial(null);
@@ -135,7 +134,7 @@ const ManageTestimonials = () => {
         let errorMessage = selectedTestimonial
           ? "Failed to update testimonial."
           : "Failed to create testimonial.";
-        if (err.response?.status === 50) {
+        if (err.response?.status === 500) {
           errorMessage = "Server error: Please contact support.";
           toast.error(errorMessage, { duration: 3000 });
         } else if (err.code === "ECONNABORTED") {
@@ -167,12 +166,11 @@ const ManageTestimonials = () => {
       full_name: testimonial.full_name,
       rating: testimonial.rating.toString(),
       comment: testimonial.comment,
-      image: null, // Image is not pre-filled for updates
+      image: null,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Fetch all testimonials with retry mechanism
   const fetchTestimonials = async (retries = 1, delay = 1000) => {
     if (!token) {
       setError("Please log in to access testimonials.");
@@ -193,14 +191,15 @@ const ManageTestimonials = () => {
         throw new Error("API base URL is not defined. Check your .env file.");
       }
 
+      console.log("API_URL:", API_URL); // Log API_URL for debugging
       let response = await axios.get(`${API_URL}/api/testimonial`, {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         timeout: 5000,
       });
 
-      // Fallback to /api/testimonial if /api/testimonial fails with ERR_NETWORK
       if (response?.code === "ERR_NETWORK") {
         console.log("Retrying with alternative endpoint: /api/testimonial");
         response = await axios.get(`${API_URL}/api/testimonial`, {
@@ -219,13 +218,16 @@ const ManageTestimonials = () => {
         throw new Error("Invalid response format: Expected an array of testimonials");
       }
 
-      const mappedData = data.map((testimonial) => ({
-        id: testimonial.id,
-        full_name: testimonial.full_name,
-        rating: parseInt(testimonial.rating, 10),
-        comment: testimonial.comment,
-        image: testimonial.image,
-      }));
+      const mappedData = data.map((testimonial) => {
+        console.log("Testimonial image:", testimonial.image); // Log image URL
+        return {
+          id: testimonial.id,
+          full_name: testimonial.full_name,
+          rating: parseInt(testimonial.rating, 10),
+          comment: testimonial.comment,
+          image: testimonial.image, // Keep as-is for now
+        };
+      });
 
       setTestimonials(mappedData);
     } catch (err) {
@@ -271,8 +273,12 @@ const ManageTestimonials = () => {
   };
 
   useEffect(() => {
-    fetchTestimonials();
-  }, [API_URL, token]);
+    if (!contextLoading && token !== null) {
+      if (token) {
+        fetchTestimonials();
+      }
+    }
+  }, [API_URL, token, contextLoading]);
 
   const totalPages = Math.ceil(testimonials.length / rowsPerPage);
 
@@ -281,7 +287,6 @@ const ManageTestimonials = () => {
     return testimonials.slice(start, start + rowsPerPage);
   }, [currentPage, testimonials]);
 
-  // Handle Delete action: Show confirmation modal
   const handleDeletePrompt = (id) => {
     if (!token) {
       setError("Please log in to delete testimonials.");
@@ -291,11 +296,11 @@ const ManageTestimonials = () => {
       }, 3000);
       return;
     }
+
     setTestimonialToDelete(id);
     setShowDeleteModal(true);
   };
 
-  // Confirm Delete action
   const confirmDelete = async () => {
     try {
       setError(null);
@@ -309,7 +314,6 @@ const ManageTestimonials = () => {
         }
       );
 
-      // Fallback to /api/testimonial if /api/testimonial fails with ERR_NETWORK
       if (response?.code === "ERR_NETWORK") {
         console.log("Retrying with alternative endpoint: /api/testimonial");
         response = await axios.delete(
@@ -371,7 +375,6 @@ const ManageTestimonials = () => {
 
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col space-y-6 lg:flex-row lg:space-y-0 lg:gap-4 w-full">
-            {/* Name Field */}
             <div className="w-full lg:w-1/2 mb-2">
               <label className="text-sm font-semibold" htmlFor="full_name">
                 Name
@@ -390,7 +393,6 @@ const ManageTestimonials = () => {
               )}
             </div>
 
-            {/* Rating Field */}
             <div className="w-full lg:w-1/2">
               <label htmlFor="rating" className="text-sm font-semibold">
                 Rating
@@ -401,11 +403,10 @@ const ManageTestimonials = () => {
                 value={formik.values.rating}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className={`w-full p-3 border border-pryClr outline-0 rounded-lg ${
-                  formik.touched.rating && formik.errors.rating
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                className={`w-full p-3 border border-pryClr outline-0 rounded-lg ${formik.touched.rating && formik.errors.rating
+                  ? "border-red-500"
+                  : "border-gray-300"
+                  }`}
               >
                 <option value="">Select Rating</option>
                 <option value="1">1</option>
@@ -471,15 +472,14 @@ const ManageTestimonials = () => {
           <button
             type="submit"
             disabled={submitting}
-            className={`bg-pryClr text-white px-4 py-2 rounded-lg hover:bg-pryClr/80 ${
-              submitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`bg-pryClr text-white px-4 py-2 rounded-lg hover:bg-pryClr/80 ${submitting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             {submitting
               ? "Processing"
               : selectedTestimonial
-              ? "Update Testimonial"
-              : "Create Testimonial"}
+                ? "Update Testimonial"
+                : "Create Testimonial"}
           </button>
         </form>
       </div>
@@ -526,19 +526,13 @@ const ManageTestimonials = () => {
                         <td className="lg:p-5 p-3 text-left">{t.rating}</td>
                         <td className="lg:p-5 p-3 text-left">{t.comment}</td>
                         <td className="lg:p-5 p-3 text-left">
-                          {t.image ? (
-                            <>
-                              {console.log("Image URL:", t.image)}
-                              <img
-                                src={`${API_URL}/${t.image}`}
-                                alt="Testimonial"
-                                className="max-w-[100px] max-h-[100px] object-contain rounded"
-                              />
-                            </>
-                          ) : (
-                            "No image"
-                          )}
+                          <img
+                            src={`${API_URL}${t.image}`}
+                            alt={t.name}
+                            className="w-full h-full object-cover rounded-full"
+                          />
                         </td>
+
                         <td className="lg:p-5 p-3 text-left">
                           <div className="flex gap-3">
                             <button
@@ -581,7 +575,6 @@ const ManageTestimonials = () => {
             </>
           )}
 
-          {/* Delete Confirmation Modal */}
           {showDeleteModal && (
             <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 pointer-events-none">
               <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 relative pointer-events-auto">
