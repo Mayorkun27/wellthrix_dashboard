@@ -97,7 +97,7 @@ const MainLayout = ({ child, pageName, subText }) => {
 
   useEffect(() => {
     if (pageName === 'Transactions') {
-      setSelectedType("Product History");
+      setSelectedType("E-Wallet");
     } else if (pageName === 'Recharge History') {
       setSelectedType("Airtime");
     }

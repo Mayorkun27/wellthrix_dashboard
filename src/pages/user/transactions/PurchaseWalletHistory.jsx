@@ -38,14 +38,14 @@ const PurchaseWalletHistory = () => {
                 setLastPage(last_page);
                 setPerPage(per_page);
             } else {
-                throw new Error(response.data.message || "Failed to fetch E-wallet history.");
+                throw new Error(response.data.message || "Failed to fetch purchase wallet history.");
             }
         } catch (error) {
             if (error.response?.data?.message?.includes("unauthenticated")) {
                 logout();
             }
             console.error("API submission error:", error);
-            toast.error(error.response?.data?.message || "An error occurred fetching E-wallet history!.");
+            toast.error(error.response?.data?.message || "An error occurred fetching purchase wallet history!.");
         } finally {
             setIsLoading(false);
         }

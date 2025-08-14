@@ -90,3 +90,11 @@ input[type="number"]::-webkit-inner-spin-button{
 .hr-scroll{
   box-shadow: inset -0.5px 0px 5px #00000013;
 }
+
+.disabledForNow{
+  @apply pointer-events-none relative overflow-hidden
+}
+.disabledForNow::after{
+  content: "Coming soon";
+  @apply absolute inset-0 bg-black/50 flex items-center justify-center text-secClr text-2xl font-bold
+}

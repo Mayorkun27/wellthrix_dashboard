@@ -61,7 +61,7 @@ const Withdraw = () => {
       console.log(typeof pin.join(""))
 
       try {
-        const response = await axios.post(`${API_URL}/api/withdraw`, { ...values, account_number: String(values.account_number), pin: pin.join("") }, {
+        const response = await axios.post(`${API_URL}/api/withdraw`, { ...values, pin: pin.join("") }, {
           headers: {
             "Authorization": `Bearer ${token}`,
           }
@@ -152,7 +152,7 @@ const Withdraw = () => {
                 {/* Paystack Option */}
                 <div
                   onClick={() => formik.setFieldValue("method", "paystack")}
-                  className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+                  className={`disabledForNow flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
                 >
                   <div className="flex lg:gap-2 gap-4 items-center">
                       <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />

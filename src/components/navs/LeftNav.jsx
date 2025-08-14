@@ -25,10 +25,22 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["user"]
         },
         {
+            name: 'Users',
+            icon: <FaUsers size={20} />,
+            path: '/admin/allusers',
+            role: ["admin"]
+        },
+        {
             name: 'Network',
             icon: <PiNetwork size={20} />,
             path: '/user/network',
-            role: ["user", "admin"]
+            role: ["user"]
+        },
+        {
+            name: 'Register',
+            icon: <SlUserFollow className="-skew-x-1" size={20} />,
+            path: '/user/register',
+            role: ["user"]
         },
         {
             name: 'Deposit',
@@ -59,12 +71,6 @@ const LeftNav = ({ setIsOpen }) => {
             icon: <CgDigitalocean size={20} />,
             path: '/user/recharge',
             role: ["user"]
-        },
-        {
-            name: 'Register',
-            icon: <SlUserFollow className="-skew-x-1" size={20} />,
-            path: '/user/register',
-            role: ["user", 'admin']
         },
         {
             name: 'Recharge History',
@@ -115,12 +121,6 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
         {
-            name: 'Users',
-            icon: <FaUsers size={20} />,
-            path: '/admin/allusers',
-            role: ["admin"]
-        },
-        {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
             path: '/stockist/managestockist',
@@ -133,8 +133,9 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
     ];
+    console.log("user?.role", user?.role)
 
-    const filteredLinks = navItems.filter(navItem => navItem.role === user?.role || (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+    const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
 
     return (
       <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full py-4 md:pt-4 pt-8 flex flex-col gap-'>
@@ -143,8 +144,8 @@ const LeftNav = ({ setIsOpen }) => {
         </div>
         <ul className='lg:mt-5 mt-8 flex flex-col gap-3 pb-2 border-b border-secClr/20 h-3/4 overflow-y-scroll no-scrollbar'>
             {
-                // filteredLinks.map(({ name, icon, path }, index) => (
-                navItems.map(({ name, icon, path }, index) => (
+                filteredLinks.map(({ name, icon, path }, index) => (
+                // navItems.map(({ name, icon, path }, index) => (
                     <NavLink
                         to={path}
                         key={index}

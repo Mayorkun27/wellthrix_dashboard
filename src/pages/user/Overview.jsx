@@ -93,7 +93,7 @@ const Overview = () => {
         </div>,
       buttonText: "History",
       buttonType: 1,
-      path: "/user/history"
+      path: "/user/transactions"
     },
     {
       walletType: "Total Debit",
@@ -103,7 +103,7 @@ const Overview = () => {
         </div>,
       buttonText: "History",
       buttonType: 1,
-      path: "/user/history"
+      path: "/user/transactions"
     },
   ]
 
@@ -229,7 +229,7 @@ const Overview = () => {
       </div>
       {/* New Refs */}
       <div className="lg:col-span-3 lg:my-1">
-        <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
+        <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm max-h-[45vh]">
           <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
           <div className="grid gap-6">
             {
@@ -252,9 +252,9 @@ const Overview = () => {
       </div>
       {/* Announcement Board */}
       <div className="lg:col-span-3 lg:my-1">
-        <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
+        <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
-          <div className="max-h-[20vh] overflow-y-scroll pe-2 styled-scrollbar">
+          <div className="max-h-[33vh] overflow-y-scroll pe-2 styled-scrollbar">
             <AnnouncementBoard />
           </div>
         </div>

@@ -30,8 +30,8 @@ const Network = () => {
       console.log("Genealogy response", response)
 
       if (response.status === 200) {
-        toast.success(response.data.message || "Genealogy data fetched successfully.");
         setReferralData(response.data.data)
+        toast.success(response.data.message || "Genealogy data fetched successfully.");
       } else {
         throw new Error(response.data.message || "Genealogy data call failed.");
       }
@@ -44,7 +44,7 @@ const Network = () => {
     } finally {
       setTimeout(() => {
         setIsLoading(false)
-      }, 5000);
+      }, 2000);
     }
   }
 
@@ -119,7 +119,7 @@ const Network = () => {
         {hasChildren && (
           <button
             onClick={() => onToggle(user.id)}
-            className={`mt-4 p-2 rounded-lg bg-pryClr text-white hover:shadow-md transition-all duration-200`}
+            className={`mt-2 p-2 rounded-lg bg-pryClr text-white hover:shadow-md transition-all duration-200`}
           >
             {isExpanded ? <BsChevronDown size={16} /> : <BsChevronRight size={16} />}
           </button>

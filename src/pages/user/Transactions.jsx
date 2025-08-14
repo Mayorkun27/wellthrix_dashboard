@@ -12,8 +12,8 @@ const Transactions = ({ selectedType }) => {
     <div className="space-y-6">
       {selectedType === 'E-Wallet' && <EwalletHistory />}
       {selectedType === 'Purchase Wallet' && <PurchaseWalletHistory />}
-      {selectedType === 'Earnings Wallet' && <EarningWalletHistory />}
-      {selectedType === 'Incentive Wallet' && <IncentiveWalletHistory />}
+      {/* {selectedType === 'Earnings Wallet' && <EarningWalletHistory />}
+      {selectedType === 'Incentive Wallet' && <IncentiveWalletHistory />} */}
       {selectedType === 'Withdraw History' && <WithdrawHistory />}
       {selectedType === 'Product History' && <ProductsPurchaseHistory />}
     </div>

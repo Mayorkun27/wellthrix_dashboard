@@ -42,18 +42,17 @@ const ManageAnnouncement = () => {
                 console.log("announcement post response", response)
 
                 if (response.status === 201 && response.data.status === 201) {
-                    setAnnouncements(response.data.data)
-                    toast.error(response.data.message || "Announcement posted successfully!")
+                    toast.success(response.data.message || "Announcement posted successfully!")
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
                 }
             } catch (error) {
-                if (error.response.data.message.toLowerCase() == "unauthenticated") {
+                if (error?.response?.data?.message.toLowerCase() == "unauthenticated") {
                     logout()
                 }
                 console.error("An error occured posting announcements", error)
-                toast.error(error.response.data.message || "An error occured posting announcements")
+                toast.error(error?.response?.data?.message || "An error occured posting announcements")
             } finally {
                 setTimeout(() => {
                     setSubmitting(false)

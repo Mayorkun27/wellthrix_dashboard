@@ -52,7 +52,7 @@ const ProductsPurchaseHistory = () => {
                         <th className="p-5">S/N</th>
                         <th className="p-5">Order ID</th>
                         <th className="p-5">Order Amount</th>
-                        <th className="p-5">Delevery Status</th>
+                        <th className="p-5">Pickup Status</th>
                         <th className="p-5">Stockist Name</th>
                         <th className="p-5">Stockist Location</th>
                         <th className="p-5">Date</th>
