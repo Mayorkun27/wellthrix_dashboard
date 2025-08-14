@@ -55,7 +55,10 @@ const ProfileInfoTab = () => {
           </div>
           <div className='w-full border-b-3 border-white flex justify-between items-center'>
             <p className='md:text-lg mb-2'><span className='font-semibold'>Package: </span>{user?.plan}</p>
-            <div className='flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg'>
+            <Link
+              to="/upgradepackage"
+              className="flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg"
+            >
               <p>Upgrade</p>
               <FaArrowUpLong />
             </Link>
