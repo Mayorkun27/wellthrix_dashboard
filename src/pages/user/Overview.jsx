@@ -87,7 +87,7 @@ const Overview = () => {
     },
     {
       walletType: "Total Credit",
-      amount: user?.e_wallet,
+      amount: user?.total_credit,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandDeposit />
         </div>,
@@ -97,7 +97,7 @@ const Overview = () => {
     },
     {
       walletType: "Total Debit",
-      amount: "0",
+      amount: user?.total_debit,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandWithdraw />
         </div>,
@@ -210,7 +210,7 @@ const Overview = () => {
         </div>
         <div className="flex flex-col items-center">
           <h3 className='font-bold'>@{user?.username}</h3>
-          <p>Package: <span className='font-bold uppercase'>Crown</span></p>
+          <p>Package: <span className='font-bold uppercase'>{miscellanousDetails[0].planDetails[0]?.name}</span></p>
           <Link to={"/upgradepackage"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
@@ -218,7 +218,7 @@ const Overview = () => {
         {/* New Refs */}
         <div className="lg:my-1 w-1/2 h-full">
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
-            <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
+            <h3 className='md:text-xl text-lg mb-3 font-semibold'>New members</h3>
             <div className="grid gap-4">
               {
                 referrals.length <= 0 ? (

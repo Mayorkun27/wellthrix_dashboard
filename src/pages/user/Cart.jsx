@@ -56,7 +56,8 @@ const Cart = () => {
             // 1. Construct the payload based on your backend API's requirements
             const productsPayload = cartItems.map(item => ({
                 product_id: item.id || item._id, // Use item.id or item._id as per your product structure
-                quantity: item.quantity
+                quantity: item.quantity,
+                stockist_id: user?.stockist
             }));
 
             console.log("productsPayload", productsPayload)

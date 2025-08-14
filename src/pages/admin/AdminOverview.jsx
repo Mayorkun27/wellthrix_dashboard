@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useUser } from '../../context/UserContext'
 import { MdOutlineAccountBalanceWallet, MdOutlineSdCard } from 'react-icons/md'
 import { IoWalletOutline } from 'react-icons/io5'
-import { GiWallet } from 'react-icons/gi'
-import { BsWallet2 } from 'react-icons/bs'
 import { PiHandDeposit, PiHandWithdraw } from 'react-icons/pi'
 import { ImUsers } from "react-icons/im";
 import OverviewCards from '../../components/cards/OverviewCards'

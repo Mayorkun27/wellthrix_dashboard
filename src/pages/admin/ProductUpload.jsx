@@ -390,23 +390,23 @@ const ProductUpload = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Image</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Name</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Price</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Point Value</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Stock</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">Actions</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-600">Image</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-600">Name</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-600">Price</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-600">Point Value</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-600">Stock</th>
+                  <th className="text-center py-3 px-4 font-medium text-gray-600">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((product) => (
-                  <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50 text-center">
                     <td className="py-3 px-4">
                       <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
                         <img
                           src={`${IMAGE_BASE_URL}/${product.product_image}`}
                           alt={product.product_name}
-                          className="h-10 w-10 object-cover rounded"
+                          className="h-full w-full object-contain rounded"
                         />
                       </div>
                     </td>

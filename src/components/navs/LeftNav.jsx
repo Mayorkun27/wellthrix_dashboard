@@ -16,7 +16,7 @@ import { BsSignpost } from 'react-icons/bs';
 
 const LeftNav = ({ setIsOpen }) => {
 
-    const { user, logout } = useUser()
+    const { user, logout, miscellanousDetails } = useUser()
 
     const navItems = [
         {
@@ -160,7 +160,7 @@ const LeftNav = ({ setIsOpen }) => {
     ];
 
     const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
-
+console.log("user?.plan", user?.plan)
     return (
       <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full md:pt-4 pt-8 flex flex-col gap-'>
         <div className="flex items-center justify-center">
@@ -175,7 +175,7 @@ const LeftNav = ({ setIsOpen }) => {
                         key={index}
                         className={({ isActive }) => `
                             flex items-center md:ps-18 ps-24 gap-3 font-medium border-l-10 border-transparent text-white transition-all duration-300 hover:border-secClr hover:bg-secClr/30 px-4 py-3 cursor-pointer text-base
-                            ${name.toLowerCase() === "stockist" && user?.plan !== 7 && "line-through pointer-events-none opacity-50"}
+                            ${name.toLowerCase() === "stockist" && user?.stockist_enabled !== 1 && "line-through pointer-events-none opacity-50"}
                             ${isActive ? 'bg-secClr/30 !border-secClr text-white' : ''}
                         `}
                         onClick={() => setIsOpen(false)}
