@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
+import { formatterUtility } from "../../utilities/Formatterutility";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
@@ -175,9 +176,6 @@ const ProductUpload = () => {
       }
     }
   };
-
-  // Edit product
-
 
   // Cancel edit
   const handleCancelEdit = () => {
@@ -404,31 +402,19 @@ const ProductUpload = () => {
                 {products.map((product) => (
                   <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4">
-                      {product.product_image ? (
+                      <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
                         <img
-                          src={
-                            product.product_image.startsWith("http")
-                              ? product.product_image
-                              : `${IMAGE_BASE_URL}/${product.product_image}`
-                          }
+                          src={`${IMAGE_BASE_URL}/${product.product_image}`}
                           alt={product.product_name}
                           className="h-10 w-10 object-cover rounded"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = assets.placeholderImage;
-                          }}
                         />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">No img</span>
-                        </div>
-                      )}
+                      </div>
                     </td>
                     <td className="py-3 px-4 font-medium text-gray-900">
                       {product.product_name}
                     </td>
                     <td className="py-3 px-4 text-gray-600">
-                      ${product.price}
+                      {formatterUtility(product.price)}
                     </td>
                     <td className="py-3 px-4 text-gray-600">
                       {product.product_pv}
