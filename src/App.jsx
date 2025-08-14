@@ -153,7 +153,7 @@ function App() {
           }
         />
         <Route
-          path="/admin/uploadproduct"
+          path="/sunmence/uploadproduct"
           element={
             <MainLayout
               pageName={"Manage Products"}

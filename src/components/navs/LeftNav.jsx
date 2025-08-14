@@ -112,8 +112,8 @@ const LeftNav = ({ setIsOpen }) => {
         {
             name: 'Product Upload',
             icon: <MdOutlineFileUpload size={20} />,
-            path: '/admin/uploadproduct',
-            role: ["admin"]
+            path: '/sunmence/uploadproduct',
+            role: ["sunmence"]
         },
         {
             name: 'Contact Input',

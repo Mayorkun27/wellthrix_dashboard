@@ -214,9 +214,9 @@ const Overview = () => {
           <Link to={"/upgradepackage"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
-      <div className="flex items-center lg:col-span-6 gap-6 border h-[40vh]">
+      <div className="flex items-center lg:col-span-6 gap-6 h-[40vh]">
         {/* New Refs */}
-        <div className="lg:my-1 w-1/2 h-full border">
+        <div className="lg:my-1 w-1/2 h-full">
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
             <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
             <div className="grid gap-4">
@@ -239,10 +239,10 @@ const Overview = () => {
           </div>
         </div>
         {/* Announcement Board */}
-        <div className="lg:my-1 w-1/2">
-          <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm">
+        <div className="lg:my-1 w-1/2 h-full">
+          <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
             <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
-            <div className="max-h-[33vh] overflow-y-scroll pe-2 styled-scrollbar">
+            <div className="h-[80%] overflow-y-scroll pe-2 styled-scrollbar">
               <AnnouncementBoard />
             </div>
           </div>
