@@ -9,7 +9,7 @@ const Ranking = () => {
   return (
     <div className="space-y-6">
       {/* Selection Dropdown */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 justify-end">
         <select
           id="rankType"
           value={selectedType}

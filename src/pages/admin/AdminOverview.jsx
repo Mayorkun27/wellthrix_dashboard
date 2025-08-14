@@ -8,6 +8,8 @@ import { PiHandDeposit, PiHandWithdraw } from 'react-icons/pi'
 import { ImUsers } from "react-icons/im";
 import OverviewCards from '../../components/cards/OverviewCards'
 import axios from 'axios'
+import { toast } from 'sonner'
+import AnnouncementBoard from '../../components/AnnouncementBoard'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -20,7 +22,7 @@ const AdminOverview = () => {
     const fetchOverviewDetails = async () => {
       setIsFetching(true)
       try {
-        const response = await axios.get(`${API_URL}/`, {
+        const response = await axios.get(`${API_URL}/api/admin/stat`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -29,7 +31,7 @@ const AdminOverview = () => {
         console.log("overview response", response)
 
         if (response.status === 200) {
-          setOverviewDetails(response.data.data)
+          setOverviewDetails(response.data)
         } else {
           throw new Error(response.data.message || "Failed to get overview data.");
         }
@@ -46,12 +48,12 @@ const AdminOverview = () => {
     }
 
     fetchOverviewDetails()
-  })
+  }, [token])
 
   const overviews = [
     {
       walletType: "Total Users",
-      amount: user?.e_wallet,
+      amount: overviewDetails?.total_users,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <ImUsers />
         </div>,
@@ -61,64 +63,53 @@ const AdminOverview = () => {
       isAmount: false
     },
     {
-      walletType: "Purchase Wallet",
-      amount: user?.purchased_wallet,
+      walletType: "Pending deposit",
+      amount: overviewDetails?.pending_e_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <IoWalletOutline />
         </div>,
-      buttonText: "Purchase Now",
+      buttonText: "View Queue",
       buttonType: 1,
-      path: "/user/products"
-    },
-    {
-      walletType: "Earnings Wallet",
-      amount: user?.earning_wallet,
-      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
-          <GiWallet />
-        </div>,
-      buttonText: "Transfer",
-      buttonType: 1,
-      path: "/user/transfer"
-    },
-    {
-      walletType: "Incentive Wallet",
-      amount: user?.incentive_wallet,
-      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
-          <BsWallet2 />
-        </div>,
-      buttonText: "Withdraw",
-      buttonType: 1,
-      path: "/user/withdraw"
+      path: "/admin/managetransactions",
+      isAmount: false
     },
     {
       walletType: "Total Credit",
-      amount: user?.e_wallet,
-      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
-          <PiHandDeposit />
-        </div>,
-      buttonText: "History",
-      buttonType: 1,
-      path: "/user/transactions"
-    },
-    {
-      walletType: "Total Debit",
-      amount: "0",
+      amount: overviewDetails?.total_credit,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandWithdraw />
         </div>,
-      buttonText: "History",
+      buttonText: "View History",
       buttonType: 1,
-      path: "/user/transactions"
+      path: "/admin/managetransactions"
+    },
+    {
+      walletType: "Total Debit",
+      amount: overviewDetails?.total_debit,
+      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+          <PiHandDeposit />
+        </div>,
+      buttonText: "View History",
+      buttonType: 1,
+      path: "/admin/managetransactions"
     },
   ]
 
   return (
-    <div className='grid lg:grid-cols-3 gap-6'>
-      {
-        overviews.map((overview, index) => (
-          <OverviewCards key={index} {...overview} />
-        ))
-      }
+    <div className='space-y-8'>
+      <div className='grid lg:grid-cols-2 gap-6'>
+        {
+          overviews.map((overview, index) => (
+            <OverviewCards key={index} {...overview} />
+          ))
+        }
+      </div>
+      <div className="w-full bg-white md:p-6 p-4 rounded-lg shadow-sm">
+        <h3 className='md:text-2xl text-lg mb-2 font-semibold tracking-[-0.1em]'>Announcement Board</h3>
+        <div className="overflow-y-scroll md:max-h-[77vh] max-h-[65vh] pe-2 styled-scrollbar">
+            <AnnouncementBoard />
+        </div>
+      </div>
     </div>
   )
 }

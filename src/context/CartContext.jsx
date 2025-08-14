@@ -11,21 +11,17 @@ const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_PRODUCT": {
       const productId = action.payload.id || action.payload._id;
-
       const existingItem = state.cartItems.find(
         (item) => item.id === productId
       );
-
       const availableStock =
         action.payload.in_stock - action.payload.total_sold;
 
       if (existingItem) {
         if (existingItem.quantity < availableStock) {
           toast.success(`${action.payload.product_name} quantity increased`);
-
           return {
             ...state,
-
             cartItems: state.cartItems.map((item) =>
               item.id === productId
                 ? { ...item, quantity: item.quantity + 1 }
@@ -34,38 +30,41 @@ const cartReducer = (state, action) => {
           };
         } else {
           toast.error("Cannot add more — stock limit reached");
-
-          return state; // No changes
+          return state;
         }
       }
 
       if (availableStock > 0) {
         toast.success(`${action.payload.product_name} added to cart`);
-
         return {
           ...state,
-
-          cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }],
+          cartItems: [...state.cartItems, { ...action.payload, id: productId, quantity: 1 }], // Standardize ID here
         };
       } else {
         toast.error("Out of stock");
-
-        return state; // No changes
+        return state;
       }
     }
 
     case "INCREMENT_PRODUCT": {
-      const productId = action.payload.id || action.payload._id;
+      const productId = action.payload.id;
+      const itemToIncrement = state.cartItems.find(
+        (item) => item.id === productId
+      );
 
-      return {
-        ...state,
-
-        cartItems: state.cartItems.map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        ),
-      };
+      if (itemToIncrement.quantity < itemToIncrement.in_stock - itemToIncrement.total_sold) {
+        return {
+          ...state,
+          cartItems: state.cartItems.map((item) =>
+            item.id === productId
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          ),
+        };
+      } else {
+        toast.error("Cannot add more — stock limit reached");
+        return state;
+      }
     }
 
     case "DECREMENT_PRODUCT": {

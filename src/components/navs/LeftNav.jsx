@@ -1,17 +1,18 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty } from 'react-icons/md';
+import { MdChat, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
-import { FaPlugCircleBolt, FaUsers } from 'react-icons/fa6';
+import { FaPlugCircleBolt, FaRankingStar, FaUsers } from 'react-icons/fa6';
 import { GiShoppingBag } from 'react-icons/gi';
 import { GrAnnounce, GrTransaction } from "react-icons/gr";
 import { TbTruckDelivery } from 'react-icons/tb';
 import { VscPackage } from 'react-icons/vsc';
 import { useUser } from '../../context/UserContext';
+import { BsSignpost } from 'react-icons/bs';
 
 const LeftNav = ({ setIsOpen }) => {
 
@@ -121,6 +122,12 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
         {
+            name: 'Subscribers',
+            icon: <MdOutlineUnsubscribe size={20} />,
+            path: '/admin/subscribers',
+            role: ["admin"]
+        },
+        {
             name: 'Packages',
             icon: <VscPackage size={20} />,
             path: '/admin/managepackages',
@@ -136,6 +143,18 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Loyalty Bonus',
             icon: <MdOutlineLoyalty size={20} />,
             path: '/admin/loyaltybonus',
+            role: ["admin"]
+        },
+        {
+            name: 'Milestone Bonus',
+            icon: <BsSignpost size={20} />,
+            path: '/admin/milestonebonus',
+            role: ["admin"]
+        },
+        {
+            name: 'Rankings',
+            icon: <FaRankingStar size={20} />,
+            path: '/admin/ranking',
             role: ["admin"]
         },
     ];
