@@ -91,7 +91,7 @@ const StepFour = ({ prevStep, nextStep, formData, sessionId }) => {
             <p className='text-lg md:text-xl font-bold capitalize'>{formData?.sponsor.username || 'N/A'}</p>
           </div>
           <div className='flex flex-col'>
-            <p className='text-sm md:text-lg text-black/70'>BV</p>
+            <p className='text-sm md:text-lg text-black/70'>PV</p>
             <p className='text-lg md:text-xl font-bold capitalize'>{formData?.selectedPackage?.point_value+"PV" || 'N/A'}</p>
           </div>
           <div className='flex flex-col'>
