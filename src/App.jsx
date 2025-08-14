@@ -156,7 +156,7 @@ function App() {
           path="/admin/uploadproduct"
           element={
             <MainLayout
-              pageName={"Upload Products"}
+              pageName={"Manage Products"}
               child={<ProductUpload />}
             />
           }
@@ -214,6 +214,7 @@ function App() {
           path="/admin/ranking"
           element={<MainLayout pageName={"Ranking"} child={<Ranking />} />}
         />
+        <Route path='/upgradepackage' element={<MainLayout pageName={"Upgrade Package"} child={<UpgradePackage />} />}/>
       </Routes>
     </>
   );

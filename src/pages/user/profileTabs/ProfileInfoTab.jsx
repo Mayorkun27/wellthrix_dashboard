@@ -3,6 +3,7 @@ import { FaArrowUpLong } from 'react-icons/fa6';
 import assets from '../../../assets/assests';
 import { useUser } from '../../../context/UserContext';
 import { useLocation } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const PS_SK = import.meta.env.VITE_PAYSTACK_SECRET_KEY;
@@ -10,13 +11,13 @@ const PS_SK = import.meta.env.VITE_PAYSTACK_SECRET_KEY;
 const ProfileInfoTab = () => {
   const searchParams = new URLSearchParams(useLocation().search);
   const comeToEditBank = searchParams.get("setbank");
-  
+
   const { user, miscellanousDetails, refreshUser } = useUser()
 
   useEffect(() => {
     refreshUser()
   }, [])
-  
+
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
 
@@ -53,11 +54,14 @@ const ProfileInfoTab = () => {
             <p className='md:text-lg mb-2'><span className='font-semibold'>Username: </span>{user?.username}</p>
           </div>
           <div className='w-full border-b-3 border-white flex justify-between items-center'>
-            <p className='md:text-lg mb-2'><span className='font-semibold'>Package: </span>{miscellanousDetails?.plan_details?.name}</p>
-            <div className='flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg'>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Package: </span>{user?.plan}</p>
+            <Link
+              to="/upgradepackage"
+              className="flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg"
+            >
               <p>Upgrade</p>
               <FaArrowUpLong />
-            </div>
+            </Link>
           </div>
           <div className='w-full border-b-3 border-white'>
             <p className='md:text-lg mb-2'><span className='font-semibold'>Current Rank: </span>No Rank Achieved</p>
