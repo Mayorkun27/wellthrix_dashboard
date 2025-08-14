@@ -73,8 +73,6 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-
-
   const isLoggedIn = !!token;
 
   const logout = async () => {
@@ -94,7 +92,8 @@ export const UserProvider = ({ children }) => {
       setMiscellanousDetails([]);
       toast.success("Logged out successfully")
       setTimeout(() => {
-        window.location.href = "https://wellthrixinternational.com/#/login";
+        // window.location.href = "https://wellthrixinternational.com/#/login";
+        window.location.href = "/#/login";
       }, 500)
       
     } catch (err) {

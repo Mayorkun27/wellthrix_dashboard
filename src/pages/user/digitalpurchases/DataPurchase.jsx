@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import assets from '../../assets/assests';
+import assets from '../../../assets/assests';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { IoIosCheckmark } from 'react-icons/io';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../../context/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
 

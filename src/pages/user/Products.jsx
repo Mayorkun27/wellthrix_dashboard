@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import ProductCards from '../../components/cards/ProductCards'
-import assets from '../../assets/assests'
-import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { useUser } from '../../context/UserContext'
 import { toast } from 'sonner'
@@ -22,8 +20,10 @@ const Products = () => {
         }
       })
 
+      console.log("Products Response:", response)
+
       if (response.status === 200) {
-        setProducts(response.data.products || response.data) // Handle different response structures
+        setProducts(response.data.products || response.data)
         toast.success("Products loaded successfully!")
       }
 
@@ -40,35 +40,26 @@ const Products = () => {
       setLoading(false)
     }
   }
-
-  // Load products when component mounts
+  
   useEffect(() => {
     if (token) {
       fetchProducts()
     }
   }, [token])
 
-  // Use only API products
   const displayProducts = products
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="text-lg">Loading products...</div>
+      <div className="flex flex-col gap-4 p-6 justify-center items-center min-h-[400px]">
+        <h3 className='text-2xl font-semibold'>Loading Products</h3>
+        <div className='border-[6px] border-t-transparent border-pryClr animate-spin mx-auto rounded-full w-[80px] h-[80px]'></div>
       </div>
     )
   }
 
   return (
     <div className='grid lg:grid-cols-3 md:grid-cols-2 gap-6 pb-2'>
-      <div className="lg:col-span-3 md:col-span-2">
-        <Link
-          to={"/user/products/cart"}
-          className='bg-pryClr w-max ms-auto px-4 h-[45px] flex items-center justify-center rounded-lg font-medium text-secClr'
-        >
-          View cart
-        </Link>
-      </div>
       
       {displayProducts.length > 0 ? (
         displayProducts.map((product, index) => (

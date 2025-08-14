@@ -10,6 +10,10 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) => {
 
+  useEffect(() => {
+    console.log('StepTwo sessionId:', sessionId);
+  }, [sessionId]);
+
   const { token, logout } = useUser()
 
   useEffect(() => {
@@ -69,9 +73,16 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       console.log("values to be posted", values)
+
+      if (!sessionId) {
+        toast.error('Session ID is missing. Please start over.');
+        return;
+      }
       setSubmitting(true);
       updateFormData(values);
 
+      console.log('StepTwo received sessionId:', sessionId);
+      console.log('StepTwo API payload:', values, { 'X-Session-ID': sessionId });
       try {
         const response = await axios.post(`${API_URL}/api/registration/step-2`, values, {
           headers: {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import assets from "../../assets/assests";
 import OverviewCards from "../../components/cards/OverviewCards";
 import { useUser } from "../../context/UserContext";
@@ -56,6 +56,8 @@ const Deposit = () => {
       if (values.proof_of_payment) {
         formData.append('proof_of_payment', values.proof_of_payment);
       }
+
+      console.log("Deposit form data", formData)
 
       try {
         const response = await axios.post(`${API_URL}/api/wallets/fund/initiate`, formData, {

@@ -72,7 +72,7 @@ const Login = () => {
         if (axios.isAxiosError(err) && err.response && err.response.status === 401) {
           toast.error(err.response.data.message || 'Validation error. Please check your inputs.');
         } else {
-          toast.error('An unexpected error occurred while logging in. ' + err?.response?.data?.message || "Please try again later.");
+          toast.error('An unexpected error occurred while logging in. ' + err?.response?.data?.message || err?.message || "Please try again later.");
           console.error('Error during logging in:', err);
         }
       } finally {

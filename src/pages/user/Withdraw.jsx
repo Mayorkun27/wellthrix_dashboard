@@ -4,11 +4,11 @@ import * as Yup from "yup"
 import { useUser } from "../../context/UserContext";
 import { toast } from "sonner";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OverviewCards from "../../components/cards/OverviewCards";
 import { BsWallet2 } from "react-icons/bs";
 import Modal from "../../components/modals/Modal";
-import { MdPayment } from "react-icons/md";
+import { MdArrowOutward, MdPayment } from "react-icons/md";
 import assets from "../../assets/assests";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -18,6 +18,8 @@ const Withdraw = () => {
   const navigate = useNavigate();
   const [pin, setPin] = useState(['', '', '', '']);
   const [showPinModal, setShowPinModal] = useState(false);
+
+  const bankNotSet = !user?.bank_name || !user?.account_number || !user?.account_name
 
   const formik = useFormik({
     initialValues: {
@@ -118,8 +120,16 @@ const Withdraw = () => {
             walletType={"Incentive Wallet"}
           />
         </div>
-        <div className="shadow-sm rounded-xl bg-white overflow-x-auto md:p-8 p-6">
-          <h1 className="text-[22px] font-semibold tracking-tight md:flex hidden">Withdraw Funds</h1>
+        <div className="shadow-sm rounded-xl bg-white space-y-4 overflow-x-auto md:p-8 p-6">
+          <div className="md:flex hidden gap-1 items-end justify-between">
+            <h1 className="text-[22px] font-semibold tracking-tight">Withdraw Funds</h1>
+            <Link
+              to={"/user/profile"}
+              className="underline underline-offset-2"
+            >
+              Add/Change Bank Details
+            </Link>
+          </div>
           <form 
             onSubmit={(e) => {
               e.preventDefault();
@@ -127,49 +137,60 @@ const Withdraw = () => {
             }}
             className="grid md:grid-cols-2 grid-cols-1 lg:gap-x-8 lg:gap-y-4 gap-6"
           >
-            <p className="text-black md:col-span-2 col-span-1 md:mt-6 font-medium tracking-tight">Withdraw Method</p>
-            <div className="flex md:flex-row flex-col gap-4 md:col-span-2 col-span-1 mb-5">
-              {/* Paystack Option */}
-              <div
-                onClick={() => formik.setFieldValue("method", "paystack")}
-                className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
-              >
-                 <div className="flex lg:gap-2 gap-4 items-center">
+            <div className="w-full space-y-2 md:col-span-2 col-span-1">
+              <div className="flex md:flex-row flex-col gap-1 md:items-end justify-between">
+                <p className="text-black md:col-span-2 col-span-1 tracking-tight text-sm">Withdraw Method</p>
+                <Link
+                  to={"/user/profile"}
+                  className="underline underline-offset-2 md:hidden flex items-center gap-1 md:text-base text-xs ms-auto"
+                >
+                  Add/Change Bank Details
+                  <MdArrowOutward />
+                </Link>
+              </div>
+              <div className="flex md:flex-row flex-col gap-4">
+                {/* Paystack Option */}
+                <div
+                  onClick={() => formik.setFieldValue("method", "paystack")}
+                  className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+                >
+                  <div className="flex lg:gap-2 gap-4 items-center">
+                      <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
+                      <div>
+                        <p className="md:text-[14px] text-xs font-medium">Paystack</p>
+                        <p className="md:text-[12px] text-[10px]">
+                          Pay securely with your card or bank account
+                        </p>
+                      </div>
+                    </div>
+                  <div className="w-9 h-9 p-2 relative bg-pryClr rounded-full flex items-center justify-center">
+                    <div className="bg-white w-full h-full rounded-full"></div>
+                    {formik.values.method === 'paystack' && (
+                      <img src={assets.mark} alt="" className="scale-125 w-3 h-3 absolute top-1/2 -translate-y-2/3 left-1/2 -translate-x-2/5" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Manual Payment Option */}
+                <div
+                  onClick={() => formik.setFieldValue("method", "manual")}
+                  className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+                >
+                  <div className="flex lg:gap-2 gap-4 items-center">
                     <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
                     <div>
-                      <p className="md:text-[14px] text-xs font-medium">Paystack</p>
+                      <p className="md:text-[14px] text-xs font-medium">Manual</p>
                       <p className="md:text-[12px] text-[10px]">
-                        Pay securely with your card or bank account
+                        Pay via bank transfer and upload proof
                       </p>
                     </div>
                   </div>
-                <div className="w-9 h-9 p-2 relative bg-pryClr rounded-full flex items-center justify-center">
-                  <div className="bg-white w-full h-full rounded-full"></div>
-                  {formik.values.method === 'paystack' && (
-                    <img src={assets.mark} alt="" className="scale-125 w-3 h-3 absolute top-1/2 -translate-y-2/3 left-1/2 -translate-x-2/5" />
-                  )}
-                </div>
-              </div>
-
-              {/* Manual Payment Option */}
-              <div
-                onClick={() => formik.setFieldValue("method", "manual")}
-                className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
-              >
-                <div className="flex lg:gap-2 gap-4 items-center">
-                  <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
-                  <div>
-                    <p className="md:text-[14px] text-xs font-medium">Manual</p>
-                    <p className="md:text-[12px] text-[10px]">
-                      Pay via bank transfer and upload proof
-                    </p>
+                  <div className="w-9 h-9 p-2 relative bg-pryClr rounded-full flex items-center justify-center">
+                    <div className="bg-white w-full h-full rounded-full"></div>
+                    {formik.values.method === 'manual' && (
+                      <img src={assets.mark} alt="" className="scale-125 w-3 h-3 absolute top-1/2 -translate-y-2/3 left-1/2 -translate-x-2/5" />
+                    )}
                   </div>
-                </div>
-                <div className="w-9 h-9 p-2 relative bg-pryClr rounded-full flex items-center justify-center">
-                  <div className="bg-white w-full h-full rounded-full"></div>
-                  {formik.values.method === 'manual' && (
-                    <img src={assets.mark} alt="" className="scale-125 w-3 h-3 absolute top-1/2 -translate-y-2/3 left-1/2 -translate-x-2/5" />
-                  )}
                 </div>
               </div>
             </div>
@@ -286,6 +307,26 @@ const Withdraw = () => {
             >
               {formik.isSubmitting ? "Confirming..." : "Confirm"}
             </button>
+          </div>
+        </Modal>
+      )}
+
+      {bankNotSet && (
+        <Modal>
+          <div className="text-center space-y-4">
+            <h3 className="text-3xl font-semibold tracking-tight w-3/4 mx-auto leading-6">Set Up Your Bank Details</h3>
+            <p className="leading-5">To receive payments and enjoy seamless funds interaction, we need your bank account information.</p>
+            <Link
+              to={"/user/profile"}
+              >
+              <button
+                type="button"
+                className="bg-pryClr text-secClr mt-8 w-full h-[50px] rounded-lg cursor-pointer flex items-center justify-center gap-2 font-medium"
+              >
+                Add Bank Details
+                <MdArrowOutward />
+              </button>
+            </Link>
           </div>
         </Modal>
       )}

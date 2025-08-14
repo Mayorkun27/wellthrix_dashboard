@@ -4,8 +4,7 @@ import EarningWalletHistory from './transactions/EarningWalletHistory';
 import PurchaseWalletHistory from './transactions/PurchaseWalletHistory';
 import IncentiveWalletHistory from './transactions/IncentiveWalletHistory';
 import WithdrawHistory from './transactions/WithdrawHistory';
-
-const options = ['E-Wallet', 'Purchase Wallet', 'Earnings Wallet', 'Incentive Wallet'];
+import ProductsPurchaseHistory from './transactions/ProductsPurchaseHistory';
 
 const Transactions = ({ selectedType }) => {
 
@@ -16,6 +15,7 @@ const Transactions = ({ selectedType }) => {
       {selectedType === 'Earnings Wallet' && <EarningWalletHistory />}
       {selectedType === 'Incentive Wallet' && <IncentiveWalletHistory />}
       {selectedType === 'Withdraw History' && <WithdrawHistory />}
+      {selectedType === 'Product History' && <ProductsPurchaseHistory />}
     </div>
   )
 }

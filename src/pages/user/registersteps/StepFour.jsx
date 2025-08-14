@@ -2,10 +2,16 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 import { useUser } from '../../../context/UserContext';
+import { formatterUtility } from '../../../utilities/Formatterutility';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const StepFour = ({ prevStep, nextStep, formData, sessionId }) => {
+
+  useEffect(() => {
+    console.log('StepFour sessionId:', sessionId);
+    console.log('StepFour formData:', formData);
+  }, [sessionId, formData]);
 
   const [ registerOverview, setRegisterOverview ] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -14,14 +20,21 @@ const StepFour = ({ prevStep, nextStep, formData, sessionId }) => {
 
   useEffect(() => {
     const fetchStepsSummary = async () => {
+      if (!sessionId) {
+        toast.error('Session ID is missing. Please start over.');
+        return;
+      }
+
       setIsLoading(true)
+      console.log('StepFour received sessionId:', sessionId);
+      console.log({ 'X-Session-ID': sessionId });
       try {
         const response = await axios.get(`${API_URL}/api/registration/overview`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Accept": `application/json`,
             'Content-Type': 'application/json',
-            "X-Session-ID": "755ddb59-fdd6-4352-82aa-f512e46954a1",
+            "X-Session-ID": sessionId,
           }
         });
 
@@ -70,24 +83,24 @@ const StepFour = ({ prevStep, nextStep, formData, sessionId }) => {
         </div>
         <div className='w-full rounded-xl bg-pryClr/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6'>
           <div className='flex flex-col'>
-            <p className='text-sm md:text-lg text-black/70'>Product</p>
-            <p className='text-lg md:text-xl font-bold'>{formData?.selectedPackage?.name || 'N/A'}</p>
+            <p className='text-sm md:text-lg text-black/70'>Package</p>
+            <p className='text-lg md:text-xl font-bold capitalize'>{formData?.selectedPackage?.name || 'N/A'}</p>
           </div>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>Sponsor</p>
-            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_1.sponsor || 'N/A'}</p>
+            <p className='text-lg md:text-xl font-bold capitalize'>{formData?.sponsor.username || 'N/A'}</p>
           </div>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>BV</p>
-            <p className='text-lg md:text-xl font-bold'>{formData?.selectedPackage?.pointValue?.replace('PV', '') || 'N/A'}</p>
+            <p className='text-lg md:text-xl font-bold capitalize'>{formData?.selectedPackage?.point_value+"PV" || 'N/A'}</p>
           </div>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>Price</p>
-            <p className='text-lg md:text-xl font-bold'>N{registerOverview?.step_1.selectedPackage?.price || 'N/A'}</p>
+            <p className='text-lg md:text-xl font-bold capitalize'>{formatterUtility(Number(formData?.selectedPackage?.price)) || 'N/A'}</p>
           </div>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>Total Amount</p>
-            <p className='text-lg md:text-xl font-bold'>N{registerOverview?.step_1.selectedPackage?.price || 'N/A'}</p>
+            <p className='text-lg md:text-xl font-bold capitalize'>{formatterUtility(Number(formData?.selectedPackage?.price)) || 'N/A'}</p>
           </div>
         </div>
 
