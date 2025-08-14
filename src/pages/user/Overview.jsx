@@ -122,13 +122,19 @@ const Overview = () => {
 
   const fetchReferrals = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/referrals/sponsor-placement-tree`, {
+      const response = await axios.get(`${API_URL}/api/referrals/latest`, {
         headers: {
           "Authorization" : `Bearer ${token}`,
         }
       })
 
       console.log("My refs response", response)
+
+      if (response.status === 200) {
+        setReferrals(response.data.data)
+      } else {
+        throw new Error(response.data.message || "Failed to get latest referrals.");
+      }
       
     } catch (error) {
       if (error.response.data.message.toLowerCase() == "unauthenticated") {

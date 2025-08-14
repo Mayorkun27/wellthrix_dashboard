@@ -16,7 +16,7 @@ const FilterDropdown = ({ options, selectedType, setSelectedType }) => {
   }, []);
 
   return (
-    <div className="relative w-40 cursor-pointer" ref={dropdownRef}>
+    <div className="relative w-[200px] cursor-pointer" ref={dropdownRef}>
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}

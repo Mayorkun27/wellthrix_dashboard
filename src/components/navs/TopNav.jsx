@@ -4,9 +4,11 @@ import { GoSearch } from 'react-icons/go';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import FilterDropdown from '../../utilities/FilterDropdown';
+import { HiOutlineShoppingCart } from 'react-icons/hi2';
+import { useCart } from '../../context/CartContext';
 
 const optionsRecharge = ['Airtime', 'Data', 'Electricity'];
-const optionsTransactions = ['E-Wallet', 'Purchase Wallet', 'Earnings Wallet', 'Incentive Wallet', 'Withdraw History'];
+const optionsTransactions = ['E-Wallet', 'Purchase Wallet', 'Earnings Wallet', 'Incentive Wallet', 'Withdraw History', 'Product History'];
 
 const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
   const [searchParam, setSearchParam] = React.useState('');
@@ -14,6 +16,7 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
   const showSearchBar = ["/user/transactions", "/user/rechargehistory"].includes(location.pathname);
   const navigate = useNavigate();
   const { user } = useUser()
+  const { cartItems } = useCart()
     
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
@@ -31,8 +34,9 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
         )}
       </div>
 
-      <div className="flex items-center md:gap-4 gap-2">
+      <div className="flex items-center md:gap-5 gap-3">
         <form
+          hidden
           onSubmit={(e) => {
             e.preventDefault();
             setSearchParam('');
@@ -67,9 +71,25 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
           />
         )}
 
-        <button type="button">
+        <Link 
+          to={"/user/overview"}
+          type="button">
           <IoMdNotificationsOutline className="text-pryClr md:text-3xl text-2xl" />
-        </button>
+        </Link>
+
+        <Link
+          to={"/user/products/cart"}
+          className='relative'
+        >
+          <HiOutlineShoppingCart className="text-pryClr md:text-3xl text-2xl" />
+          {cartItems.length > 0 && (
+            <span
+              className="absolute -top-1 -right-1.5 bg-red-500 text-white text-xs font-semibold rounded-full min-w-[1.25rem] h-5 px-1 flex items-center justify-center"
+            >
+              {cartItems.length > 9 ? '9+' : cartItems.length}
+            </span>
+          )}
+        </Link>
 
         <Link
           to="/user/profile"

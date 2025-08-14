@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork } from 'react-icons/md';
+import { MdChat, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
@@ -114,7 +114,6 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/admin/managepackages',
             role: "admin"
         },
-       
         {
             name: 'Users',
             icon: <FaUsers size={20} />,
@@ -124,8 +123,14 @@ const LeftNav = ({ setIsOpen }) => {
         {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
-            path: '/user/managestockist',
+            path: '/stockist/managestockist',
             role: ["user", "admin"]
+        },
+        {
+            name: 'Loyalty Bonus',
+            icon: <MdOutlineLoyalty size={20} />,
+            path: '/admin/loyaltybonus',
+            role: "admin"
         },
     ];
 

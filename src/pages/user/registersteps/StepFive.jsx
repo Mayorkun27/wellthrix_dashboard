@@ -25,7 +25,7 @@ const StepFive = ({ prevStep, formData, updateFormData, sessionId }) => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/registration/complete`, {}, {
+      const response = await axios.post(`${API_URL}/api/registration/initiate/pay`, {}, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": `application/json`,

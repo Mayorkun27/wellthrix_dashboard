@@ -16,6 +16,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^12.23.12",
     "libphonenumber-js": "^1.12.10",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.539.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

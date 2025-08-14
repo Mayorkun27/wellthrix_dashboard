@@ -1,4 +1,5 @@
-import React, { createContext, useReducer, useContext } from 'react';
+import React, { createContext, useReducer, useContext } from "react";
+import { toast } from "sonner";
 
 const CartContext = createContext();
 
@@ -8,51 +9,104 @@ const initialState = {
 
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case 'ADD_PRODUCT':
-      const existingProduct = state.cartItems.find(item => item.id === action.payload.id);
-      if (existingProduct) {
-        return {
-          ...state,
-          cartItems: state.cartItems.map(item =>
-            item.id === action.payload.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          ),
-        };
+    case "ADD_PRODUCT": {
+      const productId = action.payload.id || action.payload._id;
+
+      const existingItem = state.cartItems.find(
+        (item) => item.id === productId
+      );
+
+      const availableStock =
+        action.payload.in_stock - action.payload.total_sold;
+
+      if (existingItem) {
+        if (existingItem.quantity < availableStock) {
+          toast.success(`${action.payload.product_name} quantity increased`);
+
+          return {
+            ...state,
+
+            cartItems: state.cartItems.map((item) =>
+              item.id === productId
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            ),
+          };
+        } else {
+          toast.error("Cannot add more — stock limit reached");
+
+          return state; // No changes
+        }
       }
 
-      return {
-        ...state,
-        cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }],
-      };
+      if (availableStock > 0) {
+        toast.success(`${action.payload.product_name} added to cart`);
 
-    case 'INCREMENT_PRODUCT':
+        return {
+          ...state,
+
+          cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }],
+        };
+      } else {
+        toast.error("Out of stock");
+
+        return state; // No changes
+      }
+    }
+
+    case "INCREMENT_PRODUCT": {
+      const productId = action.payload.id || action.payload._id;
+
       return {
         ...state,
-        cartItems: state.cartItems.map(item =>
-          item.id === action.payload.id
+
+        cartItems: state.cartItems.map((item) =>
+          item.id === productId
             ? { ...item, quantity: item.quantity + 1 }
             : item
         ),
       };
+    }
 
-    case 'DECREMENT_PRODUCT':
+    case "DECREMENT_PRODUCT": {
+      const productId = action.payload.id || action.payload._id;
+
       return {
         ...state,
-        cartItems: state.cartItems.map(item =>
-          item.id === action.payload.id
-            ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 }
-            : item
-        ),
-      };
 
-    case 'REMOVE_PRODUCT':
+        cartItems: state.cartItems
+
+          .map((item) =>
+            item.id === productId
+              ? { ...item, quantity: item.quantity - 1 }
+              : item
+          )
+
+          .filter((item) => item.quantity > 0),
+      };
+    }
+
+    case "REMOVE_PRODUCT": {
+      const productId = action.payload.id || action.payload._id;
+
+      const removedProduct = state.cartItems.find(
+        (item) => item.id === productId
+      );
+
+      if (removedProduct) {
+        toast.info(`${removedProduct.product_name} removed from cart`);
+      }
+
       return {
         ...state,
-        cartItems: state.cartItems.filter(item => item.id !== action.payload.id),
-      };
 
-    case 'CLEAR_CART':
+        cartItems: state.cartItems.filter((item) => item.id !== productId),
+      };
+    }
+
+    case "CLEAR_CART":
+      toast.info(`Cart cleared`);
+
       return initialState;
 
     default:
@@ -61,12 +115,29 @@ const cartReducer = (state, action) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, initialState);
+  const storedCart = JSON.parse(localStorage.getItem("cart")) || initialState;
 
-  const value = React.useMemo(() => ({
-    ...state,
-    dispatch,
-  }), [state]);
+  const [state, dispatch] = useReducer(cartReducer, storedCart);
+
+  const subtotal = state.cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  React.useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(state));
+  }, [state]);
+
+  const value = React.useMemo(
+    () => ({
+      ...state,
+
+      subtotal,
+
+      dispatch,
+    }),
+    [state, subtotal]
+  );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

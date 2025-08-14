@@ -84,8 +84,8 @@ const EwalletHistory = () => {
                                     <td className="p-4 capitalize">{item.transaction_type.includes("deposit") && "Deposit" || "-"}</td>
                                     <td className="p-4">{formatterUtility(item.amount) || "-"}</td>
                                     <td className="p-4 capitalize">
-                                        <div className={`w-[100px] py-2 ${item.status === "success" ? "bg-[#dff7ee]/80 text-pryclr" : item.status === "failed" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
-                                            {item.status === "success" ? "Successful" : item.status === "failed" ? "Failed" : "Pending"}
+                                        <div className={`w-[100px] py-2 ${item.status === "success" ? "bg-[#dff7ee]/80 text-pryclr" : item.status === "declined" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
+                                            {item.status === "success" ? "Successful" : item.status === "declined" ? item.status : "Pending"}
                                         </div>
                                     </td>
                                     <td className="p-4 text-sm text-pryClr font-semibold">

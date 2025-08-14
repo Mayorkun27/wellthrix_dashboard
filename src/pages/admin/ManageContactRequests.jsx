@@ -4,52 +4,32 @@ import { toast } from "sonner";
 import PaginationControls from "../../utilities/PaginationControls";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { useUser } from "../../context/UserContext";
+import Modal from "../../components/modals/Modal";
+import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ManageContactRequests = () => {
   const { token } = useUser();
-  const API_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
-  const [showViewModal, setShowViewModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [contactToDelete, setContactToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const rowsPerPage = 5;
-
-  // Fallback contacts
-  const fallbackContacts = [
-    {
-      id: "001",
-      first_name: "Dorcas",
-      last_name: "Odekunle",
-      phone: "08133565247",
-      email: "atoyebiolamilekins@gmail.com",
-      message: "Hello! Tell me more about this.",
-    },
-    {
-      id: "002",
-      first_name: "Jane",
-      last_name: "Smith",
-      phone: "08133565247",
-      email: "janesmith@gmail.com",
-      message: "Request for quotation",
-    },
-  ];
 
   // Fetch all contacts with retry mechanism
-  const fetchContacts = async (retries = 1, delay = 1000) => {
+  const fetchContacts = async () => {
     if (!token) {
       setError("Please log in to access contacts.");
-      setContacts(fallbackContacts);
+      setContacts([]);
       setLoading(false);
       toast.error("Please log in to access contacts.", {
         duration: 3000,
       });
-      setTimeout(() => {
-        window.location.href = "https://wellthrixinternational.com/#/login";
-      }, 3000);
       return;
     }
 
@@ -65,6 +45,10 @@ const ManageContactRequests = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          page: currentPage,
+          perPage: perPage
         },
         timeout: 5000,
       });
@@ -111,7 +95,7 @@ const ManageContactRequests = () => {
       }
 
       setError(errorMessage);
-      setContacts(fallbackContacts);
+      setContacts([]);
     } finally {
       setLoading(false);
     }
@@ -122,58 +106,8 @@ const ManageContactRequests = () => {
     fetchContacts();
   }, [API_URL, token]);
 
-  const totalPages = Math.ceil(contacts.length / rowsPerPage);
-
-  const currentData = useMemo(() => {
-    const start = (currentPage - 1) * rowsPerPage;
-    return contacts.slice(start, start + rowsPerPage);
-  }, [currentPage, contacts]);
-
-  // Handle View action
-  const handleView = async (id) => {
-    if (!token) {
-      setError("Please log in to view contact details.");
-      toast.error("Please log in to view contact details.", { duration: 3000 });
-      setTimeout(() => {
-        window.location.href = "https://wellthrixinternational.com/#/login";
-      }, 3000);
-      return;
-    }
-
-    try {
-      setError(null);
-      const response = await axios.get(`${API_URL}/api/contact/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = response.data.data || response.data;
-      console.log("Fetched contact details:", data);
-      setSelectedContact(data);
-      setShowViewModal(true);
-    } catch (err) {
-      console.error("View error:", err.message, err.response?.data);
-      let errorMessage = "Failed to fetch contact details.";
-      if (err.response?.status === 401) {
-        errorMessage = "Unauthorized: Please log in again.";
-        toast.error(errorMessage, { duration: 3000 });
-        setTimeout(() => {
-          window.location.href = "https://wellthrixinternational.com/#/login";
-        }, 3000);
-      } else if (err.response?.status === 500) {
-        errorMessage = "Server error: Please contact support.";
-        toast.error(errorMessage, { duration: 3000 });
-      } else {
-        toast.error(errorMessage, { duration: 3000 });
-      }
-      setError(errorMessage);
-    }
-  };
-
   // Handle Delete action: Show confirmation modal
-  const handleDeletePrompt = (id) => {
+  const handleDeletePrompt = (contact) => {
     if (!token) {
       setError("Please log in to delete contacts.");
       toast.error("Please log in to delete contacts.", { duration: 3000 });
@@ -182,7 +116,7 @@ const ManageContactRequests = () => {
       }, 3000);
       return;
     }
-    setContactToDelete(id);
+    setContactToDelete(contact);
     setShowDeleteModal(true);
   };
 
@@ -190,15 +124,15 @@ const ManageContactRequests = () => {
   const confirmDelete = async () => {
     try {
       setError(null);
-      const response = await axios.delete(`${API_URL}/api/contact/${contactToDelete}`, {
+      const response = await axios.delete(`${API_URL}/api/contact/${contactToDelete?.id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log(`Deleted contact with ID: ${contactToDelete}`, response.data);
-      setContacts(contacts.filter((contact) => contact.id !== contactToDelete));
+      console.log(`Deleted contact with ID: ${contactToDelete.id}`, response.data);
+      setContacts(contacts.filter((contact) => contact.id !== contactToDelete.id));
       setShowDeleteModal(false);
       setContactToDelete(null);
       toast.success("Contact deleted successfully", { duration: 3000 });
@@ -231,60 +165,61 @@ const ManageContactRequests = () => {
           {error && (
             <div className="text-center p-4 text-red-600">
               {error}
-              <div className="mt-2 text-sm text-gray-600">
-                Using fallback data due to API failure.
-                <button
-                  onClick={() => fetchContacts()}
-                  className="ml-2 text-pryClr hover:text-pryClr/50 underline"
-                >
-                  Retry
-                </button>
-              </div>
+              <button
+                onClick={() => fetchContacts()}
+                className="ml-2 text-pryClr hover:text-pryClr/50 underline"
+              >
+                Retry
+              </button>
             </div>
           )}
           <table className="w-full">
             <thead>
-              <tr className="text-black/70 text-[12px] uppercase border-b border-black/20 whitespace-nowrap">
-                <th className="lg:p-5 p-3 text-left">ID</th>
-                <th className="lg:p-5 p-3 text-left">Name</th>
-                <th className="lg:p-5 p-3 text-left">Phone Number</th>
-                <th className="lg:p-5 p-3 text-left">Email Address</th>
-                <th className="lg:p-5 p-3 text-left">Subject</th>
-                <th className="lg:p-5 p-3 text-left">Action</th>
+              <tr className="text-black/70 text-[12px] text-center uppercase border-b border-black/20 whitespace-nowrap">
+                <th className="lg:p-5 p-3">ID</th>
+                <th className="lg:p-5 p-3">Name</th>
+                <th className="lg:p-5 p-3">Phone Number</th>
+                <th className="lg:p-5 p-3">Email Address</th>
+                <th className="lg:p-5 p-3">Subject</th>
+                <th className="lg:p-5 p-3">Action</th>
               </tr>
             </thead>
             <tbody>
-              {currentData.length > 0 ? (
-                currentData.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="hover:bg-gray-50 text-sm border-b border-black/10"
-                  >
-                    <td className="lg:p-5 p-3 text-left">{c.id}</td>
-                    <td className="lg:p-5 p-3 text-left">{`${c.first_name} ${c.last_name}`}</td>
-                    <td className="lg:p-5 p-3 text-left">{c.phone}</td>
-                    <td className="lg:p-5 p-3 text-left">{c.email}</td>
-                    <td className="lg:p-5 p-3 text-left">{c.message}</td>
-                    <td className="lg:p-5 p-3 text-left">
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => handleView(c.id)}
-                          className="text-pryClr hover:text-pryClr/50"
-                          title="View"
-                        >
-                          <FaEye size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeletePrompt(c.id)}
-                          className="text-pryClr hover:text-pryClr/50"
-                          title="Delete"
-                        >
-                          <FaTrash size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+              {contacts.length > 0 ? (
+                contacts.map((c, index) => {
+                  const serialNumber = (currentPage - 1) * perPage + (index + 1);
+                  return (
+                    <tr
+                      key={c.id}
+                      className="hover:bg-gray-50 text-sm text-center border-b border-black/10"
+                    >
+                      <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
+                      <td className="lg:p-5 p-3">{`${c.first_name} ${c.last_name}`}</td>
+                      <td className="lg:p-5 p-3">{c.phone}</td>
+                      <td className="lg:p-5 p-3">{c.email}</td>
+                      <td className="lg:p-5 p-3">{c.message}</td>
+                      <td className="lg:p-5 p-3">
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            title={`View`}
+                            onClick={() => setSelectedContact(c)}
+                            className="text-pryClr cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto"
+                          >
+                            <FaEye size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeletePrompt(c)}
+                            className="text-pryClr cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto"
+                            title="Delete"
+                          >
+                            <FaTrash size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
               ) : (
                 <tr>
                   <td colSpan="6" className="text-center p-8">
@@ -295,11 +230,11 @@ const ManageContactRequests = () => {
             </tbody>
           </table>
 
-          {currentData.length > 0 && (
+          {contacts.length > 0 && (
             <div className="p-4">
               <PaginationControls
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={lastPage}
                 setCurrentPage={setCurrentPage}
               />
             </div>
@@ -308,88 +243,33 @@ const ManageContactRequests = () => {
       )}
 
       {/* View Contact Modal */}
-      {showViewModal && selectedContact && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 relative">
-            <button
-              onClick={() => setShowViewModal(false)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <div className="text-center p-4 mt-4">
-              <h2 className="text-xl font-bold text-pryClr">Contact Details</h2>
-              <div className="mt-4 text-left flex flex-col gap-3 text-sm">
-                <p><strong>ID:</strong> {selectedContact.id}</p>
-                <p><strong>First Name:</strong> {selectedContact.first_name}</p>
-                <p><strong>Last Name:</strong> {selectedContact.last_name}</p>
-                <p><strong>Phone:</strong> {selectedContact.phone}</p>
-                <p><strong>Email:</strong> {selectedContact.email}</p>
-                <p><strong>Message:</strong> {selectedContact.message}</p>
-              </div>
+      {selectedContact && (
+        <Modal
+          onClose={() => setSelectedContact(null)}
+          title={`Contact Details - ${selectedContact.first_name} ${selectedContact.last_name}`}
+        >
+          <div className="text-center space-y-8">
+            <h2 className="text-3xl font-bold text-pryClr">Contact Details</h2>
+            <div className="mt-4 text-left grid md:grid-cols-2 grid-cols-1 gap-3 text-sm">
+              <p className=""><strong>First Name:</strong> {selectedContact.first_name}</p>
+              <p className=""><strong>Last Name:</strong> {selectedContact.last_name}</p>
+              <p className=""><strong>Phone:</strong> {selectedContact.phone}</p>
+              <p className=""><strong>Email:</strong> {selectedContact.email}</p>
+              <p className="md:col-span-2 col-span-1"><strong>Message:</strong> {selectedContact.message}</p>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 relative">
-            <button
-              onClick={() => setShowDeleteModal(false)}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <div className="text-center p-4 mt-4">
-              <h2 className="text-xl font-bold text-pryClr">Confirm Delete</h2>
-              <p className="text-sm mt-2">
-                Are you sure you want to delete this contact?
-              </p>
-              <div className="flex justify-center gap-4 mt-6">
-                <button
-                  onClick={confirmDelete}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Yes, Delete
-                </button>
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Modal>
+          <ConfirmationDialog
+            message={`Are you sure you want to delete this contact from ${contactToDelete?.email}? This action cannot be undone.`}
+            onCancel={() => setShowDeleteModal(false)}
+            onConfirm={confirmDelete}
+          />
+        </Modal>
       )}
     </div>
   );

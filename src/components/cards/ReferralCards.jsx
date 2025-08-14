@@ -1,9 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
-const ReferralCards = ({ name, userName, createdAt }) => {
+const ReferralCards = ({ user, createdAt }) => {
 
-    const splittedName = name?.split(" ");
+    const splittedName = user?.fullname?.split(" ");
     const splittedFirstName = splittedName[0].split("")[0]
     const splittedLastName = splittedName[1].split("")[0]
 
@@ -14,8 +13,8 @@ const ReferralCards = ({ name, userName, createdAt }) => {
                 <h3 className=''>{splittedFirstName+splittedLastName}</h3>
             </div>
             <div className="flex flex-col md:leading-0 leading-3">
-                <h3 className='font-semibold text-sm'>{name}</h3>
-                <small className='text-xs text-black/50'>{userName}</small>
+                <h3 className='font-semibold text-sm'>{user?.fullname}</h3>
+                <small className='text-xs text-black/50'>&#64;{user?.username}</small>
             </div>
         </div>
         <span className='text-[8px]'>{createdAt}</span>
