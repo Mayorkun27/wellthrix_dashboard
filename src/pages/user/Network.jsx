@@ -155,7 +155,7 @@ const Network = () => {
 
         {/* Children Container */}
         {isExpanded && hasChildren && (
-          <div className="mt-12 flex gap-8 items-start justify-center relative">
+          <div className={`${node.left && node.right ? "mt-12" : "mt-7"} flex gap-8 items-start justify-center relative`}>
 
             {/* Conditionally render the left child */}
             {node.left && (

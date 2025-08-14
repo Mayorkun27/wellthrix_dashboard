@@ -1,6 +1,7 @@
 import React from 'react'
+import { formatDateToStyle, formatISODateToCustom } from '../../utilities/Formatterutility';
 
-const ReferralCards = ({ user, createdAt }) => {
+const ReferralCards = ({ user }) => {
 
     const splittedName = user?.fullname?.split(" ");
     const splittedFirstName = splittedName[0].split("")[0]
@@ -17,7 +18,7 @@ const ReferralCards = ({ user, createdAt }) => {
                 <small className='text-xs text-black/50'>&#64;{user?.username}</small>
             </div>
         </div>
-        <span className='text-[8px]'>{createdAt}</span>
+        <span className='text-[8px]'>{formatDateToStyle(user?.created_at)}</span>
     </div>
   )
 }

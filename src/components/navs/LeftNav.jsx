@@ -22,103 +22,103 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Dashboard',
             icon: <MdOutlineDashboard size={20} />,
             path: '/user/overview',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Network',
             icon: <PiNetwork size={20} />,
             path: '/user/network',
-            role: "user"
+            role: ["user", "admin"]
         },
         {
             name: 'Deposit',
             icon: <BiMoneyWithdraw size={20} />,
             path: '/user/deposit',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Withdraw',
             icon: <PiHandDeposit size={20} />,
             path: '/user/withdraw',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Transfer Funds',
             icon: <GrTransaction size={20} />,
             path: '/user/transfer',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Transactions',
             icon: <PiCardsThreeFill size={20} />,
             path: '/user/transactions',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Digital',
             icon: <CgDigitalocean size={20} />,
             path: '/user/recharge',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Register',
             icon: <SlUserFollow className="-skew-x-1" size={20} />,
             path: '/user/register',
-            role: "user"
+            role: ["user", 'admin']
         },
         {
             name: 'Recharge History',
             icon: <FaPlugCircleBolt size={20} />,
             path: '/user/rechargehistory',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Products',
             icon: <GiShoppingBag size={20} />,
             path: '/user/products',
-            role: "user"
+            role: ["user"]
         },
         {
             name: 'Announcement',
             icon: <GrAnnounce size={20} />,
             path: '/admin/manageannouncement',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Testimonials',
             icon: <MdChat size={20} />,
             path: '/admin/managetestimonials',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Product Upload',
             icon: <MdOutlineFileUpload size={20} />,
             path: '/admin/uploadproduct',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Contact Input',
             icon: <MdOutlineContactMail size={20} />,
             path: '/admin/managecontacts',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Transaction',
             icon: <GrTransaction size={20} />,
             path: '/admin/managetransactions',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Packages',
             icon: <VscPackage size={20} />,
             path: '/admin/managepackages',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Users',
             icon: <FaUsers size={20} />,
             path: '/admin/allusers',
-            role: "admin"
+            role: ["admin"]
         },
         {
             name: 'Stockist',
@@ -130,11 +130,11 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Loyalty Bonus',
             icon: <MdOutlineLoyalty size={20} />,
             path: '/admin/loyaltybonus',
-            role: "admin"
+            role: ["admin"]
         },
     ];
 
-    // const filteredLinks = navItems.filter(navItem => navItem.role === user?.role || (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
+    const filteredLinks = navItems.filter(navItem => navItem.role === user?.role || (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
 
     return (
       <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full py-4 md:pt-4 pt-8 flex flex-col gap-'>

@@ -27,3 +27,15 @@ export const formatISODateToCustom = (isoString) => {
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}${ampm}`;
 };
+
+export function formatDateToStyle(isoString) {
+  const date = new Date(isoString);
+
+  const options = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  };
+
+  return date.toLocaleDateString('en-US', options);
+}
