@@ -11,6 +11,7 @@ import Modal from "../../components/modals/Modal";
 import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "";
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const ManageTestimonials = () => {
   const { token, loading: contextLoading } = useUser(); // Added contextLoading
@@ -508,7 +509,7 @@ const ManageTestimonials = () => {
                     <th className="lg:p-5 p-3 text-left">ID</th>
                     <th className="lg:p-5 p-3 text-left">Name</th>
                     <th className="lg:p-5 p-3 text-left">Rating</th>
-                    <th className="lg:p-5 p-3 text-left">Comment</th>
+                    <th className="lg:p-5 p-3 text-center">Comment</th>
                     <th className="lg:p-5 p-3 text-left">Image</th>
                     <th className="lg:p-5 p-3 text-left">Action</th>
                   </tr>
@@ -523,13 +524,15 @@ const ManageTestimonials = () => {
                         <td className="lg:p-5 p-3 text-left">{t.id}</td>
                         <td className="lg:p-5 p-3 text-left">{t.full_name}</td>
                         <td className="lg:p-5 p-3 text-left">{t.rating}</td>
-                        <td className="lg:p-5 p-3 text-left">{t.comment}</td>
+                        <td className="lg:p-5 p-3 text-left min-w-[400px]">{t.comment}</td>
                         <td className="lg:p-5 p-3 text-left">
-                          <img
-                            src={`${API_URL}${t.image}`}
-                            alt={t.name}
-                            className="w-full h-full object-cover rounded-full"
-                          />
+                          <div className="w-[60px] h-[60px]">
+                            <img
+                              src={`${IMAGE_BASE_URL}/${t.image}`}
+                              alt={t.name}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          </div>
                         </td>
 
                         <td className="lg:p-5 p-3 text-left">

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const ProductUpload = () => {
   const { token, logout } = useUser()
@@ -130,6 +131,8 @@ const ProductUpload = () => {
           Authorization: `Bearer ${token}`
         }
       });
+
+      console.log("fetch res", response)
 
       if (response.status === 200) {
         setProducts(response.data.products || response.data || []);
@@ -406,7 +409,7 @@ const ProductUpload = () => {
                           src={
                             product.product_image.startsWith("http")
                               ? product.product_image
-                              : `${API_URL}/${product.product_image}`
+                              : `${IMAGE_BASE_URL}/${product.product_image}`
                           }
                           alt={product.product_name}
                           className="h-10 w-10 object-cover rounded"

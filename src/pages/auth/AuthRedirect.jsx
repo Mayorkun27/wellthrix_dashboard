@@ -19,13 +19,13 @@ const AuthRedirect = () => {
 
     const verifyAndRedirect = async () => {
       if (!encryptedToken) {
-        // window.location.href = "http://localhost:5174/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
         return;
       }
 
       const token = decryptToken(decodeURIComponent(encryptedToken));
       if (!token) {
-        // window.location.href = "http://localhost:5174/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
         return;
       }
 
@@ -55,7 +55,7 @@ const AuthRedirect = () => {
         }, 1000);
       } catch (error) {
         console.error("Verification failed", error);
-        // window.location.href = "http://localhost:5174/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
       }
     };
 

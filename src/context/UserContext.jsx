@@ -92,8 +92,8 @@ export const UserProvider = ({ children }) => {
       setMiscellanousDetails([]);
       toast.success("Logged out successfully")
       setTimeout(() => {
-        // window.location.href = "https://wellthrixinternational.com/#/login";
-        window.location.href = "/#/login";
+        // window.location.href = "/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
       }, 500)
       
     } catch (err) {

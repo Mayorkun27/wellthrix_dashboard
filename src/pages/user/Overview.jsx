@@ -214,7 +214,7 @@ const Overview = () => {
           <Link to={"/upgradepackage"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
-      <div className="flex items-center lg:col-span-6 gap-6 h-[40vh]">
+      <div className="flex md:flex-row flex-col items-center lg:col-span-6 gap-6 h-[40vh]">
         {/* New Refs */}
         <div className="lg:my-1 w-1/2 h-full">
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
@@ -249,7 +249,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Digital Products */}
-      <div className="lg:col-span-6 lg:my-1">
+      <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-6 font-semibold'>Digital Links</h3>
           <div className="lg:grid grid-cols-3 flex items-center jstify-between gap-6 overflow-x-scroll no-scrollbar">
@@ -264,7 +264,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Binary Pairing Point */}
-      <div className="lg:col-span-2 lg:my-1">
+      <div hidden className="lg:col-span-2 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='text-lg mb-4 font-semibold'>Binary Pairing Bonus</h3>
           <div className="grid items-center jstify-between gap-2 overflow-x-scroll no-scrollbar">
@@ -277,7 +277,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Rank Award Point */}
-      <div className="lg:col-span-2 lg:my-1">
+      <div hidden className="lg:col-span-2 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='text-lg mb-4 font-semibold'>Rank Award Points</h3>
           <div className="grid items-center jstify-between gap-2 overflow-x-scroll no-scrollbar">
@@ -290,7 +290,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Unilevel Award Point */}
-      <div className="lg:col-span-2 lg:my-1">
+      <div hidden className="lg:col-span-2 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='text-lg mb-4 font-semibold'>Unilevel Award Points</h3>
           <div className="grid items-center jstify-between gap-2 overflow-x-scroll no-scrollbar">
@@ -303,7 +303,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Team Performance */}
-      <div className="lg:col-span-6 lg:my-1">
+      <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-2 font-semibold'>Team Performance</h3>
           <div className="flex overflow-x-scroll gap-10 mb-8 items-center justify-between no-scrollbar">
@@ -332,7 +332,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Earning & Expenses */}
-      <div className="lg:col-span-6 lg:my-1">
+      <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-2 font-semibold'>Earning & Expenses</h3>
           <div className="flex overflow-x-scroll gap-10 mb-8 items-center justify-between no-scrollbar">

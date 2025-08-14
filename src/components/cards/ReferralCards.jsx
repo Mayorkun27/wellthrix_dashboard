@@ -8,7 +8,7 @@ const ReferralCards = ({ user }) => {
     const splittedLastName = splittedName[1].split("")[0]
 
   return (
-    <div className='flex items-end justify-between border'>
+    <div className='flex items-end justify-between'>
         <div className="flex items-center md:gap-3 gap-2">
             <div className="w-[40px] h-[40px] rounded-full border border-pryClr bg-pryClr overflow-hidden flex items-center justify-center font-medium text-secClr">
                 <h3 className='uppercase'>{`${splittedFirstName}${splittedLastName}`}</h3>

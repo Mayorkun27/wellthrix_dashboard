@@ -5,6 +5,7 @@ import { useCart } from "../../context/CartContext";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const ProductCards = ({ product }) => {
 
@@ -26,7 +27,7 @@ const ProductCards = ({ product }) => {
             <div className="bg-white shadow-md rounded-xl md:p-3 p-5 overflow-hidden w-full">
                 <div className="w-full h-[180px] bg-pryClr/15 rounded-lg flex items-center justify-center">
                     <img
-                        src={`${API_URL}/${product.product_image}`}
+                        src={`${IMAGE_BASE_URL}/${product.product_image}`}
                         alt={product.product_name + " image"}
                         className="w-[90%] h-[90%] object-scale-down mx-auto"
                     />

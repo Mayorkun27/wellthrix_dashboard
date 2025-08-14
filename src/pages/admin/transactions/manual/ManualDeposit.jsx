@@ -10,6 +10,7 @@ import ConfirmationDialog from "../../../../components/modals/ConfirmationDialog
 import { TbCancel } from "react-icons/tb";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const ManualDeposit = () => {
     const { token, logout } = useUser();
@@ -164,7 +165,7 @@ const ManualDeposit = () => {
                                           onClick={() => handleImageClick(item.proof_of_payment)}
                                         >
                                             <img 
-                                                src={`${API_URL}/${item.proof_of_payment}`} 
+                                                src={`${IMAGE_BASE_URL}/${item.proof_of_payment}`} 
                                                 alt={`${item.user?.username} deposit proof`} 
                                                 className="w-full h-full object-cover"
                                             />
@@ -244,7 +245,7 @@ const ManualDeposit = () => {
                 <Modal onClose={() => { setShowImageModal(false); setImageToShow(null); }}>
                   <div className="p-4">
                     <img 
-                      src={`${API_URL}/${imageToShow}`} 
+                      src={`${IMAGE_BASE_URL}/${imageToShow}`} 
                       alt="Proof of payment" 
                       className="max-w-full max-h-[80vh] mx-auto" 
                     />
