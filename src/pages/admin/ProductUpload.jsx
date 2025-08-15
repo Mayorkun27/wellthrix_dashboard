@@ -75,16 +75,26 @@ const ProductUpload = () => {
         const formData = new FormData();
         // In edit mode, include existing product data for unchanged fields
         if (editingProduct) {
-          formData.append("product_name", values.product_name?.trim() || editingProduct.product_name?.trim() || "");
-          formData.append("price", values.price != null ? values.price : editingProduct.price != null ? editingProduct.price : 0);
-          formData.append("product_pv", values.product_pv != null ? values.product_pv : editingProduct.product_pv != null ? editingProduct.product_pv : 0);
-          formData.append("in_stock", values.in_stock != null ? values.in_stock : editingProduct.in_stock != null ? editingProduct.in_stock : 0);
-          formData.append("product_description", values.product_description || editingProduct.product_description || "");
+          const productName = values.product_name?.trim() || editingProduct.product_name?.trim() || "";
+          const price = values.price != null && values.price !== "" ? Number(values.price) : Number(editingProduct.price != null ? editingProduct.price : 0);
+          const productPv = values.product_pv != null && values.product_pv !== "" ? Number(values.product_pv) : Number(editingProduct.product_pv != null ? editingProduct.product_pv : 0);
+          const inStock = values.in_stock != null && values.in_stock !== "" ? Number(values.in_stock) : Number(editingProduct.in_stock != null ? editingProduct.in_stock : 0);
+          const description = values.product_description || editingProduct.product_description || "";
+
+          formData.append("product_name", productName);
+          formData.append("price", price);
+          formData.append("product_pv", productPv);
+          formData.append("in_stock", inStock);
+          formData.append("product_description", description);
+
+          // Fallback for possible backend field name variations
+          formData.append("name", productName); // In case backend expects 'name'
+          formData.append("pv", productPv); // In case backend expects 'pv'
         } else {
           formData.append("product_name", values.product_name?.trim() || "");
-          formData.append("price", values.price || 0);
-          formData.append("product_pv", values.product_pv || 0);
-          formData.append("in_stock", values.in_stock || 0);
+          formData.append("price", Number(values.price || 0));
+          formData.append("product_pv", Number(values.product_pv || 0));
+          formData.append("in_stock", Number(values.in_stock || 0));
           formData.append("product_description", values.product_description || "");
         }
 
@@ -104,22 +114,12 @@ const ProductUpload = () => {
           : `${API_URL}/api/products`;
         console.log("Requesting:", endpoint);
 
-        let response;
-        if (editingProduct) {
-          response = await axios.put(endpoint, formData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          });
-        } else {
-          response = await axios.post(endpoint, formData, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          });
-        }
+        const response = await axios.post(endpoint, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         console.log("Product upload/update response:", response.data);
 
@@ -222,10 +222,10 @@ const ProductUpload = () => {
     setEditingProduct(product);
     formik.setValues({
       product_name: product.product_name?.trim() || "",
-      price: product.price != null ? product.price : 0,
-      product_pv: product.product_pv != null ? product.product_pv : 0,
+      price: product.price != null ? product.price : "",
+      product_pv: product.product_pv != null ? product.product_pv : "",
       product_description: product.product_description || "",
-      in_stock: product.in_stock != null ? product.in_stock : 0,
+      in_stock: product.in_stock != null ? product.in_stock : "",
       product_image: null,
     });
     setImagePreview(product.product_image ? `${IMAGE_BASE_URL}/${product.product_image}` : null);
@@ -413,7 +413,7 @@ const ProductUpload = () => {
           <div className="md:col-span-2 col-span-1 text-center">
             <button
               type="submit"
-              disabled={formik.isSubmitting || (!editingProduct && !formik.isValid)}
+              disabled={formik.isSubmitting || (!editingProduct && !formik.isValid) || (!editingProduct && !formik.dirty)}
               className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-[300px] h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {formik.isSubmitting
