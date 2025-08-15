@@ -11,10 +11,10 @@ import Modal from "../../components/modals/Modal";
 import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "";
-const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || "";
 
 const ManageTestimonials = () => {
-  const { token, loading: contextLoading } = useUser(); // Added contextLoading
+  const { token, loading: contextLoading, logout } = useUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [testimonials, setTestimonials] = useState([]);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
@@ -25,7 +25,6 @@ const ManageTestimonials = () => {
   const [error, setError] = useState(null);
   const rowsPerPage = 5;
 
-  // Fallback testimonials
   const fallbackTestimonials = [
     {
       id: "001",
@@ -45,11 +44,27 @@ const ManageTestimonials = () => {
 
   // Form validation schema
   const validationSchema = Yup.object({
-    full_name: Yup.string().required("Name is required"),
-    rating: Yup.string()
-      .required("Rating is required")
-      .matches(/^[1-5]$/, "Rating must be between 1 and 5"),
-    comment: Yup.string().required("Comment is required"),
+    full_name: Yup.string()
+      .trim()
+      .when([], {
+        is: () => !selectedTestimonial,
+        then: (schema) => schema.required("Name is required").min(1, "Name cannot be empty"),
+        otherwise: (schema) => schema.min(0).optional(),
+      }),
+    rating: Yup.number()
+      .when([], {
+        is: () => !selectedTestimonial,
+        then: (schema) => schema.required("Rating is required").min(1, "Rating must be between 1 and 5").max(5, "Rating must be between 1 and 5"),
+        otherwise: (schema) => schema.min(1).max(5).optional(),
+      })
+      .typeError("Rating must be a number"),
+    comment: Yup.string()
+      .trim()
+      .when([], {
+        is: () => !selectedTestimonial,
+        then: (schema) => schema.required("Comment is required").min(1, "Comment cannot be empty"),
+        otherwise: (schema) => schema.min(0).optional(),
+      }),
     image: Yup.mixed().nullable(),
   });
 
@@ -62,6 +77,8 @@ const ManageTestimonials = () => {
       image: null,
     },
     validationSchema,
+    validateOnChange: true,
+    validateOnBlur: true,
     onSubmit: async (values, { resetForm }) => {
       if (!token) {
         setError("Please log in to submit testimonials.");
@@ -74,20 +91,29 @@ const ManageTestimonials = () => {
 
       setSubmitting(true);
       const formData = new FormData();
-      formData.append("full_name", values.full_name);
-      formData.append("rating", values.rating);
-      formData.append("comment", values.comment);
+      formData.append("full_name", values.full_name?.trim() || (selectedTestimonial ? selectedTestimonial.full_name?.trim() : ""));
+      formData.append("rating", values.rating != null && values.rating !== "" ? Number(values.rating) : Number(selectedTestimonial ? selectedTestimonial.rating : 0));
+      formData.append("comment", values.comment?.trim() || (selectedTestimonial ? selectedTestimonial.comment?.trim() : ""));
       if (values.image) {
         formData.append("image", values.image);
       }
 
+      // Debug: Log FormData contents
+      const formDataEntries = {};
+      for (let [key, value] of formData.entries()) {
+        formDataEntries[key] = value instanceof File ? value.name : value;
+      }
+      console.log("FormData contents:", formDataEntries);
+
       try {
-        let url = selectedTestimonial
+        const url = selectedTestimonial
           ? `${API_URL}/api/testimonial/${selectedTestimonial.id}`
           : `${API_URL}/api/testimonial`;
-        const method = selectedTestimonial ? "post" : "post";
+        const method = selectedTestimonial ? "put" : "post";
 
-        let response = await axios({
+        console.log("Requesting:", { method, url });
+
+        const response = await axios({
           method,
           url,
           data: formData,
@@ -97,23 +123,6 @@ const ManageTestimonials = () => {
           },
           timeout: 10000,
         });
-
-        if (response?.code === "ERR_NETWORK") {
-          console.log("Retrying with alternative endpoint: /api/testimonial");
-          url = selectedTestimonial
-            ? `${API_URL}/api/testimonial/${selectedTestimonial.id}`
-            : `${API_URL}/api/testimonial`;
-          response = await axios({
-            method,
-            url,
-            data: formData,
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-            timeout: 10000,
-          });
-        }
 
         console.log("Submit response:", response.data);
 
@@ -137,7 +146,18 @@ const ManageTestimonials = () => {
         let errorMessage = selectedTestimonial
           ? "Failed to update testimonial."
           : "Failed to create testimonial.";
-        if (err.response?.status === 500) {
+        if (err.response?.status === 401) {
+          errorMessage = "Unauthorized: Please log in again.";
+          logout();
+          toast.error(errorMessage, { duration: 3000 });
+          setTimeout(() => {
+            window.location.hash = '#/login';
+          }, 3000);
+        } else if (err.response?.status === 422) {
+          const errorMessages = Object.values(err.response.data.errors || {}).flat().join(", ");
+          errorMessage = errorMessages || errorMessage;
+          toast.error(errorMessage, { duration: 3000 });
+        } else if (err.response?.status === 500) {
           errorMessage = "Server error: Please contact support.";
           toast.error(errorMessage, { duration: 3000 });
         } else if (err.code === "ECONNABORTED") {
@@ -152,6 +172,7 @@ const ManageTestimonials = () => {
         } else {
           toast.error(errorMessage, { duration: 3000 });
         }
+        setError(errorMessage);
       } finally {
         setSubmitting(false);
       }
@@ -164,17 +185,23 @@ const ManageTestimonials = () => {
   };
 
   const handleEdit = (testimonial) => {
+    console.log("Editing testimonial:", testimonial);
     setSelectedTestimonial(testimonial);
     formik.setValues({
-      full_name: testimonial.full_name,
-      rating: testimonial.rating.toString(),
-      comment: testimonial.comment,
+      full_name: testimonial.full_name?.trim() || "",
+      rating: testimonial.rating != null ? testimonial.rating.toString() : "",
+      comment: testimonial.comment?.trim() || "",
       image: null,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const fetchTestimonials = async (retries = 1, delay = 1000) => {
+  const handleCancelEdit = () => {
+    setSelectedTestimonial(null);
+    formik.resetForm();
+  };
+
+  const fetchTestimonials = async (retries = 2, delay = 1000) => {
     if (!token) {
       setError("Please log in to access testimonials.");
       setTestimonials(fallbackTestimonials);
@@ -194,43 +221,30 @@ const ManageTestimonials = () => {
         throw new Error("API base URL is not defined. Check your .env file.");
       }
 
-      console.log("API_URL:", API_URL); // Log API_URL for debugging
-      let response = await axios.get(`${API_URL}/api/testimonial`, {
+      console.log("Fetching testimonials from:", `${API_URL}/api/testimonial`);
+      console.log("Using token:", token);
+
+      const response = await axios.get(`${API_URL}/api/testimonial`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        timeout: 5000,
+        timeout: 10000,
       });
+let dataa = response.data.data || [];
+let data = dataa.data;
 
-      if (response?.code === "ERR_NETWORK") {
-        console.log("Retrying with alternative endpoint: /api/testimonial");
-        response = await axios.get(`${API_URL}/api/testimonial`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 5000,
-        });
-      }
 
-      const data = response.data.data || response.data;
-      console.log("Fetched testimonials:", data);
 
-      if (!Array.isArray(data)) {
-        throw new Error("Invalid response format: Expected an array of testimonials");
-      }
+      const mappedData = data.map((testimonial) => ({
+        id: testimonial.id,
+        full_name: testimonial.full_name?.trim() || "",
+        rating: parseInt(testimonial.rating, 10) || 0,
+        comment: testimonial.comment?.trim() || "",
+        image: testimonial.image ? `${IMAGE_BASE_URL}/${testimonial.image}` : null,
+      }));
 
-      const mappedData = data.map((testimonial) => {
-        console.log("Testimonial image:", testimonial.image); // Log image URL
-        return {
-          id: testimonial.id,
-          full_name: testimonial.full_name,
-          rating: parseInt(testimonial.rating, 10),
-          comment: testimonial.comment,
-          image: testimonial.image, // Keep as-is for now
-        };
-      });
+      console.log("Mapped testimonials:", mappedData);
 
       setTestimonials(mappedData);
     } catch (err) {
@@ -243,6 +257,7 @@ const ManageTestimonials = () => {
       let errorMessage = "Failed to fetch testimonials. Please try again later.";
       if (err.response?.status === 401) {
         errorMessage = "Unauthorized: Please log in again.";
+        logout();
         toast.error(errorMessage, { duration: 3000 });
         setTimeout(() => {
           window.location.hash = '#/login';
@@ -263,13 +278,9 @@ const ManageTestimonials = () => {
         toast.error(errorMessage, { duration: 3000 });
       }
 
-      if (retries > 0 && err.code !== "ECONNABORTED" && !err.message.includes("ERR_CERT") && err.code !== "ERR_NETWORK") {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return fetchTestimonials(retries - 1, delay * 2);
-      }
-
       setError(errorMessage);
       setTestimonials(fallbackTestimonials);
+     let contextLoading = null;
     } finally {
       setLoading(false);
     }
@@ -281,7 +292,7 @@ const ManageTestimonials = () => {
         fetchTestimonials();
       }
     }
-  }, [API_URL, token, contextLoading]);
+  }, [token, contextLoading]);
 
   const totalPages = Math.ceil(testimonials.length / rowsPerPage);
 
@@ -307,28 +318,15 @@ const ManageTestimonials = () => {
   const confirmDelete = async () => {
     try {
       setError(null);
-      let response = await axios.delete(
+      const response = await axios.delete(
         `${API_URL}/api/testimonial/${testimonialToDelete}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          timeout: 5000,
+          timeout: 10000,
         }
       );
-
-      if (response?.code === "ERR_NETWORK") {
-        console.log("Retrying with alternative endpoint: /api/testimonial");
-        response = await axios.delete(
-          `${API_URL}/api/testimonial/${testimonialToDelete}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            timeout: 5000,
-          }
-        );
-      }
 
       console.log(`Deleted testimonial with ID: ${testimonialToDelete}`, response.data);
       setTestimonials(testimonials.filter((t) => t.id !== testimonialToDelete));
@@ -345,6 +343,7 @@ const ManageTestimonials = () => {
       let errorMessage = "Failed to delete testimonial.";
       if (err.response?.status === 401) {
         errorMessage = "Unauthorized: Please log in again.";
+        logout();
         toast.error(errorMessage, { duration: 3000 });
         setTimeout(() => {
           window.location.hash = '#/login';
@@ -387,7 +386,10 @@ const ManageTestimonials = () => {
                 name="full_name"
                 id="full_name"
                 value={formik.values.full_name}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  console.log("Full name changed:", e.target.value);
+                }}
                 onBlur={formik.handleBlur}
                 className="border border-pryClr w-full h-[46px] rounded-lg outline-0 indent-3"
               />
@@ -404,7 +406,10 @@ const ManageTestimonials = () => {
                 id="rating"
                 name="rating"
                 value={formik.values.rating}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  formik.handleChange(e);
+                  console.log("Rating changed:", e.target.value);
+                }}
                 onBlur={formik.handleBlur}
                 className={`w-full p-3 border border-pryClr outline-0 rounded-lg ${formik.touched.rating && formik.errors.rating
                   ? "border-red-500"
@@ -431,7 +436,10 @@ const ManageTestimonials = () => {
               name="comment"
               id="comment"
               value={formik.values.comment}
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                formik.handleChange(e);
+                console.log("Comment changed:", e.target.value);
+              }}
               onBlur={formik.handleBlur}
               rows={5}
               className="border border-pryClr w-full rounded-lg outline-0 p-3 resize-none no-scrollbar"
@@ -442,7 +450,7 @@ const ManageTestimonials = () => {
           </div>
           <div className="space-y-1 mt-4 mb-10">
             <label className="text-sm font-semibold mb-2" htmlFor="image">
-              Image
+              Image {selectedTestimonial && "(Upload new image to replace current)"}
             </label>
             <div className="border border-dashed border-pryClr rounded p-10 w-full">
               <label className="flex flex-col items-center justify-center cursor-pointer">
@@ -458,6 +466,8 @@ const ManageTestimonials = () => {
                   <span className="text-pryClr text-sm">
                     {formik.values.image
                       ? formik.values.image.name
+                      : selectedTestimonial && selectedTestimonial.image
+                      ? "Current image set"
                       : "No file chosen"}
                   </span>
                 </div>
@@ -472,18 +482,28 @@ const ManageTestimonials = () => {
               </label>
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={submitting}
-            className={`bg-pryClr text-white px-4 py-2 rounded-lg hover:bg-pryClr/80 ${submitting ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-          >
-            {submitting
-              ? "Processing"
-              : selectedTestimonial
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              disabled={submitting || (!selectedTestimonial && !formik.isValid) || (!selectedTestimonial && !formik.dirty)}
+              className={`bg-pryClr text-white px-4 py-2 rounded-lg hover:bg-pryClr/80 ${submitting ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              {submitting
+                ? "Processing"
+                : selectedTestimonial
                 ? "Update Testimonial"
                 : "Create Testimonial"}
-          </button>
+            </button>
+            {selectedTestimonial && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
         </form>
       </div>
       <div className="lg:mt-20 mt-15">
@@ -528,13 +548,12 @@ const ManageTestimonials = () => {
                         <td className="lg:p-5 p-3 text-left">
                           <div className="w-[60px] h-[60px]">
                             <img
-                              src={`${IMAGE_BASE_URL}/${t.image}`}
-                              alt={t.name}
+                              src={t.image || "https://via.placeholder.com/150?text=Image+Not+Found"}
+                              alt={t.full_name}
                               className="w-full h-full object-cover rounded-full"
-                            />
+                               />
                           </div>
                         </td>
-
                         <td className="lg:p-5 p-3 text-left">
                           <div className="flex gap-3">
                             <button
@@ -579,12 +598,12 @@ const ManageTestimonials = () => {
 
           {showDeleteModal && (
             <Modal
-              onClose={() => setShowDeleteModal(false)} 
+              onClose={() => setShowDeleteModal(false)}
               className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 pointer-events-none"
             >
-              <ConfirmationDialog 
+              <ConfirmationDialog
                 title="Confirm Delete"
-                message={"Are you sure you want to delete this testimonial?"}
+                message="Are you sure you want to delete this testimonial?"
                 onConfirm={confirmDelete}
                 onCancel={() => setShowDeleteModal(false)}
               />
