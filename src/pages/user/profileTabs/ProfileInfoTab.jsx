@@ -21,9 +21,9 @@ const ProfileInfoTab = () => {
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
 
   const statItems = [
-    { id: 1, icon: assets.pic1, title: 'Personal PV', value: user?.total_pv },
-    { id: 3, icon: assets.pic3, title: 'Left Carry', value: miscellaneousDetails?.totalPVLeft },
-    { id: 4, icon: assets.pic4, title: 'Right Carry', value: miscellaneousDetails?.totalPVRight },
+    { id: 1, icon: assets.pic1, title: 'Total PV', value: user?.total_pv },
+    { id: 3, icon: assets.pic3, title: 'Left PV', value: miscellaneousDetails?.totalPVLeft },
+    { id: 4, icon: assets.pic4, title: 'Right PV', value: miscellaneousDetails?.totalPVRight },
   ];
 
   return (

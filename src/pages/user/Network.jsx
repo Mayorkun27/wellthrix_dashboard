@@ -5,6 +5,7 @@ import { CiMaximize1, CiMinimize1 } from "react-icons/ci";
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { Button, Popover } from "flowbite-react";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -18,7 +19,7 @@ const Network = () => {
   const [referralData, setReferralData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchStepsSummary = async () => {
+  const fetchGenealogyTree = async () => {
     setIsLoading(true)
     try {
       const response = await axios.get(`${API_URL}/api/referrals/genealogy-tree`, {
@@ -49,7 +50,7 @@ const Network = () => {
   }
 
   useEffect(() => {
-    fetchStepsSummary()
+    fetchGenealogyTree()
   }, [token])
 
   const canvaRef = useRef(null);
@@ -104,7 +105,22 @@ const Network = () => {
   };
 
   const ReferralCard = ({ user, isExpanded, onToggle, hasChildren }) => (
-    <div className={`bg-white thiscard rounded-xl transition-all duration-300 py-3 w-[200px] relative text-sm`}>
+    <div 
+      title={`View ${user.username} info`}
+      className={`bg-white cursor-pointer thiscard rounded-xl transition-all duration-300 py-3 w-[200px] relative text-sm`}
+    >
+      <Popover
+        placement="bottom"
+        trigger="click"
+        content={
+          <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
+            <h4 className="font-semibold mb-2">Popover title</h4>
+            <p>Any JSX goes here — inputs, links, etc.</p>
+          </div>
+        }
+      >
+        <Button>Toggle Popover</Button>
+      </Popover>
       <div className="flex flex-col items-center">
         <div className="md:w-11 w-10 md:h-11 h-10 mb-2 rounded-full border-2 border-pryClr bg-pryClr/20 overflow-hidden uppercase font-bold flex items-center justify-center">
           <h3>{`${user?.fullname?.split(" ")[0].split("")[0]}${user?.fullname?.split(" ")[1].split("")[0]}`}</h3>

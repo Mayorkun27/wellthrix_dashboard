@@ -40,7 +40,7 @@ const StepFive = ({ prevStep, formData, updateFormData, sessionId }) => {
         toast.success(response.data.message || "Registration completed successfully.", { id: toastId });
         updateFormData(null);
         setTimeout(() => {
-          navigate("/user/network");
+          navigate("/user/overview");
         }, 2000);
       } else {
         throw new Error(response.data.message || "Registration completion failed.");
