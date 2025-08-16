@@ -35,7 +35,7 @@ const ElectricityPurchase = ({ onProceed }) => {
         setElectricityCompanies(response.data.discos);
       }
     } catch (error) {
-      if (error.response.data.message.toLowerCase() == "unauthenticated") {
+      if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
         logout();
       }
       console.error("An error occured getting electricity companies", error);

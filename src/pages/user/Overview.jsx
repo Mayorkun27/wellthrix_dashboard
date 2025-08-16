@@ -32,7 +32,7 @@ const Overview = () => {
 
   const [referrals, setReferrals] = useState([])
 
-  const { user, token, logout, refreshUser, miscellanousDetails } = useUser()
+  const { user, token, logout, refreshUser, miscellaneousDetails } = useUser()
 
   useEffect(() => {
     if (token) {
@@ -42,7 +42,6 @@ const Overview = () => {
   
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
-
 
   const overviews = [
     {
@@ -193,6 +192,7 @@ const Overview = () => {
     },
   ]
 
+
   return (
     <div className='grid lg:grid-cols-6 grid-cols-1 gap-6 items-'>
       {/* Overviews */}
@@ -206,17 +206,17 @@ const Overview = () => {
       {/* Profile */}
       <div className="lg:col-span-2 flex lg:flex-col md:flex-row flex-col gap-4 items-center lg:justify-center justify-evenly lg:my-1">
         <div className="shadow-md lg:w-[150px] md:w-[250px] lg:h-[150px] md:h-[250px] w-[200px] h-[200px] rounded-full bg-accClr overflow-hidden flex items-center justify-center">
-          <h3 className='md:text-6xl text-6xl text-pryClr font-extrabold capitalize'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
+          <h3 className='md:text-6xl text-6xl text-pryClr font-extrabold uppercase'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
         </div>
         <div className="flex flex-col items-center">
           <h3 className='font-bold'>@{user?.username}</h3>
-          <p>Package: <span className='font-bold uppercase'>{miscellanousDetails[0].planDetails[0]?.name}</span></p>
-          <Link to={"/upgradepackage"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
+          <p>Package: <span className='font-bold uppercase'>{miscellaneousDetails?.planDetails?.name}</span></p>
+          <Link to={"/user/upgrade"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
-      <div className="flex md:flex-row flex-col items-center lg:col-span-6 gap-6 h-[40vh]">
+      <div className="flex md:flex-row flex-col items-center lg:col-span-6 gap-6 lg:">
         {/* New Refs */}
-        <div className="lg:my-1 w-1/2 h-full">
+        <div className="lg:my-1 md:w-1/2 w-full h-full">
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
             <h3 className='md:text-xl text-lg mb-3 font-semibold'>New members</h3>
             <div className="grid gap-4">
@@ -239,7 +239,7 @@ const Overview = () => {
           </div>
         </div>
         {/* Announcement Board */}
-        <div className="lg:my-1 w-1/2 h-full">
+        <div className="lg:my-1 md:w-1/2 w-full h-full">
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
             <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
             <div className="h-[80%] overflow-y-scroll pe-2 styled-scrollbar">

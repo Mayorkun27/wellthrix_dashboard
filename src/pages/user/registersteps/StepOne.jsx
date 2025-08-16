@@ -184,6 +184,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
       toast.success('Registration initialized successfully!', { id: toastId });
       await handleSubmit(newSessionId);
     } catch (error) {
+      console.error("error", error)
       if (error.response?.data?.message?.includes('unauthenticated')) logout();
       toast.error(error.response?.data?.message || 'Failed to initialize registration.', { id: toastId });
       setIsSubmitting(false);

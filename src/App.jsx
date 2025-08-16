@@ -31,6 +31,7 @@ import UpgradePackage from "./pages/user/UpgradePackage";
 import Ranking from "./pages/admin/Ranking";
 import ManageMilestones from "./pages/admin/bonuses/ManageMilestones";
 import Subscribers from "./pages/admin/Subscribers";
+import Loading from "./pages/auth/Loading";
 
 function App() {
   const { user } = useUser();
@@ -39,6 +40,7 @@ function App() {
     <>
       <Toaster />
       <Routes>
+        <Route path="/load" element={<Loading />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth-redirect" element={<AuthRedirect />} />
 
@@ -147,7 +149,7 @@ function App() {
           path="/admin/managetransactions"
           element={
             <MainLayout
-              pageName={"Transactions"}
+              pageName={"Manage Transactions"}
               child={<ManageTransactions />}
             />
           }
@@ -214,7 +216,6 @@ function App() {
           path="/admin/ranking"
           element={<MainLayout pageName={"Ranking"} child={<Ranking />} />}
         />
-        <Route path='/upgradepackage' element={<MainLayout pageName={"Upgrade Package"} child={<UpgradePackage />} />}/>
       </Routes>
     </>
   );

@@ -41,14 +41,14 @@ const Deposit = () => {
               'fileType',
               'Unsupported file format. Only JPG, JPEG, and PNG are allowed.',
               (value) => {
-                return value && (value.type === 'image/jpeg' || value.type === 'image/png');
+                return value && (value.type === 'image/jpeg' || value.type === 'image/png' || value.type === 'image/jpg');
               }
             )
             .test(
               'fileSize',
-              'File size is too large. Max size is 5MB.',
+              'File size is too large. Max size is 1MB.',
               (value) => {
-                return value && value.size <= 5 * 1024 * 1024;
+                return value && value.size <= 1 * 1024 * 1024;
               }
             ),
           otherwise: (schema) => schema.notRequired().nullable(),
@@ -96,7 +96,7 @@ const Deposit = () => {
           throw new Error(response.data.message || "An error occurred during deposit.");
         }
       } catch (error) {
-        if (error.response?.data?.message?.toLowerCase() === "unauthenticated") {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
           logout();
         }
         console.error("An error occurred initiating deposit", error);

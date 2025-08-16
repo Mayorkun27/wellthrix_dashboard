@@ -240,7 +240,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
         }
         
       } catch (error) {
-        if (error.response.data.message.toLowerCase() == "unauthenticated") {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
           logout()
         }
         console.error("An error occured fetching stockists", error)
@@ -519,7 +519,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
               <option value='' disabled>Select Stockist</option>
               {
                 stockists.map((item) => (
-                  <option key={item.id} value={item.id}>{item.username} at {item.address1}</option>
+                  <option key={item.id} value={item.id}>{item?.username} &#40;{item?.stockist_location || (item?.stockist_location+" "+item?.stockist_location)}&#41;</option>
                 ))
               }
             </select>

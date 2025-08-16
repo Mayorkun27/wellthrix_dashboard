@@ -78,8 +78,8 @@ const ProductsPurchaseHistory = () => {
                                             {item.order.delivery === "success" ? "Successful" : item.order.delivery === "failed" ? "Failed" : "Pending"}
                                         </div>
                                     </td>
-                                    <td className="p-4 capitalize">{item.stockist?.name  || "-"}</td>
-                                    <td className="p-4 capitalize">{item.stockist?.location  || "-"}</td>
+                                    <td className="p-4 capitalize">{`${item.order?.stockist?.first_name} ${item.order?.stockist?.last_name}`  || "-"}</td>
+                                    <td className="p-4 capitalize">{item.order?.stockist?.stockist_location  || "-"}</td>
                                     <td className="p-4 text-sm text-pryClr font-semibold">
                                         {formatISODateToCustom(item.created_at)}
                                     </td>

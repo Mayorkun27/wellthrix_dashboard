@@ -50,7 +50,20 @@ const ManageTestimonials = () => {
       .required("Rating is required")
       .matches(/^[1-5]$/, "Rating must be between 1 and 5"),
     comment: Yup.string().required("Comment is required"),
-    image: Yup.mixed().nullable(),
+    image: Yup.mixed()
+      .nullable()
+      .test(
+        "fileType",
+        "Unsupported file format. Only JPG, JPEG, and PNG are allowed.",
+        (value) =>
+          !value ||
+          ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
+      )
+      .test(
+        "fileSize",
+        "File size is too large. Max size is 1MB.",
+        (value) => !value || value.size <= 1 * 1024 * 1024
+      ),
   });
 
   // Formik setup

@@ -6,13 +6,12 @@ import { useLocation } from 'react-router-dom';
 import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-const PS_SK = import.meta.env.VITE_PAYSTACK_SECRET_KEY;
 
 const ProfileInfoTab = () => {
   const searchParams = new URLSearchParams(useLocation().search);
   const comeToEditBank = searchParams.get("setbank");
 
-  const { user, miscellanousDetails, refreshUser } = useUser()
+  const { user, miscellaneousDetails, refreshUser } = useUser()
 
   useEffect(() => {
     refreshUser()
@@ -22,10 +21,9 @@ const ProfileInfoTab = () => {
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
 
   const statItems = [
-    { id: 1, icon: assets.pic1, title: 'Personal PV', value: '500' },
-    { id: 2, icon: assets.pic2, title: 'Group PV', value: '700' },
-    { id: 3, icon: assets.pic3, title: 'Left Camry', value: '800' },
-    { id: 4, icon: assets.pic4, title: 'Right Camry', value: '200' },
+    { id: 1, icon: assets.pic1, title: 'Personal PV', value: user?.total_pv },
+    { id: 3, icon: assets.pic3, title: 'Left Carry', value: miscellaneousDetails?.totalPVLeft },
+    { id: 4, icon: assets.pic4, title: 'Right Carry', value: miscellaneousDetails?.totalPVRight },
   ];
 
   return (
@@ -54,9 +52,9 @@ const ProfileInfoTab = () => {
             <p className='md:text-lg mb-2'><span className='font-semibold'>Username: </span>{user?.username}</p>
           </div>
           <div className='w-full border-b-3 border-white flex justify-between items-center'>
-            <p className='md:text-lg mb-2'><span className='font-semibold'>Package: </span>{miscellanousDetails[0].planDetails[0]?.name}</p>
+            <p className='md:text-lg mb-2'><span className='font-semibold capitalize'>Package: </span>{miscellaneousDetails?.planDetails?.name}</p>
             <Link
-              to="/upgradepackage"
+              to="/user/upgrade"
               className="flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg"
             >
               <p>Upgrade</p>
@@ -69,15 +67,17 @@ const ProfileInfoTab = () => {
         </div>
       </div>
 
-      <div className='w-full rounded-lg py-8 md:pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+      <div className='w-full rounded-lg py-8 md:pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {statItems.map((item) => (
           <div
             key={item.id}
-            className='w-full gap-1 flex flex-col items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-6 justify-center text-center'
+            className='w-full gap-2 flex flex-row items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-4'
           >
-            <img src={item.icon} className='w-24 mb-4' alt={item.title} />
-            <p className='text-xl text-white md:text-xl'>{item.title}</p>
-            <p className='text-5xl md:text-5xl'>{item.value}</p>
+            <img src={item.icon} className='w-12' alt={item.title} />
+            <div className="flex flex-col">
+              <p className='md:text-base text-sm text-white'>{item.title}</p>
+              <p className='text-5xl md:text-5xl'>{item.value}</p>
+            </div>
           </div>
         ))}
       </div>

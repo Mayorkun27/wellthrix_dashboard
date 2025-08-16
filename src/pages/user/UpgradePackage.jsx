@@ -25,11 +25,15 @@ const packageIcons = {
 };
 
 const UpgradePackage = () => {
-  const { user, token, logout } = useUser();
+  const { user, token, logout, refreshUser } = useUser();
   const [packages, setPackages] = useState([]);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPackage, setCurrentPackage] = useState(null);
+
+  useEffect(() => {
+    refreshUser();
+  }, [])
 
   // Fetch all packages
   const fetchPackages = async () => {

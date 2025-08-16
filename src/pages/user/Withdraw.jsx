@@ -10,6 +10,7 @@ import { BsWallet2 } from "react-icons/bs";
 import Modal from "../../components/modals/Modal";
 import { MdArrowOutward, MdPayment } from "react-icons/md";
 import assets from "../../assets/assests";
+import { GiWallet } from "react-icons/gi";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -37,10 +38,14 @@ const Withdraw = () => {
       amount: Yup.number()
         .required("Amount is required")
         .min(100, "Minimum withdrawal amount is 100")
-        .max(user?.incentive_wallet, "Insufficient funds in your incentive wallet"),
+        .when('withdraw_from', {
+            is: 'incentive_wallet',
+            then: (schema) => schema.max(user?.incentive_wallet, 'Insufficient incentive wallet balance!'),
+            otherwise: (schema) => schema.max(user?.earning_wallet, 'Insufficient earning Wallet balance!')
+        }),
       withdraw_from: Yup.string()
         .required("Wallet to withdraw from is required")
-        .oneOf(["incentive_wallet"], "Only incentive wallet is available for withdrawal"),
+        .oneOf(["incentive_wallet", "earning_wallet"], "Select a valid wallet to withdraw from"),
       bank_name: Yup.string()
         .required("Bank Name is required"),
       account_number: Yup.string()
@@ -79,7 +84,7 @@ const Withdraw = () => {
           throw new Error(response.data.message || "An error occurred during withdrawal.");
         }
       } catch (error) {
-        if (error.response?.data?.message?.toLowerCase() === "unauthenticated") {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
           logout();
         }
         console.error("An error occurred initiating withdrawal", error);
@@ -109,7 +114,7 @@ const Withdraw = () => {
   return (
     <>
       <div className="space-y-6">
-        <div className="md:w-1/2 w-full">
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
           <OverviewCards
             amount={user?.incentive_wallet || 0}
             icon={
@@ -118,6 +123,15 @@ const Withdraw = () => {
               </div>
             }
             walletType={"Incentive Wallet"}
+          />
+          <OverviewCards
+            amount={user?.earning_wallet || 0}
+            icon={
+              <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+                <GiWallet />
+              </div>
+            }
+            walletType={"Earnings Wallet"}
           />
         </div>
         <div className="shadow-sm rounded-xl bg-white space-y-4 overflow-x-auto md:p-8 p-6">
@@ -133,6 +147,7 @@ const Withdraw = () => {
           <form 
             onSubmit={(e) => {
               e.preventDefault();
+              formik.validateForm()
               setShowPinModal(true);
             }}
             className="grid md:grid-cols-2 grid-cols-1 lg:gap-x-8 lg:gap-y-4 gap-6"
@@ -193,6 +208,25 @@ const Withdraw = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="md:col-span-2 space-y-2">
+              <label htmlFor="withdraw_from" className='text-sm mb-4'>Withdraw from</label>
+              <select
+                  id="withdraw_from"
+                  name="withdraw_from"
+                  value={formik.values.withdraw_from}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  defaultValue={""}
+                  className={`w-full p-3 border rounded-lg ${formik.touched.withdraw_from && formik.errors.withdraw_from ? 'border-red-500' : 'border-gray-300'} outline-0`}
+              >
+                  <option value="" disabled>Select target wallet</option>
+                  <option value="incentive_wallet">Incentive Wallet</option>
+                  <option value="earning_wallet">Earning Wallet</option>
+              </select>
+              {formik.touched.withdraw_from && formik.errors.withdraw_from && (
+                  <div className='text-red-500 text-sm'>{formik.errors.withdraw_from}</div>
+              )}
             </div>
             <div className="w-full space-y-2">
               <label htmlFor="amount" className="text-sm mb-4">Amount</label>
@@ -263,7 +297,7 @@ const Withdraw = () => {
             <div className="md:col-span-2 col-span-1 text-center">
               <button
                 type="submit"
-                disabled={formik.isSubmitting}
+                disabled={formik.isSubmitting || !formik.isValid}
                 className={`mt-8 bg-pryClr text-white capitalize text-sesm lg:w-1/2 w-[300px] h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 withdraw

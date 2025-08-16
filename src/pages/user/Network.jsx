@@ -111,9 +111,9 @@ const Network = () => {
         </div>
         <h3 className="font-semibold text-black/80 text-center my-2 leading-0">@{user.username}</h3>
         <small className="flex items-center gap-2 font-semibold text-pryClr">
-          <span>Left: {user.left ? 1 : 0}</span>
+          <span>Left: {user.left_count}</span>
           <hr className='h-3 border-0 border-r-2' />
-          <span>Right: {user.right ? 1 : 0}</span>
+          <span>Right: {user.right_count}</span>
         </small>
         {isExpanded && <div className="absolute left-1/2 -translate-x-1/2 -bottom-7 w-[2px] h-8 bg-black -z-1"></div>}
         {hasChildren && (

@@ -119,10 +119,10 @@ const MainLayout = ({ child, pageName, subText }) => {
       </div>
 
       <div className='lg:w-3/4 w-full overflow-hidden bg-pryClr/20 pt-4'>
-        <div className="flex gap-2 sticky top-0 z-10 items-center md:px-6 px-4">
+        <div className="flex gap-2 sticky top-0 z-10 md:items-center items-start md:px-6 px-4">
           <button
             type='button'
-            className='lg:hidden inline-block'
+            className='lg:hidden inline-block md:hidden mt-1'
             onClick={() => setIsOpen(true)}
           >
             <HiBars3 size={30} />

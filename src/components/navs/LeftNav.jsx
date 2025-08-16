@@ -137,7 +137,7 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
             path: '/stockist/managestockist',
-            role: ["user", "admin"]
+            role: ["user"]
         },
         {
             name: 'Loyalty Bonus',
@@ -160,7 +160,7 @@ const LeftNav = ({ setIsOpen }) => {
     ];
 
     const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
-console.log("user?.plan", user?.plan)
+    
     return (
       <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full md:pt-4 pt-8 flex flex-col gap-'>
         <div className="flex items-center justify-center">

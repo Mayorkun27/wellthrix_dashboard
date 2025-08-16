@@ -7,6 +7,7 @@
 // import { FaTrashAlt } from "react-icons/fa";
 // import Modal from "../../../components/modals/Modal";
 // import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
+// import { GoUnlink } from "react-icons/go";
 
 // const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -19,7 +20,10 @@
 //     const [perPage, setPerPage] = useState(5);
 //     const [showDeleteModal, setShowDeleteModal] = useState(false);
 //     const [showStockistEnableConfirmModal, setShowStockistEnableConfirmModal] = useState(false);
-//     const [userToDelete, setUserToDelete] = useState(null);
+//     const [isEnabling, setIsEnabling] = useState(false);
+//     const [selectedUserForAction, setSelectedUserForAction] = useState(null);
+//     const [selectedPlan, setSelectedPlan] = useState("");
+//     const [selectedLocation, setSelectedLocation] = useState("");
 
 //     const fetchAllUsers = async () => {
 //         setIsLoading(true);
@@ -61,19 +65,19 @@
 //         fetchAllUsers();
 //     }, [user?.id, token, currentPage]);
 
-//     const handleDeleteUser = async (user) => {
+//     const handleDeleteUser = (user) => {
 //         setShowDeleteModal(true);
-//         setUserToDelete(user);
+//         setSelectedUserForAction(user);
 //     };
 
 //     const confirmDelete = async () => {
-//         if (!userToDelete.id) return;
+//         if (!selectedUserForAction?.id) return;
 
 //         const toastId = toast.loading("Deleting user...");
 //         setShowDeleteModal(false);
 
 //         try {
-//             const response = await axios.delete(`${API_URL}/api/deleteuser/${userToDelete.id}`, {
+//             const response = await axios.delete(`${API_URL}/api/deleteuser/${selectedUserForAction.id}`, {
 //                 headers: {
 //                     "Authorization": `Bearer ${token}`,
 //                     "Content-Type": "application/json"
@@ -93,9 +97,53 @@
 //             console.error("user deletion error:", error);
 //             toast.error(error.response?.data?.message || "An error occurred deleting the user.", { id: toastId });
 //         } finally {
-//             setUserToDelete(null);
+//             setSelectedUserForAction(null);
 //         }
 //     };
+
+//     const handleEnableStockist = (user) => {
+//         setShowStockistEnableConfirmModal(true);
+//         setSelectedUserForAction(user);
+//     };
+
+//     const confirmEnable = async () => {
+//         if (!selectedUserForAction?.id) return;
+//         setIsEnabling(true)
+
+//         const payLoad = {
+//             "stockist_plan": selectedPlan,
+//             "stockist_location": selectedLocation,
+//         }
+
+//         const toastId = toast.loading(`Enabling ${selectedUserForAction.username} as stockist...`);
+        
+//         try {
+//             const response = await axios.post(`${API_URL}/api/users/${selectedUserForAction.id}/enable-stockist`, payLoad, {
+//                 headers: {
+//                     "Authorization": `Bearer ${token}`,
+//                     "Content-Type": "application/json"
+//                 }
+//             });
+
+//             if (response.status === 200) {
+//                 toast.success(response.data.message || `${selectedUserForAction.username} is now a stockist!`, { id: toastId });
+//                 fetchAllUsers();
+//             } else {
+//                 throw new Error(response.data.message || "Failed to enable stockist.");
+//             }
+//         } catch (error) {
+//             if (error.response?.data?.message?.includes("unauthenticated")) {
+//                 logout();
+//             }
+//             console.error("Enable stockist error:", error);
+//             toast.error(error.response?.data?.message || "An error occurred enabling stockist.", { id: toastId });
+//         } finally {
+//             setShowStockistEnableConfirmModal(false);
+//             setIsEnabling(false);
+//             setSelectedUserForAction(null)
+//         }
+//     };
+
 
 //     return (
 //         <div className="shadow-sm rounded bg-white overflow-x-auto">
@@ -107,8 +155,8 @@
 //                         <th className="p-5">Email</th>
 //                         <th className="p-5">Username</th>
 //                         <th className="p-5">Phone</th>
-//                         <th className="p-5">Status</th>
 //                         <th className="p-5">Stockist Enabled</th>
+//                         <th className="p-5">Account Status</th>
 //                         <th className="p-5">Date Joined</th>
 //                         <th className="p-5">Action</th>
 //                     </tr>
@@ -116,7 +164,7 @@
 //                 <tbody>
 //                     {isLoading ? (
 //                         <tr>
-//                             <td colSpan="8" className="text-center p-8">Loading...</td>
+//                             <td colSpan="9" className="text-center p-8">Loading...</td> {/* Adjusted colspan */}
 //                         </tr>
 //                     ) : allUsers.length > 0 ? (
 //                         allUsers.map((item, index) => {
@@ -132,19 +180,23 @@
 //                                     <td className="p-4">{item.username || "-"}</td>
 //                                     <td className="p-4 capitalize">{item.mobile || "-"}</td>
 //                                     <td className="p-4 capitalize">
-//                                         <div className={`w-[100px] py-2 ${item.enabled === 1 ? "bg-[#dff7ee]/80 text-pryclr" : "bg-[#c51236]/20 text-red-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
-//                                             {item.enabled === 1 ? "Active" : "Inactive"}
-//                                         </div>
+//                                         <button
+//                                             type="button"
+//                                             className="bg-accClr w-[100px] h-[40px] rounded font-semibold cursor-pointer text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+//                                             onClick={() => handleEnableStockist(item)}
+//                                             disabled={item.stockist_enabled === 1}
+//                                         >
+//                                             {item.stockist_enabled === 1 ? "Enabled" : "Enable"}
+//                                         </button>
 //                                     </td>
 //                                     <td className="p-4 capitalize">
-//                                         <input 
-//                                             type="checkbox" 
-//                                             name="" 
-//                                             id="" 
-//                                             className="w-[25px] h-[25px] accent-accClr"
-//                                             checked={item.stockist_enabled === 0 ? false : true}
-//                                             disabled={item.stockist_enabled === 0 ? false : true}
-//                                         />
+//                                         <button
+//                                             type="button"
+//                                             className={`w-[100px] h-[40px] rounded-md font-semibold cursor-pointer text-xs disabled:opacity-50 disabled:cursor-not-allowed border border-pryClr/20 ${item.enabled === 1 ? "bg-[#e5f9f1] hover:bg-[#e5e7eb]" : "hover:bg-[#e5f9f1] bg-[#e5e7eb]"} transition-all duration-300`}
+//                                             onClick={() => handleAccountActiveToggle(item)}
+//                                         >
+//                                             {item.enabled === 1 ? "Active" : "Deactivated"}
+//                                         </button>
 //                                     </td>
 //                                     <td className="p-4 text-sm text-pryClr font-semibold">
 //                                         {formatISODateToCustom(item.created_at)}
@@ -164,7 +216,7 @@
 //                         })
 //                     ) : (
 //                         <tr>
-//                             <td colSpan="8" className="text-center p-8">No users found.</td>
+//                             <td colSpan="9" className="text-center p-8">No users found.</td> {/* Adjusted colspan */}
 //                         </tr>
 //                     )}
 //                 </tbody>
@@ -182,8 +234,8 @@
 
 //             {showDeleteModal && (
 //                 <Modal onClose={() => setShowDeleteModal(false)}>
-//                     <ConfirmationDialog 
-//                         message={`Are you sure you want to delete ${userToDelete?.username}? This action cannot be undone.`}
+//                     <ConfirmationDialog
+//                         message={`Are you sure you want to delete ${selectedUserForAction?.username}? This action cannot be undone.`}
 //                         onConfirm={confirmDelete}
 //                         onCancel={() => setShowDeleteModal(false)}
 //                     />
@@ -192,11 +244,43 @@
 
 //             {showStockistEnableConfirmModal && (
 //                 <Modal onClose={() => setShowStockistEnableConfirmModal(false)}>
-//                     <ConfirmationDialog 
-//                         message={`Are you sure you want to make ${userToDelete?.username} a stockist? This action cannot be undone.`}
-//                         onConfirm={confirmEnable}
-//                         onCancel={() => setShowStockistEnableConfirmModal(false)}
-//                     />
+//                     <div className="space-y-4">
+//                         <h3 className="font-semibold capitalize text-2xl text-center">Enable {selectedUserForAction?.username}</h3>
+//                         <div className="space-y-1">
+//                             <label className="block text-sm" htmlFor="stockist_plan">Pick a stockist plan for {selectedUserForAction?.username}</label>
+//                             <select 
+//                                 name="stockist_plan" 
+//                                 id="stockist_plan"
+//                                 value={selectedPlan}
+//                                 onChange={(e) => setSelectedPlan(e.target.value)}
+//                                 className={`w-full p-3 border rounded-lg border-gray-300 outline-0 capitalize`}
+//                             >
+//                                 <option value="" disabled>Select stockist plan</option>
+//                                 <option value="Grand_imperial">Grand imperial Plan</option>
+//                                 <option value="imperial_stockist">imperial stockist Plan</option>
+//                                 <option value="royal_stockist">royal stockist Plan</option>
+//                             </select>
+//                         </div>
+//                         <div className="space-y-1">
+//                             <label className="block text-sm" htmlFor="stockist_location">Enter a certified location for {selectedUserForAction?.username}</label>
+//                             <input 
+//                                 type="text"
+//                                 name="stockist_location" 
+//                                 id="stockist_location"
+//                                 value={selectedLocation}
+//                                 onChange={(e) => setSelectedLocation(e.target.value)}
+//                                 className={`w-full p-3 border rounded-lg border-gray-300 outline-0 capitalize`}
+//                             />
+//                         </div>
+//                         <button
+//                             type="button"
+//                             className="bg-pryClr text-secClr w-full py-3 mt-6 rounded font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+//                             onClick={confirmEnable}
+//                             disabled={!selectedPlan || !selectedLocation || isEnabling}
+//                         >
+//                             {isEnabling ? "Enabling..." : "Enable"}
+//                         </button>
+//                     </div>
 //                 </Modal>
 //             )}
 //         </div>
@@ -204,6 +288,7 @@
 // };
 
 // export default AllUsers;
+
 
 
 import React, { useEffect, useState } from "react";
@@ -215,6 +300,7 @@ import { formatISODateToCustom, formatterUtility } from "../../../utilities/Form
 import { FaTrashAlt } from "react-icons/fa";
 import Modal from "../../../components/modals/Modal";
 import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
+import { GoUnlink } from "react-icons/go";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -227,7 +313,12 @@ const AllUsers = () => {
     const [perPage, setPerPage] = useState(5);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showStockistEnableConfirmModal, setShowStockistEnableConfirmModal] = useState(false);
-    const [selectedUserForAction, setSelectedUserForAction] = useState(null); // Renamed for clarity
+    const [showAccountStatusToggleModal, setShowAccountStatusToggleModal] = useState(false); // New state for account status toggle modal
+    const [isEnabling, setIsEnabling] = useState(false);
+    const [isTogglingAccountStatus, setIsTogglingAccountStatus] = useState(false); // New state for account status toggle loading
+    const [selectedUserForAction, setSelectedUserForAction] = useState(null);
+    const [selectedPlan, setSelectedPlan] = useState("");
+    const [selectedLocation, setSelectedLocation] = useState("");
 
     const fetchAllUsers = async () => {
         setIsLoading(true);
@@ -271,7 +362,7 @@ const AllUsers = () => {
 
     const handleDeleteUser = (user) => {
         setShowDeleteModal(true);
-        setSelectedUserForAction(user); // Use the generic state
+        setSelectedUserForAction(user);
     };
 
     const confirmDelete = async () => {
@@ -305,21 +396,27 @@ const AllUsers = () => {
         }
     };
 
-    // New handler for enabling stockist
     const handleEnableStockist = (user) => {
         setShowStockistEnableConfirmModal(true);
-        setSelectedUserForAction(user); // Set the user for the stockist action
+        setSelectedUserForAction(user);
     };
 
-    // New function to confirm and make the API call for enabling stockist
     const confirmEnable = async () => {
-        if (!selectedUserForAction?.id) return;
+        if (!selectedUserForAction?.id || !selectedPlan || !selectedLocation) {
+            toast.error("Please select a plan and enter a location.");
+            return;
+        }
+        setIsEnabling(true);
+
+        const payLoad = {
+            "stockist_plan": selectedPlan,
+            "stockist_location": selectedLocation,
+        };
 
         const toastId = toast.loading(`Enabling ${selectedUserForAction.username} as stockist...`);
-        setShowStockistEnableConfirmModal(false); // Close the modal immediately
 
         try {
-            const response = await axios.post(`${API_URL}/api/users/${selectedUserForAction.id}/enable-stockist`, {}, { // Empty body for POST request
+            const response = await axios.post(`${API_URL}/api/users/${selectedUserForAction.id}/enable-stockist`, payLoad, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -328,7 +425,7 @@ const AllUsers = () => {
 
             if (response.status === 200) {
                 toast.success(response.data.message || `${selectedUserForAction.username} is now a stockist!`, { id: toastId });
-                fetchAllUsers(); // Refresh the user list to show the updated status
+                fetchAllUsers();
             } else {
                 throw new Error(response.data.message || "Failed to enable stockist.");
             }
@@ -339,7 +436,58 @@ const AllUsers = () => {
             console.error("Enable stockist error:", error);
             toast.error(error.response?.data?.message || "An error occurred enabling stockist.", { id: toastId });
         } finally {
-            setSelectedUserForAction(null); // Clear the selected user
+            setShowStockistEnableConfirmModal(false);
+            setIsEnabling(false);
+            setSelectedUserForAction(null);
+            setSelectedPlan(""); // Reset selected plan
+            setSelectedLocation(""); // Reset selected location
+        }
+    };
+
+    // New handler for account active/deactive toggle
+    const handleAccountActiveToggle = (user) => {
+        setSelectedUserForAction(user);
+        setShowAccountStatusToggleModal(true);
+    };
+
+    // New function to confirm and perform account status toggle
+    const confirmAccountToggle = async () => {
+        if (!selectedUserForAction?.id) return;
+
+        setIsTogglingAccountStatus(true);
+        setShowAccountStatusToggleModal(false); // Close the modal immediately
+
+        const currentStatus = selectedUserForAction.enabled;
+        const endpoint = currentStatus === 1 ? `${API_URL}/api/admin/disable/${selectedUserForAction.id}` : `${API_URL}/api/admin/disable/${selectedUserForAction.id}`;
+        const actionText = currentStatus === 1 ? "Deactivating" : "Activating";
+        const successMessage = currentStatus === 1 ? "User account deactivated successfully!" : "User account activated successfully!";
+        const errorMessage = currentStatus === 1 ? "Failed to deactivate user account." : "Failed to activate user account.";
+
+        const toastId = toast.loading(`${actionText} ${selectedUserForAction.username}'s account...`);
+
+        try {
+            const response = await axios.put(endpoint, {}, { // PUT request, likely no body needed
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.status === 200) {
+                toast.success(response.data.message || successMessage, { id: toastId });
+                fetchAllUsers(); // Refresh the list
+            } else {
+                throw new Error(response.data.message || errorMessage);
+            }
+        } catch (error) {
+            if (error.response?.data?.message?.includes("unauthenticated")) {
+                logout();
+            }
+            console.error(`Account ${actionText.toLowerCase()} error:`, error);
+            toast.error(error.response?.data?.message || `An error occurred ${actionText.toLowerCase()} the account.`, { id: toastId });
+        } finally {
+            setIsTogglingAccountStatus(false);
+            setSelectedUserForAction(null);
         }
     };
 
@@ -354,8 +502,8 @@ const AllUsers = () => {
                         <th className="p-5">Email</th>
                         <th className="p-5">Username</th>
                         <th className="p-5">Phone</th>
-                        <th className="p-5">Status</th>
                         <th className="p-5">Stockist Enabled</th>
+                        <th className="p-5">Account Status</th> {/* New column header */}
                         <th className="p-5">Date Joined</th>
                         <th className="p-5">Action</th>
                     </tr>
@@ -363,11 +511,14 @@ const AllUsers = () => {
                 <tbody>
                     {isLoading ? (
                         <tr>
-                            <td colSpan="9" className="text-center p-8">Loading...</td> {/* Adjusted colspan */}
+                            <td colSpan="9" className="text-center p-8">Loading...</td> {/* Adjusted colspan to 9 */}
                         </tr>
                     ) : allUsers.length > 0 ? (
                         allUsers.map((item, index) => {
                             const serialNumber = (currentPage - 1) * perPage + (index + 1);
+                            const accountStatusText = item.enabled === 1 ? "Active" : "Deactivated";
+                            const accountStatusClass = item.enabled === 1 ? "bg-[#e5f9f1] hover:bg-[#dff7ee]" : "hover:bg-[#f2f2f2] bg-[#e5e7eb]"; // Adjusted classes for hover
+
                             return (
                                 <tr
                                     key={item.id}
@@ -379,18 +530,25 @@ const AllUsers = () => {
                                     <td className="p-4">{item.username || "-"}</td>
                                     <td className="p-4 capitalize">{item.mobile || "-"}</td>
                                     <td className="p-4 capitalize">
-                                        <div className={`w-[100px] py-2 ${item.enabled === 1 ? "bg-[#dff7ee]/80 text-pryclr" : "bg-[#c51236]/20 text-red-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
-                                            {item.enabled === 1 ? "Active" : "Inactive"}
-                                        </div>
+                                        <button
+                                            type="button"
+                                            className="bg-accClr w-[100px] h-[40px] rounded font-semibold cursor-pointer text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                                            onClick={() => handleEnableStockist(item)}
+                                            disabled={item.stockist_enabled === 1 || isEnabling}
+                                        >
+                                            {item.stockist_enabled === 1 ? "Enabled" : "Enable"}
+                                        </button>
                                     </td>
+                                    {/* Account Status Toggle Button */}
                                     <td className="p-4 capitalize">
-                                        <input
-                                            type="checkbox"
-                                            className="w-[25px] h-[25px] accent-accClr cursor-pointer" // Added cursor-pointer
-                                            checked={item.stockist_enabled === 1} // Check if stockist_enabled is 1
-                                            onChange={() => handleEnableStockist(item)} // Call handler on change
-                                            disabled={item.stockist_enabled === 1} // Disable if already enabled
-                                        />
+                                        <button
+                                            type="button"
+                                            className={`w-[100px] h-[40px] rounded-md font-semibold cursor-pointer text-xs disabled:opacity-50 disabled:cursor-not-allowed border border-pryClr/20 ${accountStatusClass} transition-all duration-300`}
+                                            onClick={() => handleAccountActiveToggle(item)}
+                                            disabled={isTogglingAccountStatus} // Disable while another toggle is in progress
+                                        >
+                                            {accountStatusText}
+                                        </button>
                                     </td>
                                     <td className="p-4 text-sm text-pryClr font-semibold">
                                         {formatISODateToCustom(item.created_at)}
@@ -410,7 +568,7 @@ const AllUsers = () => {
                         })
                     ) : (
                         <tr>
-                            <td colSpan="9" className="text-center p-8">No users found.</td> {/* Adjusted colspan */}
+                            <td colSpan="9" className="text-center p-8">No users found.</td> {/* Adjusted colspan to 9 */}
                         </tr>
                     )}
                 </tbody>
@@ -437,13 +595,69 @@ const AllUsers = () => {
             )}
 
             {showStockistEnableConfirmModal && (
-                <Modal onClose={() => setShowStockistEnableConfirmModal(false)}>
+                <Modal onClose={() => {
+                    setShowStockistEnableConfirmModal(false);
+                    setSelectedPlan("");
+                    setSelectedLocation("");
+                    setSelectedUserForAction(null); // Clear selected user
+                }}>
+                    <div className="space-y-4">
+                        <h3 className="font-semibold capitalize text-2xl text-center">Enable {selectedUserForAction?.username}</h3>
+                        <div className="space-y-1">
+                            <label className="block text-sm" htmlFor="stockist_plan">Pick a stockist plan for {selectedUserForAction?.username}</label>
+                            <select
+                                name="stockist_plan"
+                                id="stockist_plan"
+                                value={selectedPlan}
+                                onChange={(e) => setSelectedPlan(e.target.value)}
+                                className={`w-full p-3 border rounded-lg border-gray-300 outline-0 capitalize`}
+                            >
+                                <option value="" disabled>Select stockist plan</option>
+                                <option value="Grand_imperial">Grand imperial Plan</option>
+                                <option value="imperial_stockist">imperial stockist Plan</option>
+                                <option value="royal_stockist">royal stockist Plan</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="block text-sm" htmlFor="stockist_location">Enter a certified location for {selectedUserForAction?.username}</label>
+                            <input
+                                type="text"
+                                name="stockist_location"
+                                id="stockist_location"
+                                value={selectedLocation}
+                                onChange={(e) => setSelectedLocation(e.target.value)}
+                                className={`w-full p-3 border rounded-lg border-gray-300 outline-0 capitalize`}
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            className="bg-pryClr text-secClr w-full py-3 mt-6 rounded font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={confirmEnable}
+                            disabled={!selectedPlan || !selectedLocation || isEnabling}
+                        >
+                            {isEnabling ? "Enabling..." : "Enable"}
+                        </button>
+                    </div>
+                </Modal>
+            )}
+
+            {/* Account Status Toggle Confirmation Modal */}
+            {showAccountStatusToggleModal && (
+                <Modal onClose={() => {
+                    setShowAccountStatusToggleModal(false);
+                    setSelectedUserForAction(null); // Clear selected user
+                }}>
                     <ConfirmationDialog
-                        message={`Are you sure you want to make ${selectedUserForAction?.username} a stockist? This action cannot be undone.`}
-                        onConfirm={confirmEnable} 
-                        title="Confirm enabling?"
                         type="confirm"
-                        onCancel={() => setShowStockistEnableConfirmModal(false)}
+                        title={`Confirm ${selectedUserForAction?.enabled === 1 ? 'deactivation' : 'activation'}?`}
+                        message={`Are you sure you want to ${selectedUserForAction?.enabled === 1 ? 'deactivate' : 'activate'} ${selectedUserForAction?.username}'s account?`}
+                        onConfirm={confirmAccountToggle}
+                        onCancel={() => {
+                            setShowAccountStatusToggleModal(false);
+                            setSelectedUserForAction(null);
+                        }}
+                        confirmButtonText={isTogglingAccountStatus ? "Processing..." : (selectedUserForAction?.enabled === 1 ? "Deactivate" : "Activate")}
+                        isConfirming={isTogglingAccountStatus}
                     />
                 </Modal>
             )}

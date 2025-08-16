@@ -19,14 +19,14 @@ const Ranking = () => {
         >
           <option value="Unilevel">Unilevel</option>
           <option value="Rank Achievement">Rank Achievement</option>
-          <option value="Leadership">Leadership</option>
+          {/* <option value="Leadership">Leadership</option> */}
         </select>
       </div>
 
       {/* Display Selected Component */}
       {selectedType === "Unilevel" && <Unilevel />}
       {selectedType === "Rank Achievement" && <RankAchievement />}
-      {selectedType === "Leadership" && <Leadership />}
+      {/* {selectedType === "Leadership" && <Leadership />} */}
     </div>
   );
 };

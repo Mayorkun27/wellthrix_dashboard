@@ -16,35 +16,35 @@ const AdminOverview = () => {
   const [overviewDetails, setOverviewDetails] = useState(null)
   const [isFetching, setIsFetching] = useState(false)
 
-  useEffect(() => {
-    const fetchOverviewDetails = async () => {
-      setIsFetching(true)
-      try {
-        const response = await axios.get(`${API_URL}/api/admin/stat`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        })
-
-        console.log("overview response", response)
-
-        if (response.status === 200) {
-          setOverviewDetails(response.data)
-        } else {
-          throw new Error(response.data.message || "Failed to get overview data.");
+  const fetchOverviewDetails = async () => {
+    setIsFetching(true)
+    try {
+      const response = await axios.get(`${API_URL}/api/admin/stat`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
         }
-        
-      } catch (error) {
-        if (error.response.data.message.toLowerCase() == "unauthenticated") {
-          logout()
-        }
-        console.error("An error occured fetching overview data", error)
-        toast.error("An error occured fetching overview data")
-      } finally {
-        setIsFetching(false)
+      })
+
+      console.log("overview response", response)
+
+      if (response.status === 200) {
+        setOverviewDetails(response.data)
+      } else {
+        throw new Error(response.data.message || "Failed to get overview data.");
       }
+      
+    } catch (error) {
+      if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
+        logout()
+      }
+      console.error("An error occured fetching overview data", error)
+      toast.error("An error occured fetching overview data")
+    } finally {
+      setIsFetching(false)
     }
+  }
 
+  useEffect(() => {
     fetchOverviewDetails()
   }, [token])
 

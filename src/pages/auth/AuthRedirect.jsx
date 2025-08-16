@@ -4,6 +4,7 @@ import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import { decryptToken } from "../../helpers/tokenHelper";
 import assets from "../../assets/assests";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -63,12 +64,39 @@ const AuthRedirect = () => {
   }, []);
 
   return (
-    <div className="bg-pryClr/20 w-screen h-dvh flex gap-4 justify-center items-center">
-      <div className="relative md:w-24 w-20 md:h-24 h-20 flex items-center justify-center p-4">
-        <span className="absolute top-0 left-0 w-full h-full border-[10px] border-pryClr border-t-transparent animate-spin rounded-full" />
-        <img src={assets.logo} alt="Wellthrix logo" />
-      </div>
-      <h3 className="text-xl font-bold">Verifying connection...</h3>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-bl from-pryClr via-pryClr/70 to-accClr/80 p-6">
+      <motion.div
+        className="bg-pryClr bg-opacity-80 backdrop-blur-lg rounded-2xl p-8 md:p-12 max-w-md w-full text-center shadow-2xl"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        <div className="">
+          <img src={assets.logo} alt="Wellthrix international logo" className="w-2/6 mx-auto" />
+        </div>
+        <motion.h1
+          className="text-2xl md:text-4xl font-bold text-white my-4"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          Redirecting You...
+        </motion.h1>
+        <div className="flex justify-center mb-6">
+          <svg
+            className="animate-spin h-12 w-12 text-accClr"
+            viewBox="0 0 24 24"
+          >
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"
+            />
+          </svg>
+        </div>
+       
+      </motion.div>
     </div>
   );
 };

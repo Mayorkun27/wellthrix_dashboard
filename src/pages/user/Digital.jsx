@@ -92,7 +92,7 @@ const Digital = () => {
           }, 2000);
         }
       } catch (error) {
-        if (error.response.data.message.toLowerCase() == "unauthenticated") {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
           logout();
         }
         console.error("An error occured initiating transaction", error);
