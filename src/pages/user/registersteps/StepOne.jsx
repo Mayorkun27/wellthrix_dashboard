@@ -266,7 +266,7 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
     setErrors(newErrors);
     return isValid;
   };
-
+  
   const isFormValid = selectedPackage &&
     Number(selectedPackage.price) <= Number(user.e_wallet) &&
     leg &&

@@ -46,6 +46,8 @@ export const UserProvider = ({ children }) => {
       const data = response.data.data;
       const updatedUser = data.user;
 
+      console.log("refresh response data", data)
+
       const updatedMiscellaneousDetails = {
         planDetails: data.plan_details,
         stockistDetails: data.stockist_details,
@@ -92,7 +94,7 @@ export const UserProvider = ({ children }) => {
 
       // Redirect after a short delay
       setTimeout(() => {
-        window.location.href = "https://wellthrixinternational.com/#/login";
+        // window.location.href = "https://wellthrixinternational.com/#/login";
       }, 500);
     }
   };

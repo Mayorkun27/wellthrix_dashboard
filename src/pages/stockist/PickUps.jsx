@@ -45,11 +45,12 @@ const PickUps = () => {
             });
 
             console.log('response', response);
-            console.log('response data transactions', response.data.transactions);
+            console.log('orders response data transactions', response.data.transactions);
 
             if (response.status === 200) {
-                const { transactions, current_page, last_page, per_page } = response.data;
-                setPickupOrders(transactions);
+                const { data, current_page, last_page, per_page } = response.data.transactions;
+                console.log("data", data)
+                setPickupOrders(data);
                 setCurrentPage(current_page);
                 setLastPage(last_page);
                 setPerPage(per_page);
@@ -183,13 +184,13 @@ const PickUps = () => {
                         )}
                     </tbody>
                 </table>
-                {!isLoading && pickupOrders.length > 0 && (
+                {/* {!isLoading && pickupOrders.length > 0 && ( */}
                     <PaginationControls
                         currentPage={currentPage}
                         totalPages={lastPage}
                         setCurrentPage={setCurrentPage}
                     />
-                )}
+                {/* )} */}
             </div>
 
             {/* Confirmation Modal */}

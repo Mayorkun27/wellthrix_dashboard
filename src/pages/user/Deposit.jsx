@@ -23,7 +23,7 @@ const Deposit = () => {
       user_id: user?.id || "",
       amount: "",
       email: user?.email || "",
-      payment_method: "manual",
+      payment_method: "paystack",
       proof_of_payment: null,
     },
     enableReinitialize: true,
@@ -140,11 +140,11 @@ const Deposit = () => {
         <h1 className="text-[22px] font-semibold md:flex hidden">Deposit Funds</h1>
         <form onSubmit={(e) => { e.preventDefault(); setShowPinModal(true); }}>
           <p className="text-black md:mt-6 mb-3 font-medium">Deposit Method</p>
-          <div className="flex md:flex-row flex-col gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
             {/* Paystack Option */}
             <div
               onClick={() => formik.setFieldValue("payment_method", "paystack")}
-              className={`disabledForNow flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
                 <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
@@ -165,8 +165,9 @@ const Deposit = () => {
 
             {/* Manual Payment Option */}
             <div
+              hidden
               onClick={() => formik.setFieldValue("payment_method", "manual")}
-              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`disabledForNow flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
                 <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
@@ -188,7 +189,10 @@ const Deposit = () => {
           {formik.touched.payment_method && formik.errors.payment_method && (
             <p className="text-red-600">{formik.errors.payment_method}</p>
           )}
-          <div className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium">
+          <div 
+            hidden
+            className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium"
+          >
             <h3>Bank Name: <span className="font-bold">ZENITH BANK</span></h3>
             <h3>Account Number: <span className="font-bold">1310212712</span></h3>
             <h3>Account Name: <span className="font-bold">WELLTHRIX INTERNATIONAL LTD</span></h3>

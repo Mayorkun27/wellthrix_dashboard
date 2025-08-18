@@ -31,7 +31,7 @@ const History = () => {
     const fetchPickupOrders = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.post(`${API_URL}/api/stockists/${user?.id}/user`, {}, {
+            const response = await axios.get(`${API_URL}/api/user/stockists/${user?.id}`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const History = () => {
             });
 
             console.log('history response', response);
-            console.log('response data transactions', response.data.transactions);
+            console.log('history response data transactions', response.data.transactions);
 
             if (response.status === 200) {
                 const { transactions, current_page, last_page, per_page } = response.data;

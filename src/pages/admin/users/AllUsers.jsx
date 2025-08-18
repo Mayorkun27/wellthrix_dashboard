@@ -626,7 +626,7 @@ const AllUsers = () => {
                                 id="stockist_location"
                                 value={selectedLocation}
                                 onChange={(e) => setSelectedLocation(e.target.value)}
-                                className={`w-full p-3 border rounded-lg border-gray-300 outline-0 capitalize`}
+                                className={`w-full p-3 border rounded-lg border-gray-300 outline-0`}
                             />
                         </div>
                         <button

@@ -66,8 +66,8 @@ const Cart = () => {
 
             console.log("stockists response", response);
             if (response.status === 200 && response.data.success) {
-                console.log(response.data.data.data);
-                setStockists(response.data.data.data);
+                console.log(response.data.data);
+                setStockists(response.data.data);
             } else {
                 toast.error(response.data.message || "Failed to fetch stockists.");
             }
@@ -257,7 +257,7 @@ const Cart = () => {
                         <div className="text-center">
                             <button
                                 type="button"
-                                onClick={handleProceedToPinEntry} // Proceed to PIN entry
+                                onClick={handleProceedToPinEntry}
                                 disabled={!selectedStockist || isFetchingStockists}
                                 className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-full h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
                             >
@@ -272,8 +272,8 @@ const Cart = () => {
             {showPinModal && (
                 <Modal onClose={() => {
                     setShowPinModal(false);
-                    setPin(['', '', '', '']); // Reset PIN on modal close
-                    setIsPurchasing(false); // Reset purchasing state if modal is closed prematurely
+                    setPin(['', '', '', '']);
+                    setIsPurchasing(false);
                 }}>
                     <div className='w-full text-center'>
                         <h3 className='text-2xl font-bold'>Confirm Transaction</h3>

@@ -235,8 +235,8 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
 
         console.log("stockists response",response)
         if (response.status === 200 && response.data.success) {
-          console.log(response.data.data.data)
-          setStockists(response.data.data.data)
+          console.log(response.data.data)
+          setStockists(response.data.data)
         }
         
       } catch (error) {

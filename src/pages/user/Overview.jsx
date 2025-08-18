@@ -208,9 +208,12 @@ const Overview = () => {
         <div className="shadow-md lg:w-[150px] md:w-[250px] lg:h-[150px] md:h-[250px] w-[200px] h-[200px] rounded-full bg-accClr overflow-hidden flex items-center justify-center">
           <h3 className='md:text-6xl text-6xl text-pryClr font-extrabold uppercase'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center lg:gap-0 gap-1">
           <h3 className='font-bold'>@{user?.username}</h3>
-          <p>Package: <span className='font-bold uppercase'>{miscellaneousDetails?.planDetails?.name}</span></p>
+          <div className="flex lg:flex-row md:flex-col items-center justify-between lg:gap-2 md:gap-0 gap-2 text-xs">
+            <p>Package: <span className='font-bold uppercase'>{miscellaneousDetails?.planDetails?.name}</span></p>
+            <p>Rank: <span className='font-bold uppercase'>{user?.rank || "No rank"}</span></p>
+          </div>
           <Link to={"/user/upgrade"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
         </div>
       </div>
