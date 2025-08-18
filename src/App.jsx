@@ -32,6 +32,7 @@ import Ranking from "./pages/admin/Ranking";
 import ManageMilestones from "./pages/admin/bonuses/ManageMilestones";
 import Subscribers from "./pages/admin/Subscribers";
 import Loading from "./pages/auth/Loading";
+import P2P from "./pages/user/P2P";
 
 function App() {
   const { user } = useUser();
@@ -83,6 +84,10 @@ function App() {
         <Route
           path="/user/register"
           element={<MainLayout pageName={"Register"} child={<Register />} />}
+        />
+        <Route
+          path="/user/p2p"
+          element={<MainLayout pageName={"P2P"} child={<P2P />} />}
         />
         <Route
           path="/user/rechargehistory"

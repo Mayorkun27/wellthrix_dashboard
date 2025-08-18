@@ -6,7 +6,7 @@ import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
-import { FaPlugCircleBolt, FaRankingStar, FaUsers } from 'react-icons/fa6';
+import { FaMoneyBillTransfer, FaPlugCircleBolt, FaRankingStar, FaUsers } from 'react-icons/fa6';
 import { GiShoppingBag } from 'react-icons/gi';
 import { GrAnnounce, GrTransaction } from "react-icons/gr";
 import { TbTruckDelivery } from 'react-icons/tb';
@@ -89,6 +89,12 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Products',
             icon: <GiShoppingBag size={20} />,
             path: '/user/products',
+            role: ["user"]
+        },
+        {
+            name: 'P2P',
+            icon: <FaMoneyBillTransfer size={20} />,
+            path: '/user/p2p',
             role: ["user"]
         },
         {
