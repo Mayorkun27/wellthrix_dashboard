@@ -7,18 +7,18 @@ import { formatISODateToCustom, formatterUtility, formatTransactionType } from "
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-const EwalletHistory = () => {
+const P2PHistory = () => {
     const { user, token, logout } = useUser();
-    const [ewalletHistory, setEwalletHistory] = useState([]);
+    const [p2PHistory, setP2PHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
 
-    const fetchEwalletHistory = async () => {
+    const fetchP2PHistory = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_URL}/api/users/${user?.id}/fund-e-wallets`, {
+            const response = await axios.get(`${API_URL}/api/user/p2p/${user?.id}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -29,30 +29,30 @@ const EwalletHistory = () => {
                 }
             });
 
-            console.log("Ewallet History Response:", response.data);
+            console.log("P2p History Response:", response.data);
 
             if (response.status === 200 && response.data.ok) {
-                const { data, current_page, last_page, per_page } = response.data.data;
-                setEwalletHistory(data);
-                setCurrentPage(current_page);
-                setLastPage(last_page);
-                setPerPage(per_page);
+                // const { transaction, current_page, last_page, per_page } = response.data.data;
+                setP2PHistory(response.data.transactions);
+                // setCurrentPage(current_page);
+                // setLastPage(last_page);
+                // setPerPage(per_page);
             } else {
-                throw new Error(response.data.message || "Failed to fetch E-wallet history.");
+                throw new Error(response.data.message || "Failed to fetch P2P history.");
             }
         } catch (error) {
             if (error.response?.data?.message?.includes("unauthenticated")) {
                 logout();
             }
             console.error("API submission error:", error);
-            toast.error(error.response?.data?.message || "An error occurred fetching E-wallet history!.");
+            toast.error(error.response?.data?.message || "An error occurred fetching P2P history!.");
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchEwalletHistory();
+        fetchP2PHistory();
     }, [user?.id, token, currentPage]);
 
     return (
@@ -72,8 +72,8 @@ const EwalletHistory = () => {
                         <tr>
                             <td colSpan="7" className="text-center p-8">Loading...</td>
                         </tr>
-                    ) : ewalletHistory.length > 0 ? (
-                        ewalletHistory.map((item, index) => {
+                    ) : p2PHistory.length > 0 ? (
+                        p2PHistory.map((item, index) => {
                             const serialNumber = (currentPage - 1) * perPage + (index + 1);
                             return (
                                 <tr
@@ -96,13 +96,13 @@ const EwalletHistory = () => {
                         })
                     ) : (
                         <tr>
-                            <td colSpan="7" className="text-center p-8">No e-wallet history found.</td>
+                            <td colSpan="7" className="text-center p-8">No P2P history found.</td>
                         </tr>
                     )}
                 </tbody>
             </table>
 
-            {!isLoading && ewalletHistory.length > 0 && (
+            {/* {!isLoading && p2PHistory.length > 0 && (
                 <div className="flex justify-center items-center gap-2 p-4">
                     <PaginationControls
                         currentPage={currentPage}
@@ -110,9 +110,9 @@ const EwalletHistory = () => {
                         setCurrentPage={setCurrentPage}
                     />
                 </div>
-            )}
+            )} */}
         </div>
     );
 };
 
-export default EwalletHistory;
+export default P2PHistory;

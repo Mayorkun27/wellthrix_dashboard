@@ -31,7 +31,7 @@ const History = () => {
     const fetchPickupOrders = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_URL}/api/user/stockists/${user?.id}`, {}, {
+            const response = await axios.get(`${API_URL}/api/user/stockists/${user?.id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -43,11 +43,11 @@ const History = () => {
             });
 
             console.log('history response', response);
-            console.log('history response data transactions', response.data.transactions);
+            console.log('history response data transactions', response.data.data);
 
             if (response.status === 200) {
-                const { transactions, current_page, last_page, per_page } = response.data;
-                setPickupOrders(transactions);
+                const { data, current_page, last_page, per_page } = response.data.data;
+                setPickupOrders(data);
                 setCurrentPage(current_page);
                 setLastPage(last_page);
                 setPerPage(per_page);
@@ -71,12 +71,6 @@ const History = () => {
             fetchPickupOrders();
         }
     }, [currentPage, token, user?.id]);
-
-    // Handler to open the confirmation modal
-    const handleConfirmPickupClick = (order) => {
-        setOrderToConfirm(order);
-        setShowConfirmModal(true);
-    };
 
     // Function to perform the actual PUT request
     const performPickupConfirmation = async () => {
@@ -119,14 +113,13 @@ const History = () => {
     return (
         <div>
             <div className="overflow-x-auto">
-                <table className="w-full text-xs whitespace-nowrap">
+                <table className="w-full text-xs">
                     <thead className="text-gray-700 uppercase">
                         <tr>
                             <th className="px-4 text-center">S/N</th>
+                            <th className="px-4 text-center">Transaction Type</th>
+                            <th className="px-4 text-center">Transaction Ref</th>
                             <th className="px-4 text-center">Amount</th>
-                            <th className="px-4 text-center">Name</th>
-                            <th className="px-4 text-center">Ref ID</th>
-                            <th className="px-4 text-center">Status</th>
                             <th className="px-4 text-center">Date</th>
                         </tr>
                     </thead>
@@ -146,23 +139,18 @@ const History = () => {
                                 return (
                                     <tr key={pickupOrder.id} className="border-b border-black/10 text-xs">
                                         <td className="p-3">{String(index+1).padStart(3, "0")}</td>
-                                        <td className="px-4 py-2 text-center">{formatterUtility(Number(pickupOrder?.order?.total_amount)) || ''}</td>
-                                        <td className="px-4 py-2 text-center">{`${pickupOrder?.order?.user?.first_name || ''} ${pickupOrder?.order?.user?.last_name || ''}`.trim() || '-'}</td>
-                                        <td className="px-4 py-2 text-center">{pickupOrder.ref_no || '-'}</td>
-                                        <td className="py-6 text-center">
-                                            <div className={`w-[100px] py-2 ${className} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
-                                                {text}
-                                            </div>
-                                        </td>
+                                        <td className="px-4 py-2 text-center">{pickupOrder?.transaction_type || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{pickupOrder?.ref_no || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{formatterUtility(Number(pickupOrder?.amount)) || ''}</td>
                                         <td className="px-4 py-2 text-center text-pryClr font-semibold">
-                                            {formatISODateToCustom(pickupOrder.created_at).split(" ")[0] || '-'}
+                                            {formatISODateToCustom(pickupOrder.created_at) || '-'}
                                         </td>
                                     </tr>
                                 );
                             })
                         ) : (
                             <tr>
-                                <td colSpan="7" className="text-center p-8">No pickup orders found.</td>
+                                <td colSpan="7" className="text-center p-8">No history found.</td>
                             </tr>
                         )}
                     </tbody>

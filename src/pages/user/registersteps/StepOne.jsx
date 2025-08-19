@@ -86,7 +86,8 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
         });
         console.log("downline", response)
         if (response.status === 200) {
-          const results = response.data.data || [];
+          const results = response.data.data.downlines || [];
+          console.log("results", results)
           type === 'sponsor' ? setSponsorResults(results) : setPlacementResults(results);
         }
       } catch (error) {

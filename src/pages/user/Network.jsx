@@ -382,9 +382,10 @@ const Network = () => {
                   <div className="space-y-1 text-xs text-gray-700">
                       <p><strong>Name:</strong> {user.fullname}</p>
                       <p><strong>Email:</strong> {user.email}</p>
-                      <p><strong>Total PV:</strong> {Number(user.total_pv_left) + Number(user.total_pv_right)} &#40;left:{user.total_pv_left} right:{user.total_pv_right}&#41;</p>
-                      <p><strong>Package:</strong> {user.package || "-"}</p>
-                      <p><strong>Rank:</strong> {user.rank || "-"}</p>
+                      <p><strong>Personal PV:</strong> {user?.pv_info?.total_pv}</p>
+                      <p><strong>Group PV:</strong> {Number(user.total_pv_left) + Number(user.total_pv_right)} &#40;left:{user.total_pv_left} right:{user.total_pv_right}&#41;</p>
+                      {/* <p><strong>Package:</strong> {user.package || "-"}</p>
+                      <p><strong>Rank:</strong> {user.rank || "-"}</p> */}
                   </div>
 
               </Popover.Panel>

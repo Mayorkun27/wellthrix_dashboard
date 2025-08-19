@@ -10,23 +10,19 @@ import OverviewCards from '../../components/cards/OverviewCards';
 import { BsWallet2 } from 'react-icons/bs';
 import { TbTruckDelivery } from 'react-icons/tb';
 import History from './History';
+import RegistrationOrders from './RegistrationOrders';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const Stockist = () => {
-  const { token, logout, user } = useUser();
+  const { token, logout, user, refreshUser } = useUser();
   const stockistId = user?.id || 1;
-  const [activeTab, setActiveTab] = useState('history'); // Toggle between 'pickup' and 'history'
+  const [activeTab, setActiveTab] = useState('history'); // Toggle between 'pickup' and 'history' or 'register
   const perPage = 5;
 
-  // Mock transaction history data
-  const transactionHistory = [
-    { id: 1, amount: 5000, month: 'January', type: 'Bonus', status: 'completed', orderId: 'ORD123', date: '2025-01-10' },
-    { id: 2, amount: 3000, month: 'February', type: 'Move', status: 'pending', orderId: 'ORD124', date: '2025-02-15' },
-    { id: 3, amount: 7000, month: 'March', type: 'Bonus', status: 'failed', orderId: 'ORD125', date: '2025-03-20' },
-    { id: 4, amount: 4000, month: 'April', type: 'Move', status: 'completed', orderId: 'ORD126', date: '2025-04-05' },
-    { id: 5, amount: 6000, month: 'May', type: 'Bonus', status: 'pending', orderId: 'ORD127', date: '2025-05-12' },
-  ];
+  useEffect(() => {
+    refreshUser()
+  }, [])
 
   // Corrected statusLabels object with unique keys
   const statusLabels = {
@@ -55,15 +51,23 @@ const Stockist = () => {
       <div className="flex justify-end gap-4">
         <button
           onClick={() => setActiveTab('pickup')}
-          className={`px-4 py-2 font-semibold rounded-lg ${
+          className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
             activeTab === 'pickup' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
           Pickup Orders
         </button>
         <button
+          onClick={() => setActiveTab('register')}
+          className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
+            activeTab === 'register' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
+          }`}
+        >
+          Registration Orders
+        </button>
+        <button
           onClick={() => setActiveTab('history')}
-          className={`px-4 py-2 font-semibold rounded-lg ${
+          className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
             activeTab === 'history' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
@@ -75,8 +79,10 @@ const Stockist = () => {
       <div className="w-full">
         {activeTab === 'pickup' ? (
           <PickUps />
-        ) : (
+        ) : activeTab === 'history' ? (
           <History />
+        ) : (
+          <RegistrationOrders />
         )}
       </div>
     </div>

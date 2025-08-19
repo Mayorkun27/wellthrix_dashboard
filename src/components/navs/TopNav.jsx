@@ -8,8 +8,8 @@ import { HiOutlineShoppingCart } from 'react-icons/hi2';
 import { useCart } from '../../context/CartContext';
 
 const optionsRecharge = ['Airtime', 'Data', 'Electricity'];
-const optionsTransactions = ['E-Wallet', 'Purchase Wallet', 'Withdraw History', 'Product History'];
-// 'Earnings Wallet', 'Incentive Wallet', 
+const optionsTransactions = ['Earnings History', 'E-Wallet', 'Purchase Wallet', 'Withdraw History', 'Product History', 'E-wallet transfers'];
+// , 'Incentive Wallet', 
 
 const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
   const [searchParam, setSearchParam] = React.useState('');

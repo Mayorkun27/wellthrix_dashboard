@@ -23,7 +23,7 @@ const Deposit = () => {
       user_id: user?.id || "",
       amount: "",
       email: user?.email || "",
-      payment_method: "paystack",
+      payment_method: "manual",
       proof_of_payment: null,
     },
     enableReinitialize: true,
@@ -144,7 +144,7 @@ const Deposit = () => {
             {/* Paystack Option */}
             <div
               onClick={() => formik.setFieldValue("payment_method", "paystack")}
-              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`disabledForNow flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'paystack' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
                 <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
@@ -165,9 +165,8 @@ const Deposit = () => {
 
             {/* Manual Payment Option */}
             <div
-              hidden
               onClick={() => formik.setFieldValue("payment_method", "manual")}
-              className={`disabledForNow flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
                 <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />

@@ -41,7 +41,7 @@ const ProductCards = ({ product }) => {
                                 <span>&#40;&#36;{formatterUtility(Number(product.price / dollarRate), true)}&#41;</span>
                                 <span>- {product.product_pv}PV</span>
                             </div>
-                            <span className="text-xs font-medium">Quantity: {unitLeft <= 0 ? "0" : unitLeft}</span>
+                            {/* <span className="text-xs font-medium">Quantity: {unitLeft <= 0 ? "0" : unitLeft}</span> */}
                         </div>
                         {purchaseCondition && (
                             <small className="font-semibold text-[10px] text-pryClr">
@@ -78,7 +78,7 @@ const ProductCards = ({ product }) => {
                             <h2 className="md:col-span-2 col-span-1 text-2xl font-bold text-pryClr text-center">{selectedProduct.product_name} Product Details</h2>
                             <div className="w-full h-[250px] bg-pryClr/15 rounded-lg flex items-center justify-center">
                                 <img 
-                                    src={`${API_URL}/${selectedProduct.product_image}`}
+                                    src={`${IMAGE_BASE_URL}/${selectedProduct.product_image}`}
                                     alt={selectedProduct.product_name + " image"}
                                     className="w-[90%] h-[90%] object-scale-down mx-auto" 
                                 />
@@ -88,7 +88,7 @@ const ProductCards = ({ product }) => {
                                     <p className="-space-y-1"><span className="tracking-tight block font-semibold">Product Name:</span> {selectedProduct?.product_name}</p>
                                     <p className="-space-y-1"><span className="tracking-tight block font-semibold">Product Price:</span> {formatterUtility(Number(selectedProduct.price))}</p>
                                     <p className="-space-y-1"><span className="tracking-tight block font-semibold">Product Point Value:</span> {selectedProduct?.product_pv}pv</p>
-                                    <p className="-space-y-1"><span className="tracking-tight block font-semibold">Available Quantity:</span> {Number(selectedProduct.in_stock) - Number(selectedProduct.total_sold)}</p>
+                                    {/* <p className="-space-y-1"><span className="tracking-tight block font-semibold">Available Quantity:</span> {Number(selectedProduct.in_stock) - Number(selectedProduct.total_sold)}</p> */}
                                     {purchaseCondition && (
                                         <p className="-space-y-1"><span className="tracking-tight block font-semibold">Purchase Condition:</span> Available Only on Repurchase</p>
                                     )}

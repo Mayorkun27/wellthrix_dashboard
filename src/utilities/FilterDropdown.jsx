@@ -20,9 +20,9 @@ const FilterDropdown = ({ options, selectedType, setSelectedType }) => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between border border-pryClr/50 rounded-full px-4 py-2 bg-transparent text-sm text-black/80"
+        className="w-full flex gap-3 items-center justify-between border border-pryClr/50 rounded-full px-4 py-2 bg-transparent text-sm text-black/80"
       >
-        <span className='w-11/12 line-clamp-1 text-start'>{selectedType + " History"}</span>
+        <span className='w-11/12 line-clamp-1 text-start'>{selectedType}</span>
         {isOpen ? (
           <FaChevronUp className="text-pryClr/50 text-xs" />
         ) : (

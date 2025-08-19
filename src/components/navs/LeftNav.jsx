@@ -92,9 +92,9 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["user"]
         },
         {
-            name: 'P2P',
+            name: 'E-wallet Transfer',
             icon: <FaMoneyBillTransfer size={20} />,
-            path: '/user/p2p',
+            path: '/user/ewallettransfer',
             role: ["user"]
         },
         {

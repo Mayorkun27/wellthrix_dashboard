@@ -39,3 +39,18 @@ export function formatDateToStyle(isoString) {
 
   return date.toLocaleDateString('en-US', options);
 }
+
+
+
+export function formatTransactionType(input, capitalize = false) {
+  let formatted = input.replace(/_/g, ' ');
+
+  if (capitalize) {
+    formatted = formatted
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  return formatted;
+}

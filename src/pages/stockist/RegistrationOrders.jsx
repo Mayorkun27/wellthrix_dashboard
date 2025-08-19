@@ -3,7 +3,7 @@ import PaginationControls from '../../utilities/PaginationControls';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { formatISODateToCustom, formatterUtility } from '../../utilities/Formatterutility';
+import { formatISODateToCustom, formatterUtility, formatTransactionType } from '../../utilities/Formatterutility';
 import { GiCheckMark } from 'react-icons/gi';
 import Modal from '../../components/modals/Modal';
 import ConfirmationDialog from '../../components/modals/ConfirmationDialog';
@@ -11,9 +11,9 @@ import { MdRemoveRedEye } from 'react-icons/md';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-const PickUps = () => {
+const RegistrationOrders = () => {
     const { token, logout, user } = useUser();
-    const [pickupOrders, setPickupOrders] = useState([]);
+    const [registerOrders, setRegisterOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
@@ -28,11 +28,12 @@ const PickUps = () => {
     const statusLabels = {
         pending: { text: 'Pending', className: 'bg-yellow-100 text-yellow-600' }, // Corrected for pending
         failed: { text: 'Failed', className: 'bg-[#c51236]/20 text-red-600' },
-        picked: { text: 'Picked', className: 'bg-[#dff7ee]/80 text-pryclr' },
+        success: { text: 'Successful', className: 'bg-[#dff7ee]/80 text-pryclr' },
     };
 
-    const fetchPickupOrders = async () => {
+    const fetchregisterOrders = async () => {
         setIsLoading(true);
+        console.log(`Posting to ${API_URL}/api/stockists/${user?.id}/user`)
         try {
             const response = await axios.post(`${API_URL}/api/stockists/${user?.id}/user`, {}, {
                 headers: {
@@ -48,9 +49,9 @@ const PickUps = () => {
             console.log("pickup response", response)
 
             if (response.status === 200) {
-                const { data, current_page, last_page, per_page } = response.data.transactions;
+                const { data, current_page, last_page, per_page } = response.data.registrations;
                 console.log("data", data)
-                setPickupOrders(data);
+                setRegisterOrders(data);
                 setCurrentPage(current_page);
                 setLastPage(last_page);
                 setPerPage(per_page);
@@ -71,7 +72,7 @@ const PickUps = () => {
 
     useEffect(() => {
         if (token && user?.id) {
-            fetchPickupOrders();
+            fetchregisterOrders();
         }
     }, [currentPage, token, user?.id]);
 
@@ -103,7 +104,7 @@ const PickUps = () => {
 
             if (response.status === 200) {
                 toast.success(response.data.message || `Pickup for ${orderToConfirm.ref_no} confirmed!`, { id: toastId });
-                fetchPickupOrders();
+                fetchregisterOrders();
             } else {
                 throw new Error(response.data.message || 'Failed to confirm pickup.');
             }
@@ -119,9 +120,6 @@ const PickUps = () => {
         }
     };
 
-    const filteredProducts = pickupOrders.filter(pickupOrder => pickupOrder.transaction_type === "manual_purchase")
-    console.log("filteredProducts", filteredProducts)
-
     return (
         <div>
             <div className="overflow-x-auto">
@@ -129,8 +127,8 @@ const PickUps = () => {
                     <thead className="text-gray-700 uppercase">
                         <tr>
                             <th className="px-4 text-center">S/N</th>
-                            <th className="px-4 text-center">Ref ID</th>
-                            {/* <th className="px-4 text-center">Receiver username</th> */}
+                            <th className="px-4 text-center">Transaction type</th>
+                            <th className="px-4 text-center">ORD ID</th>
                             <th className="px-4 text-center">Amount</th>
                             <th className="px-4 text-center">Date</th>
                             <th className="px-4 text-center">Status</th>
@@ -142,9 +140,9 @@ const PickUps = () => {
                             <tr>
                                 <td colSpan="7" className="text-center p-8">Loading...</td>
                             </tr>
-                        ) : filteredProducts.length > 0 ? (
-                            filteredProducts.map((pickupOrder, index) => {
-                                const statusKey = pickupOrder?.orders?.delivery?.toLowerCase(); // Ensure lowercase for key lookup
+                        ) : registerOrders.length > 0 ? (
+                            registerOrders.map((pickupOrder, index) => {
+                                const statusKey = pickupOrder?.status?.toLowerCase(); // Ensure lowercase for key lookup
                                 const { text, className } = statusLabels[statusKey] || { text: statusKey || 'unknown', className: 'bg-gray-200 text-gray-600' };
 
                                 const serialNumber = (currentPage - 1) * perPage + (index + 1);
@@ -154,8 +152,8 @@ const PickUps = () => {
                                 return (
                                     <tr key={pickupOrder.id} className="border-b border-black/10 text-xs">
                                         <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
-                                        <td className="px-4 py-2 text-center">{pickupOrder.ref_no || '-'}</td>
-                                        {/* <td className="px-4 py-2 text-center">{`${pickupOrder?.order?.user?.first_name || ''} ${pickupOrder?.order?.user?.last_name || ''}`.trim() || '-'}</td> */}
+                                        <td className="px-4 py-2 text-center capitalize">{`My ${formatTransactionType(pickupOrder?.transaction_type)}` || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{`REG-${pickupOrder.id}` || '-'}</td>
                                         <td className="px-4 py-2 text-center">{formatterUtility(Number(pickupOrder?.amount)) || '-'}</td>
                                         <td className="px-4 py-2 text-center text-pryClr font-semibold">
                                             {formatISODateToCustom(pickupOrder.created_at).split(" ")[0] || '-'}
@@ -176,14 +174,6 @@ const PickUps = () => {
                                                 >
                                                     <GiCheckMark />
                                                 </button>
-                                                <button
-                                                    type="button"
-                                                    title={`View this order`}
-                                                    onClick={() => setSelectedOrder(pickupOrder)}
-                                                    className="text-pryClr text-xl hover:text-pryClr/90 cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto  disabled:opacity-25 disabled:cursor-not-allowed"
-                                                >
-                                                    <MdRemoveRedEye />
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -196,7 +186,7 @@ const PickUps = () => {
                         )}
                     </tbody>
                 </table>
-                {!isLoading && pickupOrders.length > 0 && (
+                {!isLoading && registerOrders.length > 0 && (
                     <PaginationControls
                         currentPage={currentPage}
                         totalPages={lastPage}
@@ -288,4 +278,4 @@ const PickUps = () => {
     );
 };
 
-export default PickUps;
+export default RegistrationOrders;

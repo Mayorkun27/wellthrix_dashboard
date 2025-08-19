@@ -143,7 +143,7 @@ const P2P = () => {
         />
       </div>
       <div className="shadow-sm rounded-xl bg-white space-y-4 overflow-x-auto md:p-8 p-6">
-        <h1 className="text-[22px] font-semibold tracking-tight">P2P Transfer</h1>
+        <h1 className="text-[22px] font-semibold tracking-tight">E-wallet Transfer</h1>
         <form
           onSubmit={(e) => {
             e.preventDefault();

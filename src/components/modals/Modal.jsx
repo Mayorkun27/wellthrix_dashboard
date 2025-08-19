@@ -21,7 +21,9 @@ const Modal = ({ children, onClose }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                {children}
+                <div className="max-h-[80vh] overflow-y-scroll styled-scrollbar pe-1">
+                    {children}
+                </div>
             </div>
         </div>,
         modalRoot

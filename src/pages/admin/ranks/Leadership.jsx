@@ -19,7 +19,7 @@ const Leadership = () => {
     setIsLoading(true)
 
     try {
-      const response = await axios.get(`${API_URL}/api/leadership/all-users`, {
+      const response = await axios.get(`${API_URL}/api/rank/all-users`, {
         headers: {
           "Authorization": `Bearer ${token}`
         },
