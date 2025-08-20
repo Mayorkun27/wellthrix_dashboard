@@ -40,7 +40,7 @@ function App() {
 
   return (
     <>
-      <Toaster />
+      <Toaster closeButton />
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
