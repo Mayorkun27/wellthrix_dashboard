@@ -37,7 +37,7 @@ const Transfer = () => {
             path: "/user/deposit"
         },
         {
-            walletType: "Purchase Wallet",
+            walletType: "Repurchase wallet",
             amount: user?.purchased_wallet,
             icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
                 <IoWalletOutline />
@@ -206,7 +206,7 @@ const Transfer = () => {
                             className={`w-full p-3 border rounded-lg ${formik.touched.to && formik.errors.to ? 'border-red-500' : 'border-gray-300'} outline-0`}
                         >
                             <option value="" disabled>Select destination wallet</option>
-                            <option value="purchased_wallet">Purchase Wallet</option>
+                            <option value="purchased_wallet">Repurchase wallet</option>
                         </select>
                         {formik.touched.to && formik.errors.to && (
                             <div className='text-red-500 text-sm'>{formik.errors.to}</div>

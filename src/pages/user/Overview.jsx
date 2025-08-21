@@ -55,7 +55,7 @@ const Overview = () => {
       path: "/user/deposit"
     },
     {
-      walletType: "Purchase Wallet",
+      walletType: "Repurchase Wallet",
       amount: user?.purchased_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <IoWalletOutline />

@@ -29,7 +29,8 @@ const ProfileInfoTab = () => {
         <FaUser />
       </div>, 
       title: 'Personal PV', 
-      value: Number(user?.personal_pv) + Number(user?.repurchase_pv)
+      value: Number(user?.personal_pv)
+      // + Number(user?.repurchase_pv)
     },
     { 
       id: 2, 

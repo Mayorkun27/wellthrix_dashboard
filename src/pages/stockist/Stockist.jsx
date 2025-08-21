@@ -48,10 +48,10 @@ const Stockist = () => {
       </div>
 
       {/* Tabs Section */}
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-4 overflow-x-scroll no-scrollbar">
         <button
           onClick={() => setActiveTab('pickup')}
-          className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
+          className={`px-4 h-[40px] font-semibold rounded-lg md:text-base text-sm whitespace-nowrap ${
             activeTab === 'pickup' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
@@ -59,7 +59,7 @@ const Stockist = () => {
         </button>
         <button
           onClick={() => setActiveTab('register')}
-          className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
+          className={`px-4 h-[40px] font-semibold rounded-lg md:text-base text-sm whitespace-nowrap ${
             activeTab === 'register' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
@@ -67,7 +67,7 @@ const Stockist = () => {
         </button>
         <button
           onClick={() => setActiveTab('history')}
-          className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
+          className={`px-4 h-[40px] font-semibold rounded-lg md:text-base text-sm whitespace-nowrap ${
             activeTab === 'history' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >

@@ -1,250 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { BsChevronDown, BsChevronRight } from 'react-icons/bs';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
-import { CiMaximize1, CiMinimize1 } from "react-icons/ci";
-import { useUser } from '../../context/UserContext';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { Popover } from '@headlessui/react';
-import { useFloating, autoUpdate, flip, shift } from '@floating-ui/react';
-
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+import React, { useState } from 'react'
+import GenealogyTree from './network/GenealogyTree';
+import DirectRefsTable from './network/DirectRefsTable';
 
 const Network = () => {
-    const { user, token, logout } = useUser()
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedGeneration, setSelectedGeneration] = useState('all');
-    const [expandedNodes, setExpandedNodes] = useState(new Set(['root']));
-    const [canvaScale, setCanvaScale] = useState(100);
-    const [isFullScreen, setIsFullScreen] = useState(false);
-    const [referralData, setReferralData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const fetchGenealogyTree = async () => {
-        setIsLoading(true)
-        try {
-            const response = await axios.get(`${API_URL}/api/referrals/genealogy-tree`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                }
-            });
-
-            console.log("Genealogy response", response)
-
-            if (response.status === 200) {
-                setReferralData(response.data.data)
-                toast.success(response.data.message || "Genealogy data fetched successfully.");
-            } else {
-                throw new Error(response.data.message || "Genealogy data call failed.");
-            }
-        } catch (error) {
-            if (error.response?.data?.message?.includes("unauthenticated")) {
-                logout();
-            }
-            console.error("An error occured fetching genealogy data:", error);
-            toast.error(error.response?.data?.message || "An error occurred fetching genealogy data.");
-        } finally {
-            setTimeout(() => {
-                setIsLoading(false)
-            }, 2000);
-        }
-    }
-
-    useEffect(() => {
-        fetchGenealogyTree()
-    }, [token])
-
-    const canvaRef = useRef(null);
-
-    const handleCanvaScaleReduction = () => {
-        if (canvaScale > 10) {
-            setCanvaScale(canvaScale - 10);
-        }
-    };
-
-    const handleCanvaScaleIncrement = () => {
-        if (canvaScale < 100) {
-            setCanvaScale(canvaScale + 10);
-        }
-    };
-
-    const handleMaximize = () => {
-        if (!document.fullscreenElement) {
-            if (canvaRef.current) {
-                canvaRef.current.requestFullscreen().then(() => {
-                    setIsFullScreen(true);
-                });
-            }
-        } else {
-            document.exitFullscreen().then(() => {
-                setIsFullScreen(false);
-            });
-        }
-    };
-
-    const toggleNode = (nodeId) => {
-        const newExpanded = new Set(expandedNodes);
-        if (newExpanded.has(nodeId)) {
-            newExpanded.delete(nodeId);
-        } else {
-            newExpanded.add(nodeId);
-        }
-        setExpandedNodes(newExpanded);
-    };
-
-    const filterByGeneration = (node, generation) => {
-        if (generation === 'all') return true;
-        return node.generation === parseInt(generation);
-    };
-
-    const searchInTree = (node, term) => {
-        if (!term) return true;
-        return node.username.toLowerCase().includes(term.toLowerCase());
-    };
-
-    const ReferralCard = ({ user, isExpanded, onToggle, hasChildren }) => {
-      const { refs, floatingStyles } = useFloating({
-          middleware: [flip(), shift()],
-          whileElementsMounted: autoUpdate,
-      });
-
-      return (
-          <Popover as="div" className="relative z-1 inline-block text-left w-full">
-              <Popover.Button
-                  as="div"
-                  title={`View ${user.username} info`}
-                  ref={refs.setReference}
-                  className="group bg-white cursor-pointer thiscard rounded-xl transition-all duration-300 py-3 w-[200px] relative text-sm p-4"
-              >
-                  <div className="flex flex-col items-center">
-                      <div className="md:w-11 w-10 md:h-11 h-10 mb-2 rounded-full border-2 border-pryClr bg-pryClr/20 overflow-hidden uppercase font-bold flex items-center justify-center">
-                          <h3>{`${user?.fullname?.split(" ")[0].charAt(0)}${user?.fullname?.split(" ")[1]?.charAt(0) || ''}`}</h3>
-                      </div>
-                      <h3 className="font-semibold text-black/80 text-center my-2 leading-0">@{user.username}</h3>
-                      <small className="flex items-center gap-2 font-semibold text-pryClr">
-                          <span>Left: {user.left_count}</span>
-                          <hr className='h-3 border-0 border-r-2' />
-                          <span>Right: {user.right_count}</span>
-                      </small>
-                  </div>
-                  {hasChildren && (
-                      <div className="flex justify-center mt-4">
-                          <button
-                              onClick={() => onToggle(user.id)}
-                              className={`p-2 rounded-lg bg-pryClr cursor-pointer text-white hover:shadow-md transition-all duration-200`}
-                          >
-                              {isExpanded ? <BsChevronDown size={16} /> : <BsChevronRight size={16} />}
-                          </button>
-                      </div>
-                  )}
-              </Popover.Button>
-              {isExpanded && <div className="absolute left-1/2 -translate-x-1/2 -bottom-7 w-[2px] h-8 bg-black -z-1"></div>}
-
-              <Popover.Panel
-                  ref={refs.setFloating}
-                  style={floatingStyles}
-                  className="absolute z-1000 w-[250px] mt-3 px-4 py-2 bg-white border border-gray-200 rounded-md shadow-lg"
-              >
-                  {/* Popover content */}
-                  <div className="font-semibold text-sm mb-2">User Details</div>
-                  <div className="space-y-1 text-xs text-gray-700">
-                      <p><strong>Name:</strong> {user.fullname}</p>
-                      <p><strong>Email:</strong> {user.email}</p>
-                      <p><strong>Personal PV:</strong> {user?.pv_info?.total_pv}</p>
-                      <p><strong>Group PV:</strong> {Number(user.total_pv_left) + Number(user.total_pv_right)} &#40;left:{user.total_pv_left} right:{user.total_pv_right}&#41;</p>
-                      {/* <p><strong>Package:</strong> {user.package || "-"}</p> */}
-                      <p><strong>Rank:</strong> {user.rank || "-"}</p>
-                  </div>
-
-              </Popover.Panel>
-          </Popover>
-      );
-  };
-
-
-    const TreeNode = ({ node, level = 0 }) => {
-        const isExpanded = expandedNodes.has(node.id);
-        const hasChildren = node.left || node.right;
-        const shouldShow = filterByGeneration(node, selectedGeneration) && searchInTree(node, searchTerm);
-
-        if (!shouldShow) return null;
-
-        if (isLoading) {
-            return <div className='w-10 h-10 border-4 border-pryClr border-t-transparent rounded-full animate-spin'></div>
-        }
-
-        return (
-            <div className="relative flex flex-col items-center">
-                <div className={`relative z-10 flex flex-col items-center`}>
-                    <ReferralCard
-                        user={node}
-                        isExpanded={isExpanded}
-                        onToggle={toggleNode}
-                        hasChildren={hasChildren}
-                    />
-                </div>
-                {isExpanded && hasChildren && (
-                    <div className={`${node.left && node.right ? "mt-12" : "mt-7"} flex gap-8 items-start justify-center relative`}>
-                        {node.left && (
-                            <div className={`relative z-20 flex flex-col items-center children-card ${node.right ? "left-card" : ""}`}>
-                                <TreeNode node={node.left} level={level + 1} />
-                            </div>
-                        )}
-                        {node.right && (
-                            <div className={`relative z-20 flex flex-col items-center children-card ${node.left ? "right-card" : ""}`}>
-                                <TreeNode node={node.right} level={level + 1} />
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-        );
-    };
+    const [selectedTab, setSelectedTab] = useState("tree")
 
     return (
-        <div ref={canvaRef} className='bg-white rounded-xl shadow-md p-8 h-[calc(100dvh-(44px+16px+48px))] mb-2 overflow-auto no-scrollbar'>
-            <div
-                className={`w-fit min-w-full mx-auto ${isLoading && "w-full h-full flex items-center justify-center"}`}
-                style={{ transform: `scale(${canvaScale / 100})`, transformOrigin: 'top center' }}
-            >
-                {referralData && <TreeNode node={referralData} />}
-            </div>
-            <div className="absolute w-max right-5 bottom-5 flex bg-gray-100 border border-black/20 rounded-md overflow-hidden">
+        <div className='space-y-8'>
+            <div className="flex justify-end gap-4">
                 <button
-                    type='button'
-                    className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'
-                    title='Decrease canva size'
-                    disabled={canvaScale === 30}
-                    onClick={handleCanvaScaleReduction}
+                    onClick={() => setSelectedTab('tree')}
+                    className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
+                        selectedTab === 'tree' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
+                    }`}
                 >
-                    <FaMinus />
+                    Genealogy Tree
                 </button>
                 <button
-                    type='button'
-                    className='w-10 h-10 text-xs flex items-center justify-center border-x border-black/20 cursor-pointer'
-                    title='Increase canva size'
-                    disabled
+                    onClick={() => setSelectedTab('direct')}
+                    className={`px-4 md:py-2 py-4 font-semibold rounded-lg md:text-base text-sm ${
+                        selectedTab === 'direct' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
+                    }`}
                 >
-                    {canvaScale + "%"}
-                </button>
-                <button
-                    type='button'
-                    className='w-10 h-10 flex items-center justify-center border-x border-black/20 disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer'
-                    title='Increase canva size'
-                    disabled={canvaScale === 100}
-                    onClick={handleCanvaScaleIncrement}
-                >
-                    <FaPlus />
-                </button>
-                <button
-                    type='button'
-                    className='w-10 h-10 flex items-center justify-center disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer font-extrabold'
-                    title={`${isFullScreen ? "Minimize" : "Maximize"} canva`}
-                    onClick={handleMaximize}
-                >
-                    {!isFullScreen ? <CiMaximize1 /> : <CiMinimize1 />}
+                    Referral List
                 </button>
             </div>
+            {selectedTab === "tree" && <GenealogyTree />}
+            {selectedTab === "direct" && <DirectRefsTable />}
         </div>
     )
 }

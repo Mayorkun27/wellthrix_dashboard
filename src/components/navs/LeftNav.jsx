@@ -55,12 +55,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/deposit',
             role: ["user"]
         },
-        {
-            name: 'Withdraw',
-            icon: <PiHandDeposit size={20} />,
-            path: '/user/withdraw',
-            role: ["user"]
-        },
+        // {
+        //     name: 'Withdraw',
+        //     icon: <PiHandDeposit size={20} />,
+        //     path: '/user/withdraw',
+        //     role: ["user"]
+        // },
         {
             name: 'Transfer Funds',
             icon: <GrTransaction size={20} />,
@@ -118,8 +118,8 @@ const LeftNav = ({ setIsOpen }) => {
         {
             name: 'Product Upload',
             icon: <MdOutlineFileUpload size={20} />,
-            path: '/sunmence/uploadproduct',
-            role: ["sunmence"]
+            path: '/admin/uploadproduct',
+            role: ["admin"]
         },
         {
             name: 'Contact Input',
@@ -181,7 +181,7 @@ const LeftNav = ({ setIsOpen }) => {
                         key={index}
                         className={({ isActive }) => `
                             flex items-center md:ps-18 ps-24 gap-3 font-medium border-l-10 border-transparent text-white transition-all duration-300 hover:border-secClr hover:bg-secClr/30 px-4 py-3 cursor-pointer text-base
-                            ${name.toLowerCase() === "stockist" && user?.stockist_enabled !== 1 && "line-through pointer-events-none opacity-50"}
+                            ${name.toLowerCase() === "stockist" && user?.stockist_enabled !== 1 && "linkDisabled"}
                             ${isActive ? 'bg-secClr/30 !border-secClr text-white' : ''}
                         `}
                         onClick={() => setIsOpen(false)}

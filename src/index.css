@@ -101,3 +101,8 @@ input[type="number"]::-webkit-inner-spin-button{
   content: "Coming soon";
   @apply absolute inset-0 bg-black/50 flex items-center justify-center text-secClr text-2xl font-bold
 }
+
+
+.linkDisabled{
+  @apply line-through pointer-events-none opacity-50
+}

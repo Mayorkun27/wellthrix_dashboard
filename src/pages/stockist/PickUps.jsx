@@ -83,7 +83,9 @@ const PickUps = () => {
 
     // Function to perform the actual PUT request
     const performPickupConfirmation = async () => {
-        if (!orderToConfirm?.order?.id) return;
+        console.log("clciked")
+        console.log("orderToConfirm", orderToConfirm)
+        if (!orderToConfirm?.orders?.id) return;
 
         setIsConfirming(true); // Set loading state for the button
         setShowConfirmModal(false); // Close the dialog immediately
@@ -91,7 +93,7 @@ const PickUps = () => {
 
         try {
             const response = await axios.put(
-                `${API_URL}/api/orders/${orderToConfirm.order.id}/confirm`,
+                `${API_URL}/api/orders/${orderToConfirm.orders.id}/confirm`,
                 {}, // Empty body, as it's typically just a status update
                 {
                     headers: {
