@@ -33,7 +33,7 @@ const ProductCards = ({ product }) => {
                     />
                 </div>
                 <div className="md:mt-4 mt-6 lg:h-[calc(100%-215px)] md:h-[calc(100%-220px)] flex flex-col justify-between">
-                    <div className="leading-1">
+                    <div className="md:leading-1 leading-3">
                         <h3 className="font-bold text-base text-pryClr capitalize">{product.product_name}</h3>
                         <div className="flex items-center justify-between">
                             <div className="font-semibold text-[#EC3030CC] flex md:items-start items-center md:pb-0 pb-1 gap-2 md:text-sm">

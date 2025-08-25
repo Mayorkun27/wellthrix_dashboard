@@ -12,7 +12,7 @@ import { MdRemoveRedEye } from 'react-icons/md';
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const RegistrationOrders = () => {
-    const { token, logout, user } = useUser();
+    const { token, logout, user, refreshUser } = useUser();
     const [registerOrders, setRegisterOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +31,7 @@ const RegistrationOrders = () => {
         success: { text: 'Successful', className: 'bg-[#dff7ee]/80 text-pryclr' },
     };
 
-    const fetchregisterOrders = async () => {
+    const fetchRegisterOrders = async () => {
         setIsLoading(true);
         console.log(`Posting to ${API_URL}/api/stockists/${user?.id}/user`)
         try {
@@ -46,7 +46,7 @@ const RegistrationOrders = () => {
                 }
             });
 
-            console.log("pickup response", response)
+            console.log("registration response", response)
 
             if (response.status === 200) {
                 const { data, current_page, last_page, per_page } = response.data.registrations;
@@ -56,15 +56,15 @@ const RegistrationOrders = () => {
                 setLastPage(last_page);
                 setPerPage(per_page);
             } else {
-                throw new Error(response.data.message || 'Failed to fetch pickup orders.');
+                throw new Error(response.data.message || 'Failed to fetch registration orders.');
             }
         } catch (error) {
             if (error.response?.data?.message?.includes('unauthenticated')) {
                 logout();
                 toast.error('Session expired. Please login again.');
             }
-            console.error('Pickup orders fetch error:', error);
-            toast.error(error.response?.data?.message || 'An error occurred fetching pickup orders.');
+            console.error('registration orders fetch error:', error);
+            toast.error(error.response?.data?.message || 'An error occurred fetching registration orders.');
         } finally {
             setIsLoading(false);
         }
@@ -72,27 +72,27 @@ const RegistrationOrders = () => {
 
     useEffect(() => {
         if (token && user?.id) {
-            fetchregisterOrders();
+            fetchRegisterOrders();
         }
     }, [currentPage, token, user?.id]);
 
     // Handler to open the confirmation modal
-    const handleConfirmPickupClick = (order) => {
+    const handleConfirmRegistrationClick = (order) => {
         setOrderToConfirm(order);
         setShowConfirmModal(true);
     };
 
     // Function to perform the actual PUT request
-    const performPickupConfirmation = async () => {
-        if (!orderToConfirm?.order?.id) return;
+    const performRegistrationConfirmation = async () => {
+        if (!orderToConfirm?.registration_id) return;
 
         setIsConfirming(true); // Set loading state for the button
         setShowConfirmModal(false); // Close the dialog immediately
-        const toastId = toast.loading(`Confirming pickup for ${orderToConfirm.ref_no}...`);
+        const toastId = toast.loading(`Confirming registration for ${orderToConfirm?.user?.username}...`);
 
         try {
             const response = await axios.put(
-                `${API_URL}/api/orders/${orderToConfirm.order.id}/confirm`,
+                `${API_URL}/api/registration/${orderToConfirm.registration_id}/confirm`,
                 {}, // Empty body, as it's typically just a status update
                 {
                     headers: {
@@ -102,18 +102,21 @@ const RegistrationOrders = () => {
                 }
             );
 
+            console.log("reistration confirmation response", response)
+
             if (response.status === 200) {
-                toast.success(response.data.message || `Pickup for ${orderToConfirm.ref_no} confirmed!`, { id: toastId });
-                fetchregisterOrders();
+                toast.success(response.data.message || `registration for ${orderToConfirm?.user?.username} confirmed!`, { id: toastId });
+                fetchRegisterOrders();
+                await refreshUser();
             } else {
-                throw new Error(response.data.message || 'Failed to confirm pickup.');
+                throw new Error(response.data.message || 'Failed to confirm registration.');
             }
         } catch (error) {
             if (error.response?.data?.message?.includes('unauthenticated')) {
                 logout();
             }
-            console.error('Confirm pickup error:', error);
-            toast.error(error.response?.data?.message || 'An error occurred confirming pickup.', { id: toastId });
+            console.error('Confirm registration error:', error);
+            toast.error(error.response?.data?.message || 'An error occurred confirming registration.', { id: toastId });
         } finally {
             setIsConfirming(false);
             setOrderToConfirm(null);
@@ -127,7 +130,8 @@ const RegistrationOrders = () => {
                     <thead className="text-gray-700 uppercase">
                         <tr>
                             <th className="px-4 text-center">S/N</th>
-                            <th className="px-4 text-center">Transaction type</th>
+                            <th className="px-4 text-center whitespace-nowrap">Transaction type</th>
+                            <th className="px-4 text-center whitespace-nowrap">username</th>
                             <th className="px-4 text-center">ORD ID</th>
                             <th className="px-4 text-center">Amount</th>
                             <th className="px-4 text-center">Date</th>
@@ -141,8 +145,8 @@ const RegistrationOrders = () => {
                                 <td colSpan="7" className="text-center p-8">Loading...</td>
                             </tr>
                         ) : registerOrders.length > 0 ? (
-                            registerOrders.map((pickupOrder, index) => {
-                                const statusKey = pickupOrder?.status?.toLowerCase(); // Ensure lowercase for key lookup
+                            registerOrders.map((registrationOrder, index) => {
+                                const statusKey = registrationOrder?.delivery_status?.toLowerCase(); // Ensure lowercase for key lookup
                                 const { text, className } = statusLabels[statusKey] || { text: statusKey || 'unknown', className: 'bg-gray-200 text-gray-600' };
 
                                 const serialNumber = (currentPage - 1) * perPage + (index + 1);
@@ -150,13 +154,14 @@ const RegistrationOrders = () => {
                                 const canConfirm = statusKey === "pending"; // Only allow confirming 'pending' orders
 
                                 return (
-                                    <tr key={pickupOrder.id} className="border-b border-black/10 text-xs">
+                                    <tr key={registrationOrder.id} className="border-b border-black/10 text-xs">
                                         <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
-                                        <td className="px-4 py-2 text-center capitalize">{`My ${formatTransactionType(pickupOrder?.transaction_type)}` || '-'}</td>
-                                        <td className="px-4 py-2 text-center">{`REG-${pickupOrder.id}` || '-'}</td>
-                                        <td className="px-4 py-2 text-center">{formatterUtility(Number(pickupOrder?.amount)) || '-'}</td>
+                                        <td className="px-4 py-2 text-center capitalize">{`${formatTransactionType(registrationOrder?.transaction_type)}` || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{registrationOrder?.user?.username || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{`REG-${registrationOrder?.id}` || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{formatterUtility(Number(registrationOrder?.amount)) || '-'}</td>
                                         <td className="px-4 py-2 text-center text-pryClr font-semibold">
-                                            {formatISODateToCustom(pickupOrder.created_at).split(" ")[0] || '-'}
+                                            {formatISODateToCustom(registrationOrder.created_at).split(" ")[0] || '-'}
                                         </td>
                                         <td className="py-6 text-center">
                                             <div className={`w-[100px] py-2 ${className} rounded-md text-center font-normal mx-auto border border-pryClr/15`}>
@@ -167,9 +172,9 @@ const RegistrationOrders = () => {
                                             <div className="flex flex-row-reverse items-center">
                                                 <button
                                                     type="button"
-                                                    title={canConfirm ? `Confirm pickup for ${pickupOrder.ref_no}` : `Pickup already ${text}`}
+                                                    title={canConfirm ? `Confirm registration for ${registrationOrder.ref_no}` : `Registration already ${text}`}
                                                     disabled={!canConfirm || isConfirming} // Disable if not pending or if confirming another order
-                                                    onClick={() => handleConfirmPickupClick(pickupOrder)}
+                                                    onClick={() => handleConfirmRegistrationClick(registrationOrder)}
                                                     className="text-pryClr text-xl cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto disabled:opacity-25 disabled:cursor-not-allowed"
                                                 >
                                                     <GiCheckMark />
@@ -181,7 +186,7 @@ const RegistrationOrders = () => {
                             })
                         ) : (
                             <tr>
-                                <td colSpan="7" className="text-center p-8">No pickup orders found.</td>
+                                <td colSpan="7" className="text-center p-8">No registration orders found.</td>
                             </tr>
                         )}
                     </tbody>
@@ -200,9 +205,9 @@ const RegistrationOrders = () => {
                 <Modal onClose={() => setShowConfirmModal(false)}>
                     <ConfirmationDialog
                         type='confirm'
-                        title='Confirm order pickup?'
-                        message={`Are you sure you want to confirm pickup for order #${orderToConfirm.ref_no} by ${orderToConfirm?.order?.user?.first_name || ''} ${orderToConfirm?.order?.user?.last_name || ''}?`}
-                        onConfirm={performPickupConfirmation}
+                        title='Confirm registration pickup?'
+                        message={`Are you sure you want to confirm registration order pickup REG-${orderToConfirm?.user_id} by ${orderToConfirm?.user?.first_name || ''} ${orderToConfirm?.user?.last_name || ''}?`}
+                        onConfirm={performRegistrationConfirmation}
                         onCancel={() => {
                             setShowConfirmModal(false);
                             setOrderToConfirm(null);
