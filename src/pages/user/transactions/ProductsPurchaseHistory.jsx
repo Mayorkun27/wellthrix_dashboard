@@ -182,8 +182,8 @@ const ProductsPurchaseHistory = () => {
                         <span className="font-medium">Order amount: </span>
                         {formatterUtility(Number(selectedPurchase.orders?.total_amount))}
                     </li>
-                    <div className={`w-full py-2 mt-4 ${selectedPurchase.orders.delivery === "success" ? "bg-[#dff7ee]/80 text-pryclr" : selectedPurchase.orders.delivery === "failed" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
-                        Status: {selectedPurchase.orders.delivery === "success" ? "Successful" : selectedPurchase.orders.delivery === "failed" ? "Failed" : "Pending"}
+                    <div className={`w-full py-2 mt-4 ${selectedPurchase.orders.delivery === "picked" ? "bg-[#dff7ee]/80 text-pryclr" : selectedPurchase.orders.delivery === "failed" ? "bg-[#c51236]/20 text-red-600" : "bg-yellow-100 text-yellow-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
+                        Status: {selectedPurchase.orders.delivery === "picked" ? "Picked" : selectedPurchase.orders.delivery === "failed" ? "Failed" : "Pending"}
                     </div>
                 </Modal>
             )}

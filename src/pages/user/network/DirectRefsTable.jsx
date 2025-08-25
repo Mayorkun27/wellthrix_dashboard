@@ -64,6 +64,7 @@ const DirectRefsTable = () => {
                 <thead>
                     <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
                         <th className="p-5">S/N</th>
+                        {/* <th className="p-5">Order id</th> */}
                         <th className="p-5">Full name</th>
                         <th className="p-5">username</th>
                         <th className="p-5">package</th>
@@ -85,6 +86,7 @@ const DirectRefsTable = () => {
                                     className="hover:bg-gray-50 text-sm border-b border-black/10 text-center capitalize"
                                 >
                                     <td className="p-3">{String(index+1).padStart(3, "0")}</td>
+                                    {/* <td className="p-4">{`REG-${item?.user?.id}` || "-"}</td> */}
                                     <td className="p-4">{item?.user?.fullname || "-"}</td>
                                     <td className="p-4">{item?.user?.username || "-"}</td>
                                     <td className="p-4 capitalize">{item?.user?.plan?.name || "-"}</td>

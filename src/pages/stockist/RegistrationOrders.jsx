@@ -12,7 +12,7 @@ import { MdRemoveRedEye } from 'react-icons/md';
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const RegistrationOrders = () => {
-    const { token, logout, user } = useUser();
+    const { token, logout, user, refreshUser } = useUser();
     const [registerOrders, setRegisterOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -84,15 +84,15 @@ const RegistrationOrders = () => {
 
     // Function to perform the actual PUT request
     const performRegistrationConfirmation = async () => {
-        if (!orderToConfirm?.order?.id) return;
+        if (!orderToConfirm?.registration_id) return;
 
         setIsConfirming(true); // Set loading state for the button
         setShowConfirmModal(false); // Close the dialog immediately
-        const toastId = toast.loading(`Confirming registration for ${orderToConfirm.ref_no}...`);
+        const toastId = toast.loading(`Confirming registration for ${orderToConfirm?.user?.username}...`);
 
         try {
             const response = await axios.put(
-                `${API_URL}/api/orders/${orderToConfirm.order.id}/confirm`,
+                `${API_URL}/api/registration/${orderToConfirm.registration_id}/confirm`,
                 {}, // Empty body, as it's typically just a status update
                 {
                     headers: {
@@ -102,9 +102,12 @@ const RegistrationOrders = () => {
                 }
             );
 
+            console.log("reistration confirmation response", response)
+
             if (response.status === 200) {
-                toast.success(response.data.message || `registration for ${orderToConfirm.ref_no} confirmed!`, { id: toastId });
+                toast.success(response.data.message || `registration for ${orderToConfirm?.user?.username} confirmed!`, { id: toastId });
                 fetchRegisterOrders();
+                await refreshUser();
             } else {
                 throw new Error(response.data.message || 'Failed to confirm registration.');
             }
@@ -127,7 +130,8 @@ const RegistrationOrders = () => {
                     <thead className="text-gray-700 uppercase">
                         <tr>
                             <th className="px-4 text-center">S/N</th>
-                            <th className="px-4 text-center">Transaction type</th>
+                            <th className="px-4 text-center whitespace-nowrap">Transaction type</th>
+                            <th className="px-4 text-center whitespace-nowrap">username</th>
                             <th className="px-4 text-center">ORD ID</th>
                             <th className="px-4 text-center">Amount</th>
                             <th className="px-4 text-center">Date</th>
@@ -142,7 +146,7 @@ const RegistrationOrders = () => {
                             </tr>
                         ) : registerOrders.length > 0 ? (
                             registerOrders.map((registrationOrder, index) => {
-                                const statusKey = registrationOrder?.status?.toLowerCase(); // Ensure lowercase for key lookup
+                                const statusKey = registrationOrder?.delivery_status?.toLowerCase(); // Ensure lowercase for key lookup
                                 const { text, className } = statusLabels[statusKey] || { text: statusKey || 'unknown', className: 'bg-gray-200 text-gray-600' };
 
                                 const serialNumber = (currentPage - 1) * perPage + (index + 1);
@@ -152,8 +156,9 @@ const RegistrationOrders = () => {
                                 return (
                                     <tr key={registrationOrder.id} className="border-b border-black/10 text-xs">
                                         <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
-                                        <td className="px-4 py-2 text-center capitalize">{`My ${formatTransactionType(registrationOrder?.transaction_type)}` || '-'}</td>
-                                        <td className="px-4 py-2 text-center">{`REG-${registrationOrder.id}` || '-'}</td>
+                                        <td className="px-4 py-2 text-center capitalize">{`${formatTransactionType(registrationOrder?.transaction_type)}` || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{registrationOrder?.user?.username || '-'}</td>
+                                        <td className="px-4 py-2 text-center">{`REG-${registrationOrder?.id}` || '-'}</td>
                                         <td className="px-4 py-2 text-center">{formatterUtility(Number(registrationOrder?.amount)) || '-'}</td>
                                         <td className="px-4 py-2 text-center text-pryClr font-semibold">
                                             {formatISODateToCustom(registrationOrder.created_at).split(" ")[0] || '-'}
@@ -200,8 +205,8 @@ const RegistrationOrders = () => {
                 <Modal onClose={() => setShowConfirmModal(false)}>
                     <ConfirmationDialog
                         type='confirm'
-                        title='Confirm order registration?'
-                        message={`Are you sure you want to confirm registration for order #${orderToConfirm.ref_no} by ${orderToConfirm?.order?.user?.first_name || ''} ${orderToConfirm?.order?.user?.last_name || ''}?`}
+                        title='Confirm registration pickup?'
+                        message={`Are you sure you want to confirm registration order pickup REG-${orderToConfirm?.user_id} by ${orderToConfirm?.user?.first_name || ''} ${orderToConfirm?.user?.last_name || ''}?`}
                         onConfirm={performRegistrationConfirmation}
                         onCancel={() => {
                             setShowConfirmModal(false);

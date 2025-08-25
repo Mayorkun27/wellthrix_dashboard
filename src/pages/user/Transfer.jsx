@@ -188,7 +188,7 @@ const Transfer = () => {
                         >
                             <option value="" disabled>Select target wallet</option>
                             <option value="e_wallet">E-Wallet</option>
-                            <option value="earning_wallet">Earning Wallet</option>
+                            {/* <option value="earning_wallet">Earning Wallet</option> */}
                         </select>
                         {formik.touched.from && formik.errors.from && (
                             <div className='text-red-500 text-sm'>{formik.errors.from}</div>
