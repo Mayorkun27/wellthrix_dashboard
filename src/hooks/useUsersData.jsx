@@ -17,6 +17,7 @@ export const useUsersData = ({ token, logout, initialPage = 1, initialPerPage = 
       const res = await getAllUsers(token, currentPage, perPage);
       if (res.status === 200 && res.data.success) {
         const { data, current_page, last_page, per_page } = res.data.data;
+        console.log("data", data)
         setUsers(data);
         setCurrentPage(current_page);
         setLastPage(last_page);

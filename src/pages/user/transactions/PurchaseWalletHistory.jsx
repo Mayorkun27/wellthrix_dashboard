@@ -29,7 +29,7 @@ const PurchaseWalletHistory = () => {
                 }
             });
 
-            console.log("Purchase History Response:", response.data);
+            console.log("Repurchase History Response:", response.data);
 
             if (response.status === 200 && response.data.ok) {
                 const { data, current_page, last_page, per_page } = response.data.data;
@@ -38,14 +38,14 @@ const PurchaseWalletHistory = () => {
                 setLastPage(last_page);
                 setPerPage(per_page);
             } else {
-                throw new Error(response.data.message || "Failed to fetch purchase wallet history.");
+                throw new Error(response.data.message || "Failed to fetch repurchase wallet history.");
             }
         } catch (error) {
             if (error.response?.data?.message?.includes("unauthenticated")) {
                 logout();
             }
             console.error("API submission error:", error);
-            toast.error(error.response?.data?.message || "An error occurred fetching purchase wallet history!.");
+            toast.error(error.response?.data?.message || "An error occurred fetching repurchase wallet history!.");
         } finally {
             setIsLoading(false);
         }
@@ -96,7 +96,7 @@ const PurchaseWalletHistory = () => {
                         })
                     ) : (
                         <tr>
-                            <td colSpan="7" className="text-center p-8">No purchase wallet history found.</td>
+                            <td colSpan="7" className="text-center p-8">No repurchase wallet history found.</td>
                         </tr>
                     )}
                 </tbody>

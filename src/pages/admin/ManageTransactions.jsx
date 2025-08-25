@@ -7,7 +7,7 @@ import AutomatedWithdraw from './transactions/automated/AutomatedWithdraw';
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ManageTransactions = () => {
-  const [activeTab, setActiveTab] = useState('manual-deposit');
+  const [activeTab, setActiveTab] = useState('manual-withdraw');
 
   const statusColors = {
     Successful: 'text-[#2F5318] bg-[#DFF7EE]/15 border border-[#2F5318]/15',

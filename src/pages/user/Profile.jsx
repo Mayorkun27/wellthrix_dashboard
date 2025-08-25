@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaArrowUpLong } from 'react-icons/fa6';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import assets from '../../assets/assests'; // Ensure this path is correct in your project
 import { useUser } from '../../context/UserContext';
 import ProfileInfoTab from './profileTabs/ProfileInfoTab';
 import PasswordResetTab from './profileTabs/PasswordResettab';
@@ -15,6 +11,12 @@ import BankDetailsForm from './profileTabs/BankDetailsForm';
 // Main Dashboard Component
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
+
+  const { refreshUser } = useUser()
+
+  useEffect(() => {
+    refreshUser()
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {

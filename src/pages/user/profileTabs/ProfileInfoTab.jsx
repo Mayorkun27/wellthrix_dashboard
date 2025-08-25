@@ -29,7 +29,8 @@ const ProfileInfoTab = () => {
         <FaUser />
       </div>, 
       title: 'Personal PV', 
-      value: user?.total_pv 
+      value: Number(user?.personal_pv)
+      // + Number(user?.repurchase_pv)
     },
     { 
       id: 2, 
@@ -83,7 +84,7 @@ const ProfileInfoTab = () => {
             <p className='md:text-lg mb-2'><span className='font-semibold'>Username: </span>{user?.username}</p>
           </div>
           <div className='w-full border-b-3 border-white flex justify-between items-center'>
-            <p className='md:text-lg mb-2'><span className='font-semibold capitalize'>Package: </span>{miscellaneousDetails?.planDetails?.name}</p>
+            <p className='md:text-lg mb-2 capitalize'><span className='font-semibold'>Package: </span>{miscellaneousDetails?.planDetails?.name}</p>
             <Link
               to="/user/upgrade"
               className="flex text-[#0F16D7] font-semibold items-center mb-2 md:text-lg text-sm"
@@ -93,7 +94,7 @@ const ProfileInfoTab = () => {
             </Link>
           </div>
           <div className='w-full border-b-3 border-white'>
-            <p className='md:text-lg mb-2'><span className='font-semibold'>Current Rank: </span>No Rank Achieved</p>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Current Rank: </span>{!user?.rank ? "No Rank" : user?.rank}</p>
           </div>
         </div>
       </div>

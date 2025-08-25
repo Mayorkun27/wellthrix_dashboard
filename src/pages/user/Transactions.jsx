@@ -12,7 +12,7 @@ const Transactions = ({ selectedType }) => {
   return (
     <div className="space-y-6">
       {selectedType === 'E-Wallet' && <EwalletHistory />}
-      {selectedType === 'Purchase Wallet' && <PurchaseWalletHistory />}
+      {selectedType === 'Repurchase Wallet' && <PurchaseWalletHistory />}
       {selectedType === 'Earnings History' && <EarningWalletHistory />}
       {/* {selectedType === 'Incentive Wallet' && <IncentiveWalletHistory />} */}
       {selectedType === 'Withdraw History' && <WithdrawHistory />}

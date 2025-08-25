@@ -3,7 +3,7 @@ import PaginationControls from '../../utilities/PaginationControls';
 import { useUser } from '../../context/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { formatISODateToCustom, formatterUtility } from '../../utilities/Formatterutility';
+import { formatISODateToCustom, formatterUtility, formatTransactionType } from '../../utilities/Formatterutility';
 import { GiCheckMark } from 'react-icons/gi';
 import Modal from '../../components/modals/Modal';
 import ConfirmationDialog from '../../components/modals/ConfirmationDialog';
@@ -139,7 +139,7 @@ const History = () => {
                                 return (
                                     <tr key={pickupOrder.id} className="border-b border-black/10 text-xs">
                                         <td className="p-3">{String(index+1).padStart(3, "0")}</td>
-                                        <td className="px-4 py-2 text-center">{pickupOrder?.transaction_type || '-'}</td>
+                                        <td className="px-4 py-2 text-center capitalize">{formatTransactionType(pickupOrder?.transaction_type) || '-'}</td>
                                         <td className="px-4 py-2 text-center">{pickupOrder?.ref_no || '-'}</td>
                                         <td className="px-4 py-2 text-center">{formatterUtility(Number(pickupOrder?.amount)) || ''}</td>
                                         <td className="px-4 py-2 text-center text-pryClr font-semibold">

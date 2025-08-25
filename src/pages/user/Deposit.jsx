@@ -189,7 +189,6 @@ const Deposit = () => {
             <p className="text-red-600">{formik.errors.payment_method}</p>
           )}
           <div 
-            hidden
             className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium"
           >
             <h3>Bank Name: <span className="font-bold">ZENITH BANK</span></h3>

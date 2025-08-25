@@ -1,7 +1,7 @@
 // src/components/users/UserRow.jsx
 import { FaTrashAlt } from "react-icons/fa";
 import { GiUpgrade } from "react-icons/gi";
-import { formatISODateToCustom } from "../../utilities/Formatterutility";
+import { formatISODateToCustom, formatterUtility } from "../../utilities/Formatterutility";
 
 const UserRow = ({
   user,
@@ -24,6 +24,7 @@ const UserRow = ({
     <tr className="hover:bg-gray-50 text-sm border-b border-black/10 text-center">
       <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
       <td className="p-4 capitalize">{`${user.first_name} ${user.last_name}` || "-"}</td>
+      <td className="p-4">{formatterUtility(Number(user.earning_wallet)) || "-"}</td>
       <td className="p-4">{user.email || "-"}</td>
       <td className="p-4">{user.username || "-"}</td>
       <td className="p-4 capitalize">{user.mobile || "-"}</td>

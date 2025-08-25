@@ -40,7 +40,7 @@ function App() {
 
   return (
     <>
-      <Toaster />
+      <Toaster closeButton />
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
@@ -161,7 +161,7 @@ function App() {
           }
         />
         <Route
-          path="/sunmence/uploadproduct"
+          path="/admin/uploadproduct"
           element={
             <MainLayout
               pageName={"Manage Products"}
