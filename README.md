@@ -106,7 +106,7 @@ The Wellthrix Dashboard provides distinct functionalities for different user rol
 *   **Your Name**: Adeleke Oluwamayokun
 *   **LinkedIn**: [\[LinkedIn Profile URL\]](https://www.linkedin.com/in/adeleke-oluwamayokun-780a912a5)
 *   **Twitter**: [\[Twitter Handle\]](https://www.x.com/Mayorkun_27)
-*   **Portfolio**: [\[Personal Portfolio URL\]](oluwamayokun.vercel.app)
+*   **Portfolio**: [\[Personal Portfolio URL\]](https://oluwamayokun.vercel.app)
 
 ---
 
