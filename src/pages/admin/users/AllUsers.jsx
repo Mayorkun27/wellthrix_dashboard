@@ -56,7 +56,7 @@ const AllUsers = () => {
           <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
             <th className="p-5">ID</th>
             <th className="p-5">Name</th>
-            <th className="p-5">Earnings</th>
+            {/* <th className="p-5">Earnings</th> */}
             <th className="p-5">Email</th>
             <th className="p-5">Username</th>
             <th className="p-5">Phone</th>

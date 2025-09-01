@@ -133,7 +133,7 @@ const Stockist = () => {
               activeTab === 'pickup' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
             }`}
           >
-            Pickup Orders
+            Repurchase Orders
           </button>
           <button
             onClick={() => setActiveTab('register')}

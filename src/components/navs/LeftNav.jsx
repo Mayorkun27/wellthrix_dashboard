@@ -142,8 +142,14 @@ const LeftNav = ({ setIsOpen }) => {
         {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
-            path: '/stockist/managestockist',
+            path: '/stockist/user/managestockist',
             role: ["user"]
+        },
+        {
+            name: 'Manage Stockists',
+            icon: <TbTruckDelivery size={20} />,
+            path: '/stockist/admin/managestockist',
+            role: ["admin"]
         },
         {
             name: 'Loyalty Bonus',

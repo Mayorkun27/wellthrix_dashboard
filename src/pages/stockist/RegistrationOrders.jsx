@@ -41,7 +41,7 @@ const RegistrationOrders = () => {
                     'Content-Type': 'application/json',
                 },
                 params: {
-                    page: currentPage,
+                    registrations_page: currentPage,
                     perPage: perPage
                 }
             });
@@ -72,6 +72,7 @@ const RegistrationOrders = () => {
 
     useEffect(() => {
         if (token && user?.id) {
+            console.log("Fetching orders for page:", currentPage);
             fetchRegisterOrders();
         }
     }, [currentPage, token, user?.id]);

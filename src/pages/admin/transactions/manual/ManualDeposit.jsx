@@ -3,7 +3,7 @@ import { useUser } from "../../../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
 import PaginationControls from "../../../../utilities/PaginationControls";
-import { formatISODateToCustom, formatterUtility } from "../../../../utilities/Formatterutility";
+import { formatISODateToCustom, formatterUtility } from "../../../../utilities/formatterutility";
 import { GiCheckMark } from "react-icons/gi";
 import Modal from "../../../../components/modals/Modal";
 import ConfirmationDialog from "../../../../components/modals/ConfirmationDialog";
