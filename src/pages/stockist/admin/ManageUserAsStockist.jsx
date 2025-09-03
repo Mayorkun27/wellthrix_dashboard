@@ -8,6 +8,7 @@ import { LiaShoppingBagSolid } from "react-icons/lia";
 import { CiEdit } from "react-icons/ci";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -63,12 +64,29 @@ const ManageUserAsStockist = () => {
         .required("Stockist location is required"),
     }),
     onSubmit: async (values) => {
-      console.log(values)
+      console.log("values", values)
       setIsLoading(true)
       const toastId = toast.loading("Updating stockist information")
 
       try {
-        const response = await axios.post(`${API_URL}/api/users/${stockistToEdit?.id}/upgrade-stockist`, values, {
+        const payload = {};
+
+        if (values.new_plan && values.new_plan !== stockistToEdit?.stockist_plan) {
+          payload.new_plan = values.new_plan;
+        }
+
+        if (values.stockist_location && values.stockist_location !== stockistToEdit?.stockist_location) {
+          payload.stockist_location = values.stockist_location;
+        }
+
+        if (Object.keys(payload).length === 0) {
+          toast.info("No changes to update.", { id: toastId });
+          setIsLoading(false);
+          setStockistToEdit(null);
+          return;
+        }
+
+        const response = await axios.post(`${API_URL}/api/users/${stockistToEdit?.id}/upgrade-stockist`, payload, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -141,16 +159,13 @@ const ManageUserAsStockist = () => {
                       >
                         <CiEdit />
                       </button>
-                      <button
-                        type="button"
+                      <Link
+                        to={`/stockist/admin/managestockist/${stockist?.id}?username=${stockist?.username}`}
                         title={`Manage stockist products`}
-                        onClick={() => {
-                            
-                        }}
                         className="text-pryClr text-xl cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto disabled:opacity-25 disabled:cursor-not-allowed"
                       >
                         <LiaShoppingBagSolid />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>
@@ -165,16 +180,6 @@ const ManageUserAsStockist = () => {
           )}
         </tbody>
       </table>
-
-      {/* {!isLoading && stockists.length > 0 && (
-        <div className="flex justify-center items-center gap-2 p-4">
-          <PaginationControls
-            currentPage={currentPage}
-            totalPages={lastPage}
-            setCurrentPage={setCurrentPage}
-          />
-        </div>
-      )} */}
 
       {
         stockistToEdit && (

@@ -35,6 +35,7 @@ import Loading from "./pages/auth/Loading";
 import P2P from "./pages/user/P2P";
 import NotFound from "./view/NotFound";
 import ManageUserAsStockist from "./pages/stockist/admin/ManageUserAsStockist";
+import ManageStockistInventory from "./pages/stockist/admin/ManageStockistInventory";
 
 function App() {
   const { user } = useUser();
@@ -127,6 +128,11 @@ function App() {
         <Route
           path="/stockist/admin/managestockist"
           element={<MainLayout pageName={"Manage Stockists"} child={<ManageUserAsStockist />} />}
+        />
+
+        <Route
+          path="/stockist/admin/managestockist/:id"
+          element={<MainLayout pageName={"Manage Stockists"} child={<ManageStockistInventory />} />}
         />
 
         <Route

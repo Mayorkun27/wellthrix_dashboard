@@ -5,7 +5,7 @@ import PaginationControls from "../../../utilities/PaginationControls";
 import {
   formatISODateToCustom,
   formatterUtility,
-} from "../../../utilities/Formatterutility";
+} from "../../../utilities/formatterutility";
 import { FaTrashAlt } from "react-icons/fa";
 import Modal from "../../../components/modals/Modal";
 import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
@@ -27,7 +27,7 @@ const ManageMilestones = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${API_URL}/api/milestone/paid-all-time`,
+        `${API_URL}/api/milestones`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,13 +41,15 @@ const ManageMilestones = () => {
       );
 
       console.log("eligible users Response:", response);
+      console.log("eligible users Response:", response.data);
+      console.log("eligible users Response:", response.data.data);
 
       if (response.status === 200 && response.data.success) {
-        const { data, current_page, last_page, per_page } = response.data.data;
-        setEligibleUsers(data);
-        setCurrentPage(current_page);
-        setLastPage(last_page);
-        setPerPage(per_page);
+        // const { data, current_page, last_page, per_page } = response.data;
+        setEligibleUsers(response.data.data);
+        // setCurrentPage(current_page);
+        // setLastPage(last_page);
+        // setPerPage(per_page);
       } else {
         throw new Error(
           response.data.message || "Failed to fetch eligible users."
@@ -195,7 +197,7 @@ const ManageMilestones = () => {
         </tbody>
       </table>
 
-      {!isLoading && eligibleUsers.length > 0 && (
+      {/* {!isLoading && eligibleUsers.length > 0 && (
         <div className="flex justify-center items-center gap-2 p-4">
           <PaginationControls
             currentPage={currentPage}
@@ -203,7 +205,7 @@ const ManageMilestones = () => {
             setCurrentPage={setCurrentPage}
           />
         </div>
-      )}
+      )} */}
 
       {showConfirmModal && (
         <Modal onClose={() => setShowConfirmModal(false)}>

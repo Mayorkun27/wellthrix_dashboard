@@ -71,7 +71,7 @@ const Ranking = () => {
           <tbody>
             {isLoading ? (
               <tr>
-                  <td colSpan="2" className="text-center p-8">Loading...</td>
+                  <td colSpan="4" className="text-center p-8">Loading...</td>
               </tr>
             ) : allData.length > 0 ? (
               allData.map((data, idx) => {
