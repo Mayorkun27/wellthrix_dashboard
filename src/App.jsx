@@ -36,9 +36,11 @@ import P2P from "./pages/user/P2P";
 import NotFound from "./view/NotFound";
 import ManageUserAsStockist from "./pages/stockist/admin/ManageUserAsStockist";
 import ManageStockistInventory from "./pages/stockist/admin/ManageStockistInventory";
+import useAppVersionCheck from "./hooks/useAppVersionCheck";
 
 function App() {
   const { user } = useUser();
+  useAppVersionCheck(60000); // check every 1min
 
   return (
     <>

@@ -2,11 +2,12 @@ import React from 'react';
 
 const RegisterSteps = ({ currentStep }) => {
   const steps = [
-    { number: 1, name: 'Pick Your Products' },
-    { number: 2, name: 'Contact Information' },
-    { number: 3, name: 'Login Information' },
-    { number: 4, name: 'Overview' },
-    { number: 5, name: 'Payment' }
+    { number: 1, name: 'Initialize Registration' },
+    { number: 2, name: 'Pick Your Products' },
+    { number: 3, name: 'Contact Information' },
+    { number: 4, name: 'Personal Information' },
+    { number: 5, name: 'Overview' },
+    { number: 6, name: 'Payment' }
   ];
 
   return (
@@ -23,7 +24,7 @@ const RegisterSteps = ({ currentStep }) => {
               </div>
               
               {/* Step name */}
-              <span className={`mt-2 text-xs md:text-sm text-center 
+              <span className={`mt-2 text-[10px] md:text-xs text-center
                 ${currentStep > step.number ? 'font-bold text-pryClr' : ''}
                 ${currentStep === step.number ? 'font-bold text-pryClr' : ''}
                 ${currentStep < step.number ? 'text-black/30' : ''}`}>

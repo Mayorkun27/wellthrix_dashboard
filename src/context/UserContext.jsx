@@ -84,16 +84,16 @@ export const UserProvider = ({ children }) => {
       toast.error("Logout failed. Please try again.", { id: toastId });
     } finally {
       // Always clear local state and storage, regardless of API response
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("user");
-      // localStorage.removeItem("miscellaneousDetails");
-      // setToken(null);
-      // setUser(null);
-      // setMiscellaneousDetails(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("miscellaneousDetails");
+      setToken(null);
+      setUser(null);
+      setMiscellaneousDetails(null);
 
       // Redirect after a short delay
       setTimeout(() => {
-        // window.location.href = "https://wellthrixinternational.com/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
       }, 100);
     }
   };

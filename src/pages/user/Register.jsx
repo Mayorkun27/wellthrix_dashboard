@@ -5,6 +5,7 @@ import StepTwo from './registersteps/StepTwo';
 import StepThree from './registersteps/StepThree';
 import StepFour from './registersteps/StepFour';
 import StepFive from './registersteps/StepFive';
+import StepSix from './registersteps/StepSix';
 
 // Define step components mapping
 const steps = {
@@ -13,6 +14,7 @@ const steps = {
   3: StepThree,
   4: StepFour,
   5: StepFive,
+  6: StepSix,
 };
 
 const Register = () => {

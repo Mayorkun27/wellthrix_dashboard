@@ -23,6 +23,7 @@ import { useUser } from '../../context/UserContext'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { HiOutlineShoppingCart } from 'react-icons/hi2'
+import { formatterUtility } from '../../utilities/formatterutility'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -32,6 +33,8 @@ const Overview = () => {
   const [expensesAndExpensesTab, setExpensesAndExpensesTab] = useState("earning")
 
   const [referrals, setReferrals] = useState([])
+  const [tripProgress, setTripProgress] = useState([])
+  const [isGettingProgress, setIsGettingProgress] = useState(false)
 
   const { user, token, logout, refreshUser, miscellaneousDetails } = useUser()
 
@@ -124,7 +127,7 @@ const Overview = () => {
       }
       
     } catch (error) {
-      if (error.response.data.message.toLowerCase() == "unauthenticated") {
+      if (error?.response?.data?.message.toLowerCase() == "unauthenticated") {
         logout()
       }
       console.error("An error occured fetching referrals", error)
@@ -193,6 +196,35 @@ const Overview = () => {
     },
   ]
 
+
+  const fetchTripProgress = async () => {
+    setIsGettingProgress(true)
+    try {
+      const response = await axios.get(`${API_URL}/api/trip/progress`, {
+        headers: {
+          "Authorization" : `Bearer ${token}`,
+        }
+      })
+
+      console.log("trip response", response)
+      if (response.status === 200 && response.data.success) {
+        setTripProgress(response.data.trip_progress)
+      }
+
+    } catch (error) {
+      console.error('Failed to fetch your progress:', error);
+      if (error.response?.data?.message?.includes('unauthenticated')) {
+        logout();
+      }
+      toast.error(error.response?.data?.message || 'An error occurred fetching your progress.');
+    } finally {
+      setIsGettingProgress(false)
+    }
+  }
+
+  useEffect(() => {
+    if (token) fetchTripProgress();
+  }, [token])
 
   return (
     <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
@@ -274,6 +306,31 @@ const Overview = () => {
           </div>
         </div>
       </div>
+
+
+      {/* Promo */}
+      <div className="lg:col-span-6 lg:my-1">
+        <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
+          <h3 className='md:text-xl text-lg mb-6 font-semibold'>Ongoing Promo</h3>
+          <div className="flex items-center justify-between">
+            <h4 className='font-medium'>WELLTHRIX 042 CRUISE @ The Elite Experience</h4>
+            <div className="flex flex-col items-center">
+              <h3 className='font-bold text-accClr text-3xl'>{formatterUtility(500000)}</h3>
+              <small>Trip Value per Person</small>
+            </div>
+          </div>
+          <div className="lg:grid grid-cols-3 flex items-center jstify-between gap-6 overflow-x-scroll no-scrollbar">
+            {
+              digitalProducts.map((digitalProduct, index) => (
+                <div key={index} className="lg:w-full md:min-w-2/5 min-w-10/12 rounded-lg overflow-hidden group hover:scale-95 transition-all duration-300">
+                 
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
       {/* Digital Products */}
       <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">

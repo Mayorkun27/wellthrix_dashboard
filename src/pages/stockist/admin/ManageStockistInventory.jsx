@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useUser } from "../../../context/UserContext";
-import Modal from "../../../components/modals/Modal";
 import { toast } from "sonner";
 import axios from "axios";
 import { useFormik } from "formik";
@@ -23,32 +22,32 @@ const ManageStockistInventory = () => {
     const username = searchParams.get('username');
 
     const fetchProducts = async () => {
-    setLoading(true)
-    try {
-        const response = await axios.get(`${API_URL}/api/allproducts`, {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-        })
+        setLoading(true)
+        try {
+            const response = await axios.get(`${API_URL}/api/allproducts`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+            })
 
-        console.log("Products Response:", response)
+            console.log("Products Response:", response)
 
-        if (response.status === 200) {
-        setProducts(response.data.products || response.data)
-        }
+            if (response.status === 200) {
+            setProducts(response.data.products || response.data)
+            }
 
-    } catch (error) {
-        console.error("Error fetching products:", error)
-        
-        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
-        logout()
-        toast.error("Session expired. Please login again.")
-        } else {
-        toast.error(error.response?.data?.message || "Error loading products")
+        } catch (error) {
+            console.error("Error fetching products:", error)
+            
+            if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
+            logout()
+            toast.error("Session expired. Please login again.")
+            } else {
+            toast.error(error.response?.data?.message || "Error loading products")
+            }
+        } finally {
+            setLoading(false)
         }
-    } finally {
-        setLoading(false)
-    }
     }
     
     useEffect(() => {

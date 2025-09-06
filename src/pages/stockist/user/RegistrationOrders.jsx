@@ -23,13 +23,12 @@ const RegistrationOrders = () => {
   const [perPage, setPerPage] = useState(5);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // State for confirmation modal
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [orderToConfirm, setOrderToConfirm] = useState(null);
-  const [isConfirming, setIsConfirming] = useState(false); // To manage loading state during confirmation
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const statusLabels = {
-    pending: { text: "Pending", className: "bg-yellow-100 text-yellow-600" }, // Corrected for pending
+    pending: { text: "Pending", className: "bg-yellow-100 text-yellow-600" },
     failed: { text: "Failed", className: "bg-[#c51236]/20 text-red-600" },
     success: { text: "Successful", className: "bg-[#dff7ee]/80 text-pryclr" },
   };

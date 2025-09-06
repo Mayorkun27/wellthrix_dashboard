@@ -4,7 +4,7 @@ import AnnouncementList from "./lists/AnnouncementList";
 import axios from "axios";
 import { toast } from "sonner";
 import { useUser } from "../context/UserContext";
-import { formatISODateToCustom } from "../utilities/Formatterutility";
+import { formatISODateToCustom } from "../utilities/formatterutility";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
@@ -104,7 +104,7 @@ const AnnouncementBoard = () => {
                         <h3 className="md:text-2xl text-xl font-bold tracking-tighter mb-4">
                             {selectedAnnouncement.title}
                         </h3>
-                        <p className="font-medium">{selectedAnnouncement.message}</p>
+                        <p className="font-medium whitespace-pre-wrap">{selectedAnnouncement.message}</p>
                         <div className="flex items-center justify-between mt-4">
                             {true && (
                                 <small

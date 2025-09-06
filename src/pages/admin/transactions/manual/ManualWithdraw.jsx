@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "../../../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
-import PaginationControls from "../../../../utilities/PaginationControls";
-import { formatISODateToCustom, formatterUtility } from "../../../../utilities/Formatterutility";
-import { GiCheckMark } from "react-icons/gi";
+import { formatISODateToCustom, formatISODateToReadable, formatterUtility } from "../../../../utilities/formatterutility";
 import Modal from "../../../../components/modals/Modal";
 import ConfirmationDialog from "../../../../components/modals/ConfirmationDialog";
-import { FiChevronDown } from 'react-icons/fi';
 import { FaFileCsv } from "react-icons/fa6";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -105,176 +102,78 @@ const ManualWithdraw = () => {
     const onConfirmAction = () => handleAction('confirm');
     const onDeclineAction = () => handleAction('decline');
 
-    // const sampleData = {
-    //     "2025-08-22": [
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         }
-    //     ],
-    //     "2025-08-12": [
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //         {
-    //             "name": "name",
-    //             "bank_name": "bank_name",
-    //             "account_name": "account_name",
-    //             "account_number": "accunt_nunmber",
-    //         },
-    //     ],
-    // }
-
-    // xlsx
     const handleListDownloadAsCSV = async (data) => {
         if (!data || data.length === 0) return;
-        
-        setIsDownloadingList(true)
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        setIsDownloadingList(true);
 
-        // Define CSV headers
-        const headers = [
-            "S/N",
-            "Username",
-            "Email",
-            "Amount",
-            "Bank Name",
-            "Account Number",
-            "Account Name"
-        ];
+        try {
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Build CSV rows
-        const rows = data.map((item, idx) => [
-            String(idx + 1).padStart(3, "0"),
-            item.user_name || "-",
-            item.user_email || "-",
-            item.amount || "-",
-            item.bank_name || "-",
-            item.account_number || "-",
-            item.account_name || "-"
-        ]);
+            const headers = [
+                "#No",
+                "Bene.Name",
+                "Bene.Name in Bank",
+                "Trans. Date",
+                "Value. Date",
+                "Trans. Ref",
+                "Bene.Code",
+                "Bene. Bank",
+                "Bene. Account",
+                "CUR.",
+                "Amount",
+                "Debit Account Name",
+                "Debit Account No",
+                "Reason"
+            ];
 
-        // Combine headers and rows
-        const csvContent = [
-            headers.join(","),
-            ...rows.map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(","))
-        ].join("\n");
+            const rows = data.map((item, idx) => [
+                String(idx + 1).padStart(3, "0"),
+                item.user_name || "-",
+                item.account_name || "-",
+                formatISODateToReadable(item?.created_at),
+                formatISODateToReadable(item?.created_at),
+                item.ref_no || "-",
+                "",
+                item.bank_name || "-",
+                item.account_number || "-",
+                "NGN",
+                item.amount || "-",
+                item.account_name || "-",
+                item.account_number || "-",
+                ""
+            ]);
 
-        // Create a Blob and trigger download
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `withdrawals_for_${formatISODateToCustom(Date.now()).split(" ")[0]}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+            const csvContent = [
+                headers.join(","),
+                ...rows.map(row =>
+                    row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(",")
+                )
+            ].join("\n");
 
-        setIsDownloadingList(false)
-    }
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `withdrawals_for_${formatISODateToCustom(Date.now()).split(" ")[0]}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Error generating CSV:", error);
+            toast.error("Failed to download withdrawal list. Please try again.");
+        } finally {
+            setIsDownloadingList(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
             {
                 Object.entries(manualWithdraws).map(([date, data], index) => (
-                    <div className="shadow-sm rounded bg-white">
+                    <div key={index} className="shadow-sm rounded bg-white">
                         <div
                             className={`flex items-center justify-between w-full p-5 font-medium text-left text-gray-800 transition-colors border border-pryClr/20 rounded-[inherit] cursor-pointer ${activeAccordion === index ? 'bg-white/60' : 'bg-white/90 hover:bg-white/80'
                             }`}
@@ -311,6 +210,7 @@ const ManualWithdraw = () => {
                                         <th className="p-5">Bank Name</th>
                                         <th className="p-5">Account Number</th>
                                         <th className="p-5">Account Name</th>
+                                        <th className="p-5">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -319,7 +219,7 @@ const ManualWithdraw = () => {
                                             data.map((item, index) => {
                                                 return (
                                                     <tr
-                                                        key={item.id}
+                                                        key={`${item.id}${index}${item?.user_email}`}
                                                         className="hover:bg-gray-50 text-sm border-b border-black/10 text-center whitespace-nowrap"
                                                     >
                                                         <td className="p-3">{String(index+1).padStart(3, "0")}</td>
@@ -329,6 +229,7 @@ const ManualWithdraw = () => {
                                                         <td className="p-4">{item?.bank_name || "-"}</td>
                                                         <td className="p-4">{item?.account_number || "-"}</td>
                                                         <td className="p-4">{item?.account_name || "-"}</td>
+                                                        <td className="p-4">{formatISODateToReadable(item?.created_at) || "-"}</td>
                                                     </tr>
                                                 );
                                             })
