@@ -118,7 +118,7 @@ const Overview = () => {
         }
       })
 
-      console.log("My refs response", response)
+      // console.log("My refs response", response)
 
       if (response.status === 200) {
         setReferrals(response.data.data)
@@ -200,15 +200,15 @@ const Overview = () => {
   const fetchTripProgress = async () => {
     setIsGettingProgress(true)
     try {
-      const response = await axios.get(`${API_URL}/api/trip/progress`, {
+      const response = await axios.get(`${API_URL}/api/cruise/progress/${user?.id}`, {
         headers: {
           "Authorization" : `Bearer ${token}`,
         }
       })
 
       console.log("trip response", response)
-      if (response.status === 200 && response.data.success) {
-        setTripProgress(response.data.trip_progress)
+      if (response.status === 200) {
+        setTripProgress(response.data.progress)
       }
 
     } catch (error) {
@@ -225,6 +225,31 @@ const Overview = () => {
   useEffect(() => {
     if (token) fetchTripProgress();
   }, [token])
+
+  const getProgressDetails = (progressString) => {
+    if (typeof progressString !== 'string') return { value: 0, target: 0, percentage: 0 };
+    const match = progressString.match(/(\d+)\/(\d+)\s\((\d+)%\)/);
+    if (match) {
+      return {
+        value: parseInt(match[1], 10),
+        target: parseInt(match[2], 10),
+        percentage: parseInt(match[3], 10),
+      };
+    }
+    return { value: 0, target: 0, percentage: 0 };
+  };
+
+  const ProgressBar = ({ label, progress, value, target }) => (
+    <div className='mb-4'>
+      <div className='flex justify-between items-center mb-1'>
+        <span className='text-xs font-medium text-gray-700'>{label}</span>
+        <span className='text-xs font-medium text-gray-700'>{value}/{target}</span>
+      </div>
+      <div className='w-full bg-gray-200 rounded-full h-2.5'>
+        <div className='bg-pryClr h-2.5 rounded-full' style={{ width: `${progress}%` }}></div>
+      </div>
+    </div>
+  );
 
   return (
     <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
@@ -312,22 +337,94 @@ const Overview = () => {
       <div className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-6 font-semibold'>Ongoing Promo</h3>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h4 className='font-medium'>WELLTHRIX 042 CRUISE @ The Elite Experience</h4>
             <div className="flex flex-col items-center">
               <h3 className='font-bold text-accClr text-3xl'>{formatterUtility(500000)}</h3>
               <small>Trip Value per Person</small>
             </div>
           </div>
-          <div className="lg:grid grid-cols-3 flex items-center jstify-between gap-6 overflow-x-scroll no-scrollbar">
-            {
-              digitalProducts.map((digitalProduct, index) => (
-                <div key={index} className="lg:w-full md:min-w-2/5 min-w-10/12 rounded-lg overflow-hidden group hover:scale-95 transition-all duration-300">
-                 
+          {isGettingProgress ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Loading trip progress...</p>
+            </div>
+          ) : (
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 border border-black/10 p-4 rounded-xl">
+              {tripProgress.leadership && (
+                <div className="border-2 p-4 rounded-[inherit] border-secClr flex flex-col">
+                  <h5 className="font-bold text-lg mb-2 capitalize">Leadership Builder</h5>
+                  <div className='flex-grow'>
+                    <ProgressBar
+                      label="Lesser Leg PV"
+                      progress={getProgressDetails(tripProgress.leadership.lesser_pv).percentage}
+                      value={getProgressDetails(tripProgress.leadership.lesser_pv).value}
+                      target={getProgressDetails(tripProgress.leadership.lesser_pv).target}
+                    />
+                    <ProgressBar
+                      label="New Recruits"
+                      progress={getProgressDetails(tripProgress.leadership.recruits).percentage}
+                      value={getProgressDetails(tripProgress.leadership.recruits).value}
+                      target={getProgressDetails(tripProgress.leadership.recruits).target}
+                    />
+                    <ProgressBar
+                      label="Recruits PV"
+                      progress={getProgressDetails(tripProgress.leadership.recruits_pv).percentage}
+                      value={getProgressDetails(tripProgress.leadership.recruits_pv).value}
+                      target={getProgressDetails(tripProgress.leadership.recruits_pv).target}
+                    />
+                  </div>
                 </div>
-              ))
-            }
-          </div>
+              )}
+              {tripProgress.crown && (() => {
+                const sponsoredCrowns = getProgressDetails(tripProgress.crown).value;
+                return (
+                  <div className="border-2 p-4 rounded-[inherit] border-secClr flex flex-col">
+                    <h5 className="font-bold text-lg mb-2 capitalize">Crown Path</h5>
+                    <div className='flex-grow'>
+                      <ProgressBar
+                        label="Sponsor 4 (1 Slot)"
+                        progress={sponsoredCrowns ? Math.min((sponsoredCrowns / 4) * 100, 100) : 0}
+                        value={sponsoredCrowns || 0}
+                        target={4}
+                      />
+                      <ProgressBar
+                        label="Sponsor 8 (2 Slots, 1 VIP)"
+                        progress={sponsoredCrowns ? Math.min((sponsoredCrowns / 8) * 100, 100) : 0}
+                        value={sponsoredCrowns || 0}
+                        target={8}
+                      />
+                    </div>
+                    <p className="text-[10px] text-gray-500 mt-auto">Sponsor 4 for 1 slot, or 8 for 2 slots (1 VIP).</p>
+                  </div>
+                );
+              })()}
+              {tripProgress.stockist && (
+                <div className="border-2 p-4 rounded-[inherit] border-secClr flex flex-col">
+                  <h5 className="font-bold text-lg mb-2 capitalize">VIP Stockist Path</h5>
+                  <div className='flex-grow'>
+                    <ProgressBar
+                      label="Stockists Referred"
+                      progress={getProgressDetails(tripProgress.stockist).percentage}
+                      value={getProgressDetails(tripProgress.stockist).value}
+                      target={getProgressDetails(tripProgress.stockist).target}
+                    />
+                  </div>
+                  <p className="text-[10px] text-gray-500 mt-auto">Note: Refer a Royal, Imperial, or Grand Imperial Stockist.</p>
+                </div>
+              )}
+              {user?.repurchase_pv && (
+                <div className="md:col-span-3">
+                  <ProgressBar
+                    label="Personal Repurchase PV"
+                    progress={user?.repurchase_pv ? Math.min((user.repurchase_pv / 40) * 100, 100) : 0}
+                    value={user?.repurchase_pv || 0}
+                    target={40}
+                  />
+                  <p className="text-xs text-gray-500 mt-auto">Note: The 40PV Personal Repurchase is mandatory for all paths.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

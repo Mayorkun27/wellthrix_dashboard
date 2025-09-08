@@ -134,7 +134,7 @@ function App() {
 
         <Route
           path="/stockist/admin/managestockist/:id"
-          element={<MainLayout pageName={"Manage Stockists"} child={<ManageStockistInventory />} />}
+          element={<MainLayout pageName={"Manage Stockists/Mall"} child={<ManageStockistInventory />} />}
         />
 
         <Route

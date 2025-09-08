@@ -126,14 +126,13 @@ const ManageMilestones = () => {
       <table className="min-w-full">
         <thead>
           <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
-            <th className="p-5">ID</th>
-            <th className="p-5">Name</th>
+            <th className="p-5">S/N</th>
+            <th className="p-5">Full Name</th>
             <th className="p-5">Email</th>
             <th className="p-5">Username</th>
-            <th className="p-5">Phone</th>
-            <th className="p-5">Status</th>
-            <th className="p-5">Date</th>
-            <th className="p-5">Action</th>
+            <th className="p-5">Direct 480's accumulated</th>
+            <th className="p-5">Position</th>
+            {/* <th className="p-5">Action</th> */}
           </tr>
         </thead>
         <tbody>
@@ -155,26 +154,13 @@ const ManageMilestones = () => {
                     {String(serialNumber).padStart(3, "0")}
                   </td>
                   <td className="p-4 capitalize">
-                    {`${item.first_name} ${item.last_name}` || "-"}
+                    {`${item.fullname}` || "-"}
                   </td>
                   <td className="p-4">{item.email || "-"}</td>
                   <td className="p-4">{item.username || "-"}</td>
-                  <td className="p-4 capitalize">{item.mobile || "-"}</td>
-                  <td className="p-4 capitalize">
-                    <div
-                      className={`w-[100px] py-2 ${
-                        item.enabled === 1
-                          ? "bg-[#dff7ee]/80 text-pryclr"
-                          : "bg-[#c51236]/20 text-red-600"
-                      } rounded-lg text-center font-normal mx-auto border border-pryClr/15`}
-                    >
-                      {item.enabled === 1 ? "Active" : "Inactive"}
-                    </div>
-                  </td>
-                  <td className="p-4 text-sm text-pryClr font-semibold">
-                    {formatISODateToCustom(item.created_at)}
-                  </td>
-                  <td className="p-4 text-sm text-pryClr font-semibold">
+                  <td className="p-4 capitalize">{item.blocks_480pv || "-"}</td>
+                  <td className="p-4 capitalize">{item.position || "-"}</td>
+                  {/* <td className="p-4 text-sm text-pryClr font-semibold">
                     <button
                       type="button"
                       title={`Delete ${item.username}`}
@@ -183,7 +169,7 @@ const ManageMilestones = () => {
                     >
                       <FaTrashAlt />
                     </button>
-                  </td>
+                  </td> */}
                 </tr>
               );
             })

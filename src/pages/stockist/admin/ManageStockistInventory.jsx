@@ -152,7 +152,7 @@ const ManageStockistInventory = () => {
                 <span className="font-medium">Go back</span>
             </div>
             <div className="shadow-sm rounded-lg bg-white overflow-x-auto p-6">
-                <h3 className="text-2xl font-bold text-black/60">{username}&apos;s Inventory</h3>
+                <h3 className="text-2xl font-bold text-black/60">{username}&apos;s Repurchase mall</h3>
                 <Inventory stockistId={id} refetch={refreshTrigger} />
             </div>
             <div className="shadow-sm rounded-lg bg-white overflow-x-auto p-8">

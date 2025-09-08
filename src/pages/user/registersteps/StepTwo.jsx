@@ -140,6 +140,8 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
     return product ? product.quantity : 0;
   };
 
+  const filteredProducts = products.filter(product => product.repurchase === 0)
+
   return (
     <div className="w-full flex flex-col gap-4 md:gap-6 mt-6">
       <div className="w-full flex flex-col gap-4 md:gap-6 rounded-2xl bg-white shadow-xl px-4 md:px-6 py-6">
@@ -160,8 +162,8 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
           {loading ? (
             <div className="border-4 border-t-transparent animate-spin mx-auto rounded-full w-[50px] h-[50px]"></div>
-          ) : products.length > 0 ? (
-            products.map((product) => (
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
               <div key={product.id} className="flex items-center justify-between gap-2 p-2 border border-black/10 rounded-lg">
                 <div className="flex gap-3 items-center w-full">
                   <img

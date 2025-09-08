@@ -28,7 +28,7 @@ const AnnouncementBoard = () => {
                 }
             })
 
-            console.log("announcement fetch response", response)
+            // console.log("announcement fetch response", response)
 
             if (response.status === 200 && response.data.status === "success") {
                 setAnnouncements(response.data.data.data || [])

@@ -46,7 +46,7 @@ export const UserProvider = ({ children }) => {
       const data = response.data.data;
       const updatedUser = data.user;
 
-      console.log("refresh response data", data)
+      // console.log("refresh response data", data)
 
       const updatedMiscellaneousDetails = {
         planDetails: data.plan_details,
@@ -84,17 +84,17 @@ export const UserProvider = ({ children }) => {
       toast.error("Logout failed. Please try again.", { id: toastId });
     } finally {
       // Always clear local state and storage, regardless of API response
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("miscellaneousDetails");
-      setToken(null);
-      setUser(null);
-      setMiscellaneousDetails(null);
+      // localStorage.removeItem("token");
+      // localStorage.removeItem("user");
+      // localStorage.removeItem("miscellaneousDetails");
+      // setToken(null);
+      // setUser(null);
+      // setMiscellaneousDetails(null);
 
-      // Redirect after a short delay
-      setTimeout(() => {
-        window.location.href = "https://wellthrixinternational.com/#/login";
-      }, 100);
+      // // Redirect after a short delay
+      // setTimeout(() => {
+      //   window.location.href = "https://wellthrixinternational.com/#/login";
+      // }, 100);
     }
   };
 
