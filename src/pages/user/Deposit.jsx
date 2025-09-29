@@ -34,10 +34,24 @@ const Deposit = () => {
       email: Yup.string().email("Invalid email format").required("Email is required"),
       proof_of_payment: Yup.mixed()
         .when('payment_method', {
-          is: (payment_method) => payment_method && payment_method === "manual",
+          is: "manual",
           then: (schema) => schema
-            .required('Proof of payment is required'),
-            otherwise: (schema) => schema.notRequired()
+            .required('Proof of payment is required')
+            .test(
+              'fileType',
+              'Unsupported file format. Only JPG, JPEG, and PNG are allowed.',
+              (value) => {
+                return value && (value.type === 'image/jpeg' || value.type === 'image/png' || value.type === 'image/jpg');
+              }
+            )
+            .test(
+              'fileSize',
+              'File size is too large. Max size is 1MB.',
+              (value) => {
+                return value && value.size <= 1 * 1024 * 1024;
+              }
+            ),
+          otherwise: (schema) => schema.notRequired().nullable(),
         }),
       payment_method: Yup.string()
         .oneOf(['manual', 'paystack'], 'Invalid payment method')
@@ -82,7 +96,7 @@ const Deposit = () => {
           throw new Error(response.data.message || "An error occurred during deposit.");
         }
       } catch (error) {
-        if (error.response?.data?.message?.toLowerCase() === "unauthenticated") {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
           logout();
         }
         console.error("An error occurred initiating deposit", error);
@@ -126,7 +140,7 @@ const Deposit = () => {
         <h1 className="text-[22px] font-semibold md:flex hidden">Deposit Funds</h1>
         <form onSubmit={(e) => { e.preventDefault(); setShowPinModal(true); }}>
           <p className="text-black md:mt-6 mb-3 font-medium">Deposit Method</p>
-          <div className="flex md:flex-row flex-col gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
             {/* Paystack Option */}
             <div
               onClick={() => formik.setFieldValue("payment_method", "paystack")}
@@ -174,7 +188,9 @@ const Deposit = () => {
           {formik.touched.payment_method && formik.errors.payment_method && (
             <p className="text-red-600">{formik.errors.payment_method}</p>
           )}
-          <div className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium">
+          <div 
+            className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium"
+          >
             <h3>Bank Name: <span className="font-bold">ZENITH BANK</span></h3>
             <h3>Account Number: <span className="font-bold">1310212712</span></h3>
             <h3>Account Name: <span className="font-bold">WELLTHRIX INTERNATIONAL LTD</span></h3>
@@ -206,6 +222,7 @@ const Deposit = () => {
                 </label>
                 <input
                   type="file"
+                  accept=".jpg,.jpeg,.png"
                   className="w-full px-4 py-3 border border-pryClr/30 rounded-md mt-2 outline-0"
                   id="proof_of_payment"
                   name="proof_of_payment"

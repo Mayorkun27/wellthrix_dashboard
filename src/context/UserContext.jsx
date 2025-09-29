@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UserContext = createContext();
@@ -8,102 +9,100 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [role, setRole] = useState(null);
+  const [miscellaneousDetails, setMiscellaneousDetails] = useState(null);
 
-  const [miscellanousDetails, setMiscellanousDetails] = useState([]);
-
+  // Use a single useEffect to load all persisted data
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("token");
-    const storedMiscellanousDetails = localStorage.getItem("miscellanousDetails");
-      // console.log("storedToken", storedToken)
+    const storedUser = localStorage.getItem("user");
+    const storedMiscellaneousDetails = localStorage.getItem("miscellaneousDetails");
+
     if (storedToken && storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-
       setToken(storedToken);
-      setUser(parsedUser);
-      setRole(parsedUser?.role || null);
+      setUser(JSON.parse(storedUser));
     }
-
-    if (storedMiscellanousDetails) {
-      setMiscellanousDetails(JSON.parse(storedMiscellanousDetails));
+    if (storedMiscellaneousDetails) {
+      setMiscellaneousDetails(JSON.parse(storedMiscellaneousDetails));
     }
   }, []);
 
   const login = async (authToken) => {
     localStorage.setItem("token", authToken);
     setToken(authToken);
-
     await refreshUser(authToken);
   };
 
   const refreshUser = async (authToken = token) => {
     if (!authToken) {
-      console.log("No token found")
+      console.log("No token found");
       return;
-    };
+    }
 
     try {
       const response = await axios.get(`${API_URL}/api/me`, {
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: { Authorization: `Bearer ${authToken}` },
       });
 
-      console.log("response", response)
+      const data = response.data.data;
+      const updatedUser = data.user;
 
-      const updatedUser = response.data.data.user;
-      const updatedPlanDetails = response.data.data.plan_details || null;
-      const updatedStockistDetails = response.data.data.stockist_details || null;
+      console.log("refresh response data", data)
 
-      const miscDetails = [
-        { planDetails: updatedPlanDetails },
-        { stockistDetails: updatedStockistDetails },
-      ];
+      const updatedMiscellaneousDetails = {
+        planDetails: data.plan_details,
+        stockistDetails: data.stockist_details,
+        totalPVLeft: data.total_pv_left,
+        totalPVRight: data.total_pv_right,
+      };
 
       // Update state
       setUser(updatedUser);
-      setRole(updatedUser?.role || null);
-      setMiscellanousDetails(miscDetails);
+      setMiscellaneousDetails(updatedMiscellaneousDetails);
 
-      // Persist
+      // Persist to localStorage
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      localStorage.setItem("miscellanousDetails", JSON.stringify(miscDetails));
-
+      localStorage.setItem("miscellaneousDetails", JSON.stringify(updatedMiscellaneousDetails));
     } catch (err) {
       console.error("Failed to refresh user:", err);
+      // Optional: If refresh fails, consider logging out automatically
+      // logout();
     }
   };
 
   const isLoggedIn = !!token;
+  const role = user?.role || null;
 
   const logout = async () => {
-    console.log("logging out")
+    const toastId = toast.loading("Logging Out...");
     try {
-      const response = await axios.put(`${API_URL}/api/logout`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+      // You can keep the API call, but the client-side logout should always happen
+      await axios.put(`${API_URL}/api/logout`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log("logout response", response)
-
-      localStorage.removeItem("token");
-      setToken(null);
-      localStorage.removeItem("user");
-      setUser(null);
-      localStorage.removeItem("miscellanousDetails");
-      setMiscellanousDetails([]);
-      toast.success("Logged out successfully")
-      setTimeout(() => {
-        // window.location.href = "https://wellthrixinternational.com/#/login";
-        window.location.href = "/#/login";
-      }, 500)
-      
+      toast.success("Logged out successfully", { id: toastId });
     } catch (err) {
-      console.error("Failed to refresh user:", err);
+      console.error("API Logout failed, clearing local state anyway:", err);
+      toast.error("Logout failed. Please try again.", { id: toastId });
+    } finally {
+      // Always clear local state and storage, regardless of API response
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("miscellaneousDetails");
+      setToken(null);
+      setUser(null);
+      setMiscellaneousDetails(null);
+
+      // Redirect after a short delay
+      setTimeout(() => {
+        window.location.href = "https://wellthrixinternational.com/#/login";
+      }, 100);
     }
   };
 
-
   return (
-    <UserContext.Provider value={{ user, token, role, setToken, setUser, login, logout, isLoggedIn, refreshUser, miscellanousDetails }}>
+    <UserContext.Provider
+      value={{ user, token, role, miscellaneousDetails, login, logout, isLoggedIn, refreshUser, setUser, setToken }}
+    >
       {children}
     </UserContext.Provider>
   );

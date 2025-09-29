@@ -1,124 +1,245 @@
 import React, { useState, useEffect } from 'react';
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { FaAngleLeft, FaAngleRight, FaWallet } from 'react-icons/fa';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { useUser } from '../../context/UserContext'; // Adjust path as needed
-import PaginationControls from '../../utilities/PaginationControls'; // Adjust path as needed
-import { formatISODateToCustom } from '../../utilities/Formatterutility'; // Adjust path as needed
+import { useUser } from '../../context/UserContext';
+import PaginationControls from '../../utilities/PaginationControls';
+import { formatISODateToCustom, formatterUtility } from '../../utilities/Formatterutility';
+import PickUps from './PickUps';
+import OverviewCards from '../../components/cards/OverviewCards';
+import { BsWallet2 } from 'react-icons/bs';
+import { TbTruckDelivery } from 'react-icons/tb';
+import History from './History';
+import RegistrationOrders from './RegistrationOrders';
+import Modal from '../../components/modals/Modal';
+import { useFormik } from 'formik';
+import * as Yup from "yup"
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const Stockist = () => {
-  const { token, logout, user } = useUser(); // Assuming user contains stockistId
-  const stockistId = user?.id || 1; // Fallback to 1 if not available; adjust as needed
-  const [pickupOrders, setPickupOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [pickupPage, setPickupPage] = useState(1);
-  const [totalPickupPages, setTotalPickupPages] = useState(1);
-  const perPage = 5;
+  const { token, logout, user, refreshUser } = useUser();
+  const [activeTab, setActiveTab] = useState('history');
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const navigate = useNavigate();
+  const [pin, setPin] = useState(['', '', '', '']);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const statusColorsPickup = {
-    pending: 'border border-[#EC3030]/20 text-[#FF0000]/80',
-    Picked: 'border border-[#4B7233]/20 text-[#4B7233]/80',
-    success: 'border border-[#4BA312]/20 text-[#4BA312]/80', // Added for potential status
-  };
+  useEffect(() => {
+    refreshUser()
+  }, [])
 
-  // Fetch Pickup Orders via POST
-  const fetchPickupOrders = async () => {
-    setIsLoading(true);
+  const formik = useFormik({
+    initialValues: {
+      user_id: user?.id,
+      amount: "",
+      from: "stockist_balance",
+      to: "earning_wallet",
+    },
+    enableReinitialize: true,
+    validationSchema: Yup.object({
+      amount: Yup.number()
+        .required("Amount is required!.")
+        .min(100, `Minimum amount to withdraw is ${formatterUtility(100)}`)
+        .max(user?.stockist_balance, `Insufficient funds!`)
+    }),
+    onSubmit: async (values) => {
+      console.log("stockist withdraw values", values)
+      console.log("Validation successful, showing pin modal");
+      setShowWithdrawModal(false);
+      setShowPinModal(true); // ✅ show pin modal
+      setPin(['', '', '', '']); 
+    }
+  })
+
+  const handleWithdraw = async () => {
+    setIsSubmitting(true);
     try {
-      const response = await axios.post(
-        `${API_URL}/api/stockists/${stockistId}/user`,
-        { page: pickupPage, perPage: perPage },
+      const response = await axios.post(`${API_URL}/api/stockist/withdraw`, 
+        { ...formik.values, pin: pin.join("") },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${token}`,
           },
         }
       );
 
-      console.log("response", response);
+      console.log("withdrawal response", response);
 
       if (response.status === 200) {
-        const { transactions, current_page, last_page } = response.data;
-        setPickupOrders(transactions);
-        setPickupPage(current_page);
-        setTotalPickupPages(last_page);
-        toast.success('Pickup orders fetched successfully');
+        toast.success(response.data.message || `Withdraw initiated successfully`);
+        navigate("/user/transactions");
       } else {
-        throw new Error(response.data.message || 'Failed to fetch pickup orders.');
+        throw new Error(response.data.message || "An error occurred moving funds.");
       }
     } catch (error) {
-      if (error.response?.data?.message?.includes('unauthenticated')) {
+      if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
         logout();
       }
-      console.error('Pickup orders fetch error:', error);
-      toast.error(error.response?.data?.message || 'An error occurred fetching pickup orders.');
+      console.error("An error occurred moving funds", error);
+      toast.error(error.response?.data?.message || "An error occurred moving funds");
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
+      setPin(['', '', '', '']);
     }
   };
 
-  // Fetch data when page or token changes
-  useEffect(() => {
-    if (token && stockistId) {
-      fetchPickupOrders();
+  const handlePinChange = (index, value) => {
+    if (value === '' || /^[0-9]$/.test(value)) {
+      const newPin = [...pin];
+      newPin[index] = value;
+      setPin(newPin);
+
+      if (value && index < 3) {
+        document.getElementById(`pin-input-${index + 1}`).focus();
+      }
     }
-  }, [pickupPage, token, stockistId]);
+  };
+
+  const isPinComplete = pin.every(digit => digit !== '');
 
   return (
-    <div className="w-full p-4 bg-white rounded-lg shadow-sm flex flex-col gap-2">
-      <div className="overflow-x-auto">
-        <table className="w-full text-base mt-4 whitespace-nowrap">
-          <thead className="text-gray-700 uppercase">
-            <tr>
-              <th className="px-4 py-6 text-center">S/N</th>
-              <th className="px-4 py-6 text-center">Name</th>
-              <th className="px-4 py-6 text-center">Ref ID</th>
-              <th className="px-4 py-6 text-center">Product</th>
-              <th className="px-4 py-6 text-center">Date</th>
-              <th className="px-4 py-6 text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan="6" className="text-center p-8">Loading...</td>
-              </tr>
-            ) : pickupOrders.length > 0 ? (
-              pickupOrders.map((order, index) => {
-                console.log("order", order); // Debug each order object
-                return (
-                  <tr key={order.id} className="border-b border-black/10">
-                    <td className="px-4 py-6 text-center">{index+1}</td>
-                    <td className="px-4 py-6 text-center">{`${order.order.user?.first_name || ''} ${order.order.user?.last_name || ''}`.trim() || '-'}</td>
-                    <td className="px-4 py-6 text-center">{order.ref_no || '-'}</td>
-                    <td className="px-4 py-6 text-center">{order.order.product?.product_name || '-'}</td>
-                    <td className="px-4 py-6 text-center text-pryClr font-semibold">{formatISODateToCustom(order.created_at).split(" ")[0] || '-'}</td>
-                    <td className="px-4 py-6 text-center">
-                      <span className={`px-2 py-2 rounded-full text-xs ${statusColorsPickup[order.order?.delivery] || 'text-gray-600'}`}>
-                        {order.order?.delivery || 'Unknown'}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center p-8">No pickup orders found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        {!isLoading && pickupOrders.length > 0 && (
-          <PaginationControls
-            currentPage={pickupPage}
-            totalPages={totalPickupPages}
-            setCurrentPage={setPickupPage}
-          />
+    <div className="w-full p-4 bg-white rounded-lg shadow-sm grid md:grid-cols-2 grid-cols-1 gap-8">
+      {/* Header Section */}
+      <div>
+        <OverviewCards
+          amount={user?.stockist_balance || 0}
+          icon={
+            <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+              <TbTruckDelivery />
+            </div>
+          }
+          walletType={"Stockist Balance"}
+        />
+      </div>
+      <div className="flex items-center md:justify-end justify-center md:-mt-0 -mt-4">
+        <button
+          type='button'
+          onClick={() => setShowWithdrawModal(true)}
+          className='bg-accClr px-4 h-[40px] md:w-max w-3/4 rounded-md font-medium cursor-pointer'
+        >
+          Withdraw
+        </button>
+      </div>
+
+      {/* Tabs Section */}
+      <div className="md:col-span-2">
+        <div className="flex md:justify-end justify-start gap-4 overflow-x-scroll no-scrollbar">
+          <button
+            onClick={() => setActiveTab('pickup')}
+            className={`px-4 h-[40px] font-semibold rounded-lg md:text-base text-sm whitespace-nowrap ${
+              activeTab === 'pickup' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            Pickup Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('register')}
+            className={`px-4 h-[40px] font-semibold rounded-lg md:text-base text-sm whitespace-nowrap ${
+              activeTab === 'register' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            Registration Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`px-4 h-[40px] font-semibold rounded-lg md:text-base text-sm whitespace-nowrap ${
+              activeTab === 'history' ? 'bg-pryClr text-white' : 'bg-gray-200 text-gray-700'
+            }`}
+          >
+            Transaction History
+          </button>
+        </div>
+      </div>
+
+      {/* Table Section */}
+      <div className="w-full md:col-span-2">
+        {activeTab === 'pickup' ? (
+          <PickUps />
+        ) : activeTab === 'history' ? (
+          <History />
+        ) : (
+          <RegistrationOrders />
         )}
       </div>
+
+      {
+        showWithdrawModal && (
+          <Modal
+            onClose={() => setShowWithdrawModal(false)}
+          >
+            <form onSubmit={formik.handleSubmit} 
+              className='text-center'
+            >
+              <h3 className='text-2xl font-bold'>Move Stockist balance</h3>
+              <p className='md:text-base text-xs'>Move from your stockist balance to your earnings wallet</p>
+              <div className="space-y-1 text-start mt-8">
+                <label className="block text-sm font-medium" htmlFor="amount">
+                  Enter amount to move
+                </label>
+                <input
+                  type="number"
+                  name="amount"
+                  id="amount"
+                  value={formik.values.amount}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full p-3 border rounded-lg border-gray-300 outline-0"
+                />
+                {formik.touched.amount && formik.errors.amount && (<p className='text-sm text-red-600'>{formik.errors.amount}</p>)}
+              </div>
+              <button
+                type='submit'
+                disabled={isSubmitting}
+                className={`mt-8 bg-pryClr text-secClr font-medium w-full h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
+              >Withdraw</button>
+            </form>
+          </Modal>
+        )
+      }
+
+
+      {showPinModal && (
+        <Modal onClose={() => setShowPinModal(false)}>
+          <div className='w-full text-center'>
+            <h3 className='text-2xl font-bold'>Confirm Transaction</h3>
+            <p className='md:text-base text-xs'>Enter your pin to complete this transaction</p>
+            <div className="w-full flex justify-center md:gap-8 gap-4 px-4 mt-8">
+              {[0, 1, 2, 3].map((index) => (
+                <input
+                  key={index}
+                  type="password"
+                  maxLength={1}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={pin[index]}
+                  onChange={(e) => handlePinChange(index, e.target.value)}
+                  className="w-14 h-14 md:w-16 md:h-16 bg-[#D9D9D9] rounded-lg text-center text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-[#2F5318] border border-gray-300"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                      document.getElementById(`pin-input-${index - 1}`).focus();
+                    }
+                  }}
+                  id={`pin-input-${index}`}
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={handleWithdraw}
+              disabled={!isPinComplete || isSubmitting}
+              className={`mt-8 bg-pryClr text-secClr font-medium lg:w-1/2 w-full h-[50px] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {isSubmitting ? "Confirming..." : "Confirm"}
+            </button>
+          </div>
+        </Modal>
+      )}
+        
+
     </div>
   );
 };

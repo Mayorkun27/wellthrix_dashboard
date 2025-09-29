@@ -3,7 +3,7 @@ import { formatterUtility } from '../../utilities/Formatterutility'
 import { MdOutlineArrowOutward } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 
-const OverviewCards = ({ walletType, amount, icon, buttonText, buttonType, path }) => {
+const OverviewCards = ({ walletType, amount, isAmount=true, icon, buttonText, buttonType, path }) => {
   return (
     <Link to={path} className='bg-pryClr p-4 text-secClr rounded-lg flex items-center border-red-500 gap-2 shadow-md'>
       <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
@@ -17,7 +17,8 @@ const OverviewCards = ({ walletType, amount, icon, buttonText, buttonType, path 
             {buttonText && <MdOutlineArrowOutward />}
           </small>
         </div>
-        <h4 className='text-xl font-bold'>{formatterUtility(Number(amount))}</h4>
+        {isAmount && <h4 className='text-xl font-bold'>{formatterUtility(Number(amount))}</h4>}
+        {!isAmount && <h4 className='text-xl font-bold'>{amount}</h4>}
       </div>
     </Link>
   )

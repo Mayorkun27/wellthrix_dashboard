@@ -7,7 +7,7 @@ import AutomatedWithdraw from './transactions/automated/AutomatedWithdraw';
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ManageTransactions = () => {
-  const [activeTab, setActiveTab] = useState('manual-deposit');
+  const [activeTab, setActiveTab] = useState('manual-withdraw');
 
   const statusColors = {
     Successful: 'text-[#2F5318] bg-[#DFF7EE]/15 border border-[#2F5318]/15',
@@ -45,32 +45,34 @@ const ManageTransactions = () => {
           aria-selected={activeTab === 'manual-deposit'}
           role="tab"
         >
-          Deposit &#40;M&#41;
+          Deposit 
+          {/* &#40;Manual&#41; */}
         </button>
-        <button
+        {/* <button
           onClick={() => setActiveTab('automated-deposit')}
-          className={`text-lg font-bold cursor-pointer pb-1 whitespace-nowrap outline-0 ${activeTab === 'automated-deposit' ? 'text-xl text-pryClr border-b-2 border-pryClr' : 'text-black/50'}`}
+          className={`disabledforNow2 text-lg font-bold cursor-pointer pb-1 whitespace-nowrap outline-0 ${activeTab === 'automated-deposit' ? 'text-xl text-pryClr border-b-2 border-pryClr' : 'text-black/50'}`}
           aria-selected={activeTab === 'automated-deposit'}
           role="tab"
         >
           Deposit &#40;A&#41;
-        </button>
+        </button> */}
         <button
           onClick={() => setActiveTab('manual-withdraw')}
           className={`text-lg font-bold cursor-pointer pb-1 whitespace-nowrap outline-0 ${activeTab === 'manual-withdraw' ? 'text-xl text-pryClr border-b-2 border-pryClr' : 'text-black/50'}`}
           aria-selected={activeTab === 'manual-withdraw'}
           role="tab"
         >
-          Withdraw &#40;M&#41;
+          Withdraw 
+          {/* &#40;Manual&#41; */}
         </button>
-        <button
+        {/* <button
           onClick={() => setActiveTab('automated-withdraw')}
-          className={`text-lg font-bold cursor-pointer pb-1 whitespace-nowrap outline-0 ${activeTab === 'automated-withdraw' ? 'text-xl text-pryClr border-b-2 border-pryClr' : 'text-black/50'}`}
+          className={`disabledforNow2 text-lg font-bold cursor-pointer pb-1 whitespace-nowrap outline-0 ${activeTab === 'automated-withdraw' ? 'text-xl text-pryClr border-b-2 border-pryClr' : 'text-black/50'}`}
           aria-selected={activeTab === 'automated-withdraw'}
           role="tab"
         >
           Withdraw &#40;A&#41;
-        </button>
+        </button> */}
       </div>
       <div className="w-full overflow-hidden rounded-lg shadow-sm">
         {renderComponent()}

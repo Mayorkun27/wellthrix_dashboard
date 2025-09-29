@@ -1,184 +1,224 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useUser } from "../../../context/UserContext";
-import axios from "axios";
-import { toast } from "sonner";
 import PaginationControls from "../../../utilities/PaginationControls";
-import { formatISODateToCustom, formatterUtility } from "../../../utilities/Formatterutility";
-import { FaTrashAlt } from "react-icons/fa";
+import UserRow from "../../../components/table/UserRow";
+import EnableStockistModal from "../../../components/modals/EnableStockistModal";
 import Modal from "../../../components/modals/Modal";
 import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
-
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+import { useUsersData } from "../../../hooks/useUsersData";
+import { useUserActions } from "../../../hooks/useUserActions";
 
 const AllUsers = () => {
-    const { user, token, logout } = useUser();
-    const [allUsers, setAllUsers] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [lastPage, setLastPage] = useState(1);
-    const [perPage, setPerPage] = useState(5);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+  const { token, logout } = useUser();
 
-    const fetchAllUsers = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axios.get(`${API_URL}/api/users`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                params: {
-                    page: currentPage,
-                    perPage: perPage
-                }
-            });
+  // Data + pagination
+  const {
+    users: allUsers,
+    isLoading,
+    currentPage,
+    setCurrentPage,
+    lastPage,
+    perPage,
+    refetch,
+  } = useUsersData({ token, logout, initialPage: 1, initialPerPage: 5 });
 
-            console.log("all users Response:", response);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [dialogs, setDialogs] = useState({
+    delete: false,
+    enableStockist: false,
+    toggleAccount: false,
+    upgrade: false,
+  });
 
-            if (response.status === 200 && response.data.success) {
-                const { data, current_page, last_page, per_page } = response.data.data;
-                setAllUsers(data);
-                setCurrentPage(current_page);
-                setLastPage(last_page);
-                setPerPage(per_page);
-            } else {
-                throw new Error(response.data.message || "Failed to fetch all users.");
-            }
-        } catch (error) {
-            if (error.response?.data?.message?.includes("unauthenticated")) {
-                logout();
-            }
-            console.error("API submission error:", error);
-            toast.error(error.response?.data?.message || "An error occurred fetching all users!.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const {
+    confirmDelete,
+    confirmEnableStockist,
+    confirmToggleAccount,
+    confirmUpgradeUser,
+  } = useUserActions({ token, logout, refetch });
 
-    useEffect(() => {
-        fetchAllUsers();
-    }, [user?.id, token, currentPage]);
+  const [isEnabling, setIsEnabling] = useState(false);
 
-    const handleDeleteUser = async (user) => {
-        setShowDeleteModal(true);
-        setUserToDelete(user);
-    };
+  const openDialog = (key, user = null) => {
+    setSelectedUser(user);
+    setDialogs((d) => ({ ...d, [key]: true }));
+  };
 
-    const confirmDelete = async () => {
-        if (!userToDelete.id) return;
+  const closeDialog = (key) => {
+    setDialogs((d) => ({ ...d, [key]: false }));
+    if (key !== "enableStockist") setSelectedUser(null);
+  };
 
-        const toastId = toast.loading("Deleting user...");
-        setShowDeleteModal(false);
+  return (
+    <div className="shadow-sm rounded bg-white overflow-x-auto">
+      <table className="min-w-full">
+        <thead>
+          <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
+            <th className="p-5">ID</th>
+            <th className="p-5">Name</th>
+            <th className="p-5">Earnings</th>
+            <th className="p-5">Email</th>
+            <th className="p-5">Username</th>
+            <th className="p-5">Phone</th>
+            {/* <th className="p-5">Plan</th> */}
+            <th className="p-5">Stockist Enabled</th>
+            <th className="p-5">Account Status</th>
+            <th className="p-5">Date Joined</th>
+            <th className="p-5">Action</th>
+          </tr>
+        </thead>
 
-        try {
-            const response = await axios.delete(`${API_URL}/api/deleteuser/${userToDelete.id}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
+        <tbody>
+          {isLoading ? (
+            <tr>
+              {/* 10 columns total */}
+              <td colSpan="10" className="text-center p-8">
+                Loading...
+              </td>
+            </tr>
+          ) : allUsers.length > 0 ? (
+            allUsers.map((item, index) => (
+              <UserRow
+                key={item.id}
+                user={item}
+                index={index}
+                perPage={perPage}
+                currentPage={currentPage}
+                onDelete={(u) => openDialog("delete", u)}
+                onUpgrade={(u) => openDialog("upgrade", u)}
+                onToggleStatus={(u) => openDialog("toggleAccount", u)}
+                onEnableStockist={(u) => openDialog("enableStockist", u)}
+              />
+            ))
+          ) : (
+            <tr>
+              <td colSpan="10" className="text-center p-8">
+                No users found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-            if (response.status === 200) {
-                toast.success(response.data.message || "User deleted successfully", { id: toastId });
-                fetchAllUsers();
-            } else {
-                throw new Error(response.data.message || "Failed to delete user.");
-            }
-        } catch (error) {
-            if (error.response?.data?.message?.includes("unauthenticated")) {
-                logout();
-            }
-            console.error("user deletion error:", error);
-            toast.error(error.response?.data?.message || "An error occurred deleting the user.", { id: toastId });
-        } finally {
-            setUserToDelete(null);
-        }
-    };
-
-    return (
-        <div className="shadow-sm rounded bg-white overflow-x-auto">
-            <table className="min-w-full">
-                <thead>
-                    <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
-                        <th className="p-5">ID</th>
-                        <th className="p-5">Name</th>
-                        <th className="p-5">Email</th>
-                        <th className="p-5">Username</th>
-                        <th className="p-5">Phone</th>
-                        <th className="p-5">Status</th>
-                        <th className="p-5">Date</th>
-                        <th className="p-5">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {isLoading ? (
-                        <tr>
-                            <td colSpan="8" className="text-center p-8">Loading...</td>
-                        </tr>
-                    ) : allUsers.length > 0 ? (
-                        allUsers.map((item, index) => {
-                            const serialNumber = (currentPage - 1) * perPage + (index + 1);
-                            return (
-                                <tr
-                                    key={item.id}
-                                    className="hover:bg-gray-50 text-sm border-b border-black/10 text-center"
-                                >
-                                    <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
-                                    <td className="p-4 capitalize">{`${item.first_name} ${item.last_name}` || "-"}</td>
-                                    <td className="p-4">{item.email || "-"}</td>
-                                    <td className="p-4">{item.username || "-"}</td>
-                                    <td className="p-4 capitalize">{item.mobile || "-"}</td>
-                                    <td className="p-4 capitalize">
-                                        <div className={`w-[100px] py-2 ${item.enabled === 1 ? "bg-[#dff7ee]/80 text-pryclr" : "bg-[#c51236]/20 text-red-600"} rounded-lg text-center font-normal mx-auto border border-pryClr/15`}>
-                                            {item.enabled === 1 ? "Active" : "Inactive"}
-                                        </div>
-                                    </td>
-                                    <td className="p-4 text-sm text-pryClr font-semibold">
-                                        {formatISODateToCustom(item.created_at)}
-                                    </td>
-                                    <td className="p-4 text-sm text-pryClr font-semibold">
-                                        <button
-                                            type="button"
-                                            title={`Delete ${item.username}`}
-                                            onClick={() => handleDeleteUser(item)}
-                                            className="text-red-600 hover:text-red-700 cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto"
-                                        >
-                                            <FaTrashAlt />
-                                        </button>
-                                    </td>
-                                </tr>
-                            )
-                        })
-                    ) : (
-                        <tr>
-                            <td colSpan="8" className="text-center p-8">No users found.</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-
-            {!isLoading && allUsers.length > 0 && (
-                <div className="flex justify-center items-center gap-2 p-4">
-                    <PaginationControls
-                        currentPage={currentPage}
-                        totalPages={lastPage}
-                        setCurrentPage={setCurrentPage}
-                    />
-                </div>
-            )}
-
-            {showDeleteModal && (
-                <Modal onClose={() => setShowDeleteModal(false)}>
-                    <ConfirmationDialog 
-                        message={`Are you sure you want to delete ${userToDelete?.username}? This action cannot be undone.`}
-                        onConfirm={confirmDelete}
-                        onCancel={() => setShowDeleteModal(false)}
-                    />
-                </Modal>
-            )}
+      {!isLoading && allUsers.length > 0 && (
+        <div className="flex justify-center items-center gap-2 p-4">
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={lastPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
-    );
+      )}
+
+      {/* Delete user */}
+      {dialogs.delete && (
+        <Modal onClose={() => closeDialog("delete")}>
+          <ConfirmationDialog
+            message={
+              <>
+                Are you sure you want to delete{" "}
+                <span className="font-semibold">{selectedUser?.username}</span>? This
+                action cannot be undone.
+              </>
+            }
+            onConfirm={async () => {
+              await confirmDelete(selectedUser);
+              closeDialog("delete");
+              setSelectedUser(null);
+            }}
+            onCancel={() => closeDialog("delete")}
+          />
+        </Modal>
+      )}
+
+      {/* Enable stockist */}
+      <EnableStockistModal
+        open={dialogs.enableStockist}
+        user={selectedUser}
+        onClose={() => {
+          closeDialog("enableStockist");
+          setSelectedUser(null);
+        }}
+        isSubmitting={isEnabling}
+        onConfirm={async ({ plan, location }) => {
+          setIsEnabling(true);
+          await confirmEnableStockist({
+            user: selectedUser,
+            plan,
+            location,
+            onFinally: () => {
+              setIsEnabling(false);
+              closeDialog("enableStockist");
+              setSelectedUser(null);
+            },
+          });
+        }}
+      />
+
+      {/* Toggle account status */}
+      {dialogs.toggleAccount && (
+        <Modal
+          onClose={() => {
+            closeDialog("toggleAccount");
+            setSelectedUser(null);
+          }}
+        >
+          <ConfirmationDialog
+            type="confirm"
+            title={`Confirm ${Number(selectedUser?.enabled) === 1 ? "deactivation" : "activation"}?`}
+            message={
+              <>
+                Are you sure you want to{" "}
+                {Number(selectedUser?.enabled) === 1 ? "deactivate" : "activate"}{" "}
+                <span className="font-semibold">{selectedUser?.username}</span>
+                's account?
+              </>
+            }
+            onConfirm={async () => {
+              await confirmToggleAccount(selectedUser);
+              closeDialog("toggleAccount");
+              setSelectedUser(null);
+            }}
+            onCancel={() => {
+              closeDialog("toggleAccount");
+              setSelectedUser(null);
+            }}
+          />
+        </Modal>
+      )}
+
+      {/* Upgrade user */}
+      {dialogs.upgrade && (
+        <Modal
+          onClose={() => {
+            closeDialog("upgrade");
+            setSelectedUser(null);
+          }}
+        >
+          <ConfirmationDialog
+            type="confirm"
+            title="Confirm User Upgrade?"
+            message={
+              <>
+                Are you sure you want to upgrade{" "}
+                <span className="font-semibold">{selectedUser?.username}</span>? This
+                action might have irreversible effects.
+              </>
+            }
+            onConfirm={async () => {
+              await confirmUpgradeUser(selectedUser);
+              closeDialog("upgrade");
+              setSelectedUser(null);
+            }}
+            onCancel={() => {
+              closeDialog("upgrade");
+              setSelectedUser(null);
+            }}
+          />
+        </Modal>
+      )}
+    </div>
+  );
 };
 
 export default AllUsers;

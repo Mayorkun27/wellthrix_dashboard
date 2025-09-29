@@ -7,12 +7,14 @@ import { useUser } from "../context/UserContext";
 import { formatISODateToCustom } from "../utilities/Formatterutility";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const AnnouncementBoard = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [announcements, setAnnouncements] = useState([]);
     const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+    const [selectedAnnouncementAttachment, setSelectedAnnouncementAttachment] = useState(null);
 
     const { token, logout, user } = useUser();
 
@@ -32,7 +34,7 @@ const AnnouncementBoard = () => {
                 setAnnouncements(response.data.data.data || [])
             }
         } catch (error) {
-            if (error.response.data.message.toLowerCase() == "unauthenticated") {
+            if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
                 logout()
             }
             console.error("An error occured fetching announcements", error)
@@ -65,7 +67,7 @@ const AnnouncementBoard = () => {
                 toast.success(response.data.message || "Announcement deleted successfully")
             }
         } catch (error) {
-            if (error.response.data.message.toLowerCase() == "unauthenticated") {
+            if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
                 logout()
             }
             console.log("An error occured deleting announcements", error)
@@ -78,11 +80,11 @@ const AnnouncementBoard = () => {
     }
 
     return (
-        <div>
+        <>
             <div className="h-full">
                 {
                     announcements.length <= 0 ? (
-                        <div className="h-[5vh]">
+                        <div className="h-[7vh] flex items-center justify-center">
                             <h3>You are all caught up!.</h3>
                         </div>
                     ) : (
@@ -103,9 +105,21 @@ const AnnouncementBoard = () => {
                             {selectedAnnouncement.title}
                         </h3>
                         <p className="font-medium">{selectedAnnouncement.message}</p>
-                        <p className="text-end mt-3 text-sm text-black/50">
-                            Date posted: {formatISODateToCustom(selectedAnnouncement.created_at)}
-                        </p>
+                        <div className="flex items-center justify-between mt-4">
+                            {true && (
+                                <small
+                                    className="underline text-center cursor-pointer"
+                                    onClick={() => {
+                                        setSelectedAnnouncementAttachment(selectedAnnouncement)
+                                        setSelectedAnnouncement(null)
+                                    }}
+                                >
+                                    View Attachment
+                                </small>)}
+                            <p className="text-end mt-3 text-sm text-black/50">
+                                Date posted: {formatISODateToCustom(selectedAnnouncement.created_at)}
+                            </p>
+                        </div>
                         {
                             user?.role === "admin" && (
                                 <div className="text-center mt-6">
@@ -123,7 +137,14 @@ const AnnouncementBoard = () => {
                     </div>
                 </Modal>
             )}
-        </div>
+            {selectedAnnouncementAttachment && (
+                <Modal onClose={() => setSelectedAnnouncementAttachment(null)}>
+                    <div className="w-full">
+                        <img src={`${IMAGE_BASE_URL}/${selectedAnnouncementAttachment?.image}`} alt="..." className="lg:w-1/2 md:w-3/4 mx-auto" />
+                    </div>
+                </Modal>
+            )}
+        </>
     );
 };
 

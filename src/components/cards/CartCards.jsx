@@ -5,6 +5,7 @@ import { RiSubtractLine } from "react-icons/ri";
 import { formatterUtility } from '../../utilities/Formatterutility';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const CartCards = ({ cartItem, handleIncrement, handleDecrement, handleRemove }) => {
     return (
@@ -28,7 +29,7 @@ const CartCards = ({ cartItem, handleIncrement, handleDecrement, handleRemove })
                 <div className="flex items-center gap-3 md:w-[80%] w-full md:ms-0 ms-2">
                     <div className="bg-pryClr/15 w-[70px] md:h-[60px] h-[90px] rounded-lg flex items-center justify-center">
                         <img 
-                            src={`${API_URL}/${cartItem.product_image}`}
+                            src={`${IMAGE_BASE_URL}/${cartItem.product_image}`}
                             alt={cartItem.product_name + " image"} 
                             className="w-[90%] h-[90%] object-scale-down mx-auto"
                         />

@@ -24,7 +24,7 @@ const Products = () => {
 
       if (response.status === 200) {
         setProducts(response.data.products || response.data)
-        toast.success("Products loaded successfully!")
+        // toast.success("Products loaded successfully!")
       }
 
     } catch (error) {

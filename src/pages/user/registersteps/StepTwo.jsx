@@ -233,14 +233,14 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
           }
         })
 
-        console.log(response)
+        console.log("stockists response",response)
         if (response.status === 200 && response.data.success) {
-          console.log(response.data.data.data)
-          setStockists(response.data.data.data)
+          console.log(response.data.data)
+          setStockists(response.data.data)
         }
         
       } catch (error) {
-        if (error.response.data.message.toLowerCase() == "unauthenticated") {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
           logout()
         }
         console.error("An error occured fetching stockists", error)
@@ -519,7 +519,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
               <option value='' disabled>Select Stockist</option>
               {
                 stockists.map((item) => (
-                  <option value={item.id}>{item.name} at {item.location}</option>
+                  <option key={item.id} value={item.id}>{item?.username} &#40;{item?.stockist_location || (item?.stockist_location+" "+item?.stockist_location)}&#41;</option>
                 ))
               }
             </select>
@@ -542,7 +542,7 @@ const StepTwo = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =>
               !formik.isValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-pryClr hover:bg-pryClrDark'
             }`}
           >
-            {formik.isSubmitting ? "Saving..." : "Next 2"}
+            {formik.isSubmitting ? "Saving..." : "Next"}
           </button>
         </div>
       </div>

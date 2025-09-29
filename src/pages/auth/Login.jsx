@@ -35,25 +35,11 @@ const Login = () => {
         const response = await axios.post(`${API_URL}/api/login`, values, {
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            withCredentials: true,
         })
 
         console.log("response", response)
-
-        // if (response.status === 200) {
-        //     const { token, role } = response.data
-        //     localStorage.setItem("token", token)
-        //     await refreshUser(token)
-        //     // const encrypted = encryptToken(token);
-        //     // login(token, user);
-        //     toast.success('Login successful');
-        //     setTimeout(() => {
-        //         toast("Redirecting to dashboard...");
-        //         setTimeout(() => {
-        //             role === "admin" ? navigate(`/user/overview`) : navigate('/user/overview');
-        //         }, 2000);
-        //     }, 1000);
-        // }  
 
        if (response.status === 200) {
           const { token, role } = response.data;

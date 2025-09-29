@@ -1,21 +1,22 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty } from 'react-icons/md';
+import { MdChat, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork, PiRanking } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
-import { FaPlugCircleBolt, FaUsers } from 'react-icons/fa6';
+import { FaMoneyBillTransfer, FaPlugCircleBolt, FaRankingStar, FaUsers } from 'react-icons/fa6';
 import { GiShoppingBag } from 'react-icons/gi';
 import { GrAnnounce, GrTransaction } from "react-icons/gr";
 import { TbTruckDelivery } from 'react-icons/tb';
 import { VscPackage } from 'react-icons/vsc';
 import { useUser } from '../../context/UserContext';
+import { BsSignpost } from 'react-icons/bs';
 
 const LeftNav = ({ setIsOpen }) => {
 
-    const { user } = useUser()
+    const { user, logout, miscellanousDetails } = useUser()
 
     const navItems = [
         {
@@ -54,12 +55,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/deposit',
             role: ["user"]
         },
-        {
-            name: 'Withdraw',
-            icon: <PiHandDeposit size={20} />,
-            path: '/user/withdraw',
-            role: ["user"]
-        },
+        // {
+        //     name: 'Withdraw',
+        //     icon: <PiHandDeposit size={20} />,
+        //     path: '/user/withdraw',
+        //     role: ["user"]
+        // },
         {
             name: 'Transfer Funds',
             icon: <GrTransaction size={20} />,
@@ -88,6 +89,12 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Products',
             icon: <GiShoppingBag size={20} />,
             path: '/user/products',
+            role: ["user"]
+        },
+        {
+            name: 'E-wallet Transfer',
+            icon: <FaMoneyBillTransfer size={20} />,
+            path: '/user/ewallettransfer',
             role: ["user"]
         },
         {
@@ -127,6 +134,12 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
         {
+            name: 'Subscribers',
+            icon: <MdOutlineUnsubscribe size={20} />,
+            path: '/admin/subscribers',
+            role: ["admin"]
+        },
+        {
             name: 'Packages',
             icon: <VscPackage size={20} />,
             path: '/admin/managepackages',
@@ -136,7 +149,7 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
             path: '/stockist/managestockist',
-            role: ["user", "admin"]
+            role: ["user"]
         },
         {
             name: 'Loyalty Bonus',
@@ -144,13 +157,24 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/admin/loyaltybonus',
             role: ["admin"]
         },
+        {
+            name: 'Milestone Bonus',
+            icon: <BsSignpost size={20} />,
+            path: '/admin/milestonebonus',
+            role: ["admin"]
+        },
+        {
+            name: 'Rankings',
+            icon: <FaRankingStar size={20} />,
+            path: '/admin/ranking',
+            role: ["admin"]
+        },
     ];
-    console.log("user?.role", user?.role)
 
     const filteredLinks = navItems.filter(navItem => (Array.isArray(navItem.role) && navItem.role.includes(user?.role)));
-
+    
     return (
-      <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full py-4 md:pt-4 pt-8 flex flex-col gap-'>
+      <div className='bg-pryClr lg:w-full md:w-3/5 w-full h-full md:pt-4 pt-8 flex flex-col gap-'>
         <div className="flex items-center justify-center">
             <img src={assets.logo} alt="Wellthrix logo" className='w-2/5' />
         </div>
@@ -163,7 +187,7 @@ const LeftNav = ({ setIsOpen }) => {
                         key={index}
                         className={({ isActive }) => `
                             flex items-center md:ps-18 ps-24 gap-3 font-medium border-l-10 border-transparent text-white transition-all duration-300 hover:border-secClr hover:bg-secClr/30 px-4 py-3 cursor-pointer text-base
-                            ${name.toLowerCase() === "stockist" && user?.plan !== 7 && "line-through pointer-events-none opacity-50"}
+                            ${name.toLowerCase() === "stockist" && user?.stockist_enabled !== 1 && "linkDisabled"}
                             ${isActive ? 'bg-secClr/30 !border-secClr text-white' : ''}
                         `}
                         onClick={() => setIsOpen(false)}
@@ -174,6 +198,14 @@ const LeftNav = ({ setIsOpen }) => {
                 ))
             }
         </ul>
+        <button
+            type="button"
+            onClick={logout}
+            className='flex items-center gap-2 cursor-pointer justify-start m-4 text-secClr font-semibold'
+        >
+            <MdLogout />
+            <span>Logout</span>
+        </button>
       </div>
     );
 };

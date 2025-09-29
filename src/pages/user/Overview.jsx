@@ -22,6 +22,7 @@ import Expenses from './overviewsubpages/Expenses'
 import { useUser } from '../../context/UserContext'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { HiOutlineShoppingCart } from 'react-icons/hi2'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -32,7 +33,7 @@ const Overview = () => {
 
   const [referrals, setReferrals] = useState([])
 
-  const { user, token, logout, refreshUser } = useUser()
+  const { user, token, logout, refreshUser, miscellaneousDetails } = useUser()
 
   useEffect(() => {
     if (token) {
@@ -42,7 +43,6 @@ const Overview = () => {
   
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
-
 
   const overviews = [
     {
@@ -56,7 +56,7 @@ const Overview = () => {
       path: "/user/deposit"
     },
     {
-      walletType: "Purchase Wallet",
+      walletType: "Repurchase Wallet",
       amount: user?.purchased_wallet,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <IoWalletOutline />
@@ -87,7 +87,7 @@ const Overview = () => {
     },
     {
       walletType: "Total Credit",
-      amount: user?.e_wallet,
+      amount: user?.total_credit,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandDeposit />
         </div>,
@@ -97,7 +97,7 @@ const Overview = () => {
     },
     {
       walletType: "Total Debit",
-      amount: "0",
+      amount: user?.total_debit,
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <PiHandWithdraw />
         </div>,
@@ -106,19 +106,6 @@ const Overview = () => {
       path: "/user/transactions"
     },
   ]
-
-  // const referrals = [
-  //   {
-  //     name: "Adeleke Favour",
-  //     userName: "Mayorkun27",
-  //     createdAt: "25 July, 2025"
-  //   },
-  //   {
-  //     name: "Odekunle Tiwaloluwa",
-  //     userName: "DorcasTiwa28",
-  //     createdAt: "25 July, 2025"
-  //   },
-  // ]
 
   const fetchReferrals = async () => {
     try {
@@ -206,61 +193,89 @@ const Overview = () => {
     },
   ]
 
+
   return (
-    <div className='grid lg:grid-cols-6 grid-cols-1 gap-6 items-'>
+    <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
       {/* Overviews */}
-      <div className="lg:col-span-4 grid gap-4 md:grid-cols-2 grid-cols-1 lg:my-1">
+      <div className="lg:col-span-2 md:col-span-3 grid grid-cols-1 lg:gap-2 gap-4 h-full lg:my-1">
         {
-          overviews.map((overview, index) => (
-            <OverviewCards key={index} {...overview} />
+          overviews.slice(0, 3).map((overview, index) => (
+            <div className="h-full" key={index}>
+              <OverviewCards {...overview} />
+            </div>
+          ))
+        }
+      </div>
+      <div className="lg:col-span-2 md:col-span-3 grid grid-cols-1 lg:gap-2 gap-4 h-full lg:my-1">
+        {
+          overviews.slice(3, 6).map((overview, index) => (
+            <div className="h-full" key={index}>
+              <OverviewCards {...overview} />
+            </div>
           ))
         }
       </div>
       {/* Profile */}
-      <div className="lg:col-span-2 flex lg:flex-col md:flex-row flex-col gap-4 items-center lg:justify-center justify-evenly lg:my-1">
-        <div className="shadow-md lg:w-[150px] md:w-[250px] lg:h-[150px] md:h-[250px] w-[200px] h-[200px] rounded-full bg-accClr overflow-hidden flex items-center justify-center">
-          <h3 className='md:text-6xl text-6xl text-pryClr font-extrabold capitalize'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
-        </div>
-        <div className="flex flex-col items-center">
-          <h3 className='font-bold'>@{user?.username}</h3>
-          <p>Package: <span className='font-bold uppercase'>Crown</span></p>
-          <Link to={"/user/profile"} className="bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
-        </div>
-      </div>
-      {/* New Refs */}
-      <div className="lg:col-span-3 lg:my-1">
-        <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm max-h-[45vh]">
-          <h3 className='md:text-xl text-lg mb-6 font-semibold'>New members</h3>
-          <div className="grid gap-6">
-            {
-              referrals.length <= 0 ? (
-                <div className='flex flex-col gap-4 items-center justify-center font-medium'>
-                  <h3>You dont have any referral yet!.</h3>
-                  <Link
-                    to={"/user/register"}
-                    className='bg-pryClr h-[45px] text-secClr rounded-lg shadow-sm text-sm flex items-center justify-center px-4'
-                  >Register a referral</Link>
-                </div>
-              ) : (
-                referrals.map((referral, index) => (
-                  <ReferralCards key={index} {...referral} />
-                ))
-              )
-            }
+      <div className="lg:col-span-2 md:col-span-6 h-full flex flex-col lg:gap-0 gap-4 justify-between lg:my-1 -mt-2">
+        <OverviewCards 
+          amount={user?.unilevel_wallet}
+          walletType={"Unilevel Wallet"}
+          icon={
+            <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+              <HiOutlineShoppingCart />
+            </div>
+          }
+        />
+        <div className="flex lg:flex-row md:flex-row flex-col gap-4 items-center lg:justify-center justify-evenly">
+          <div className="shadow-md lg:w-[150px] md:w-[250px] lg:h-[150px] md:h-[250px] w-[200px] h-[200px] lg:rounded-xl rounded-full bg-accClr overflow-hidden flex items-center justify-center">
+            <h3 className='lg:text-5xl md:text-8xl text-6xl text-pryClr font-extrabold uppercase'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
+          </div>
+          <div className="flex flex-col md:items-start items-center lg:gap-0 gap-1">
+            <h3 className='font-bold'>@{user?.username}</h3>
+            <div className="flex flex-col items-start justify-between lg:gap-2 md:gap-0 gap-2 text-xs">
+              <p>Package: <span className='font-bold uppercase'>{miscellaneousDetails?.planDetails?.name}</span></p>
+              <p>Rank: <span className='font-bold uppercase'>{user?.rank || "No rank"}</span></p>
+            </div>
+            <Link to={"/user/upgrade"} className="whitespace-nowrap bg-pryClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 mt-2 rounded-lg lg:text-xs">Upgrade Package</Link>
           </div>
         </div>
       </div>
-      {/* Announcement Board */}
-      <div className="lg:col-span-3 lg:my-1">
-        <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm">
-          <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
-          <div className="max-h-[33vh] overflow-y-scroll pe-2 styled-scrollbar">
-            <AnnouncementBoard />
+      <div className="flex md:flex-row flex-col items-center md:col-span-6 gap-6">
+        {/* New Refs */}
+        <div className="lg:my-1 md:w-1/2 w-full h-full">
+          <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
+            <h3 className='md:text-xl text-lg mb-3 font-semibold'>New members</h3>
+            <div className="grid gap-4">
+              {
+                referrals.length <= 0 ? (
+                  <div className='flex flex-col gap-4 items-center justify-center font-medium'>
+                    <h3>You dont have any referral yet!.</h3>
+                    <Link
+                      to={"/user/register"}
+                      className='bg-pryClr h-[45px] text-secClr rounded-lg shadow-sm text-sm flex items-center justify-center px-4'
+                    >Register a referral</Link>
+                  </div>
+                ) : (
+                  referrals.map((referral, index) => (
+                    <ReferralCards key={index} {...referral} />
+                  ))
+                )
+              }
+            </div>
+          </div>
+        </div>
+        {/* Announcement Board */}
+        <div className="lg:my-1 md:w-1/2 w-full h-full">
+          <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
+            <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
+            <div className="h-[80%] overflow-y-scroll pe-2 styled-scrollbar">
+              <AnnouncementBoard />
+            </div>
           </div>
         </div>
       </div>
       {/* Digital Products */}
-      <div className="lg:col-span-6 lg:my-1">
+      <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-6 font-semibold'>Digital Links</h3>
           <div className="lg:grid grid-cols-3 flex items-center jstify-between gap-6 overflow-x-scroll no-scrollbar">
@@ -275,7 +290,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Binary Pairing Point */}
-      <div className="lg:col-span-2 lg:my-1">
+      <div hidden className="lg:col-span-2 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='text-lg mb-4 font-semibold'>Binary Pairing Bonus</h3>
           <div className="grid items-center jstify-between gap-2 overflow-x-scroll no-scrollbar">
@@ -288,7 +303,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Rank Award Point */}
-      <div className="lg:col-span-2 lg:my-1">
+      <div hidden className="lg:col-span-2 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='text-lg mb-4 font-semibold'>Rank Award Points</h3>
           <div className="grid items-center jstify-between gap-2 overflow-x-scroll no-scrollbar">
@@ -301,7 +316,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Unilevel Award Point */}
-      <div className="lg:col-span-2 lg:my-1">
+      <div hidden className="lg:col-span-2 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='text-lg mb-4 font-semibold'>Unilevel Award Points</h3>
           <div className="grid items-center jstify-between gap-2 overflow-x-scroll no-scrollbar">
@@ -314,7 +329,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Team Performance */}
-      <div className="lg:col-span-6 lg:my-1">
+      <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-2 font-semibold'>Team Performance</h3>
           <div className="flex overflow-x-scroll gap-10 mb-8 items-center justify-between no-scrollbar">
@@ -343,7 +358,7 @@ const Overview = () => {
         </div>
       </div>
       {/* Earning & Expenses */}
-      <div className="lg:col-span-6 lg:my-1">
+      <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <h3 className='md:text-xl text-lg mb-2 font-semibold'>Earning & Expenses</h3>
           <div className="flex overflow-x-scroll gap-10 mb-8 items-center justify-between no-scrollbar">

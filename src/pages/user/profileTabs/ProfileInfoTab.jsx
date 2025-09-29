@@ -1,26 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { FaArrowUpLong } from 'react-icons/fa6';
+import { FaArrowUpLong, FaUser, FaUsers } from 'react-icons/fa6';
 import assets from '../../../assets/assests';
 import { useUser } from '../../../context/UserContext';
 import { useLocation } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from 'react-icons/fa';
+import { ImArrowLeft, ImArrowRight } from 'react-icons/im';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-const PS_SK = import.meta.env.VITE_PAYSTACK_SECRET_KEY;
 
 const ProfileInfoTab = () => {
   const searchParams = new URLSearchParams(useLocation().search);
   const comeToEditBank = searchParams.get("setbank");
-  
-  const { user } = useUser()
-  
+
+  const { user, miscellaneousDetails, refreshUser } = useUser()
+
+  useEffect(() => {
+    refreshUser()
+  }, [])
+
   const splittedFirstNameFirstLetter = user?.first_name.split("")[0]
   const splittedLastNameFirstLetter = user?.last_name.split("")[0]
 
   const statItems = [
-    { id: 1, icon: assets.pic1, title: 'Personal PV', value: '500' },
-    { id: 2, icon: assets.pic2, title: 'Group PV', value: '700' },
-    { id: 3, icon: assets.pic3, title: 'Left Camry', value: '800' },
-    { id: 4, icon: assets.pic4, title: 'Right Camry', value: '200' },
+    { 
+      id: 1, 
+      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+        <FaUser />
+      </div>, 
+      title: 'Personal PV', 
+      value: Number(user?.personal_pv)
+      // + Number(user?.repurchase_pv)
+    },
+    { 
+      id: 2, 
+      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+        <FaUsers />
+      </div>, 
+      title: 'Total PV', 
+      value: Number(miscellaneousDetails?.totalPVLeft) + Number(miscellaneousDetails?.totalPVRight)
+    },
+    { 
+      id: 3, 
+      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+        <ImArrowLeft />
+      </div>, 
+      title: 'Left PV', 
+      value: miscellaneousDetails?.totalPVLeft 
+    },
+    { 
+      id: 4, 
+      icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+        <ImArrowRight />
+      </div>, 
+      title: 'Right PV', 
+      value: miscellaneousDetails?.totalPVRight 
+    },
   ];
 
   return (
@@ -49,27 +84,34 @@ const ProfileInfoTab = () => {
             <p className='md:text-lg mb-2'><span className='font-semibold'>Username: </span>{user?.username}</p>
           </div>
           <div className='w-full border-b-3 border-white flex justify-between items-center'>
-            <p className='md:text-lg mb-2'><span className='font-semibold'>Package: </span>{user?.plan}</p>
-            <div className='flex gap-1 text-[#0F16D7] font-semibold items-center mb-2 md:text-lg'>
+            <p className='md:text-lg mb-2 capitalize'><span className='font-semibold'>Package: </span>{miscellaneousDetails?.planDetails?.name}</p>
+            <Link
+              to="/user/upgrade"
+              className="flex text-[#0F16D7] font-semibold items-center mb-2 md:text-lg text-sm"
+            >
               <p>Upgrade</p>
               <FaArrowUpLong />
-            </div>
+            </Link>
           </div>
           <div className='w-full border-b-3 border-white'>
-            <p className='md:text-lg mb-2'><span className='font-semibold'>Current Rank: </span>No Rank Achieved</p>
+            <p className='md:text-lg mb-2'><span className='font-semibold'>Current Rank: </span>{!user?.rank ? "No Rank" : user?.rank}</p>
           </div>
         </div>
       </div>
 
-      <div className='w-full rounded-lg py-8 md:pt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+      <div className='w-full rounded-lg py-4 md:pt-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         {statItems.map((item) => (
           <div
             key={item.id}
-            className='w-full gap-1 flex flex-col items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-6 justify-center text-center'
+            className='w-full gap-2 flex flex-row items-center font-bold bg-pryClr/40 rounded-lg shadow-lg p-4'
           >
-            <img src={item.icon} className='w-24 mb-4' alt={item.title} />
-            <p className='text-xl text-white md:text-xl'>{item.title}</p>
-            <p className='text-5xl md:text-5xl'>{item.value}</p>
+            <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+              {item.icon}
+            </div>
+            <div className="flex flex-col">
+              <p className='md:text-xs text-xs text-white'>{item.title}</p>
+              <p className='text-2xl md:text-3xl'>{item.value}</p>
+            </div>
           </div>
         ))}
       </div>
