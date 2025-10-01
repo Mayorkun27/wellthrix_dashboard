@@ -49,8 +49,7 @@ const History = () => {
         }
       );
 
-      console.log("history response", response);
-      console.log("history response data transactions", response.data.data);
+      // console.log("history response", response);
 
       if (response.status === 200) {
         const { data, current_page, last_page, per_page } = response.data.data;
@@ -153,21 +152,12 @@ const History = () => {
               </tr>
             ) : pickupOrders.length > 0 ? (
               pickupOrders.map((pickupOrder, index) => {
-                const statusKey = pickupOrder?.order?.delivery?.toLowerCase();
-                const { text, className } = statusLabels[statusKey] || {
-                  text: statusKey || "unknown",
-                  className: "bg-gray-200 text-gray-600",
-                };
-
-                const serialNumber = (currentPage - 1) * perPage + (index + 1);
-                const canConfirm = statusKey === "pending";
-
                 return (
                   <tr
                     key={pickupOrder.id}
                     className="border-b border-black/10 text-xs"
                   >
-                    <td className="p-3">
+                    <td className="p-3 text-center">
                       {String(index + 1).padStart(3, "0")}
                     </td>
                     <td className="px-4 py-2 text-center capitalize">

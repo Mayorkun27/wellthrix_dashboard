@@ -8,7 +8,6 @@ import { BsWallet2 } from 'react-icons/bs'
 import { PiHandDeposit, PiHandWithdraw } from 'react-icons/pi'
 import ReferralCards from '../../components/cards/ReferralCards'
 import DigitalCards from '../../components/cards/DigitalCards'
-import assets from '../../assets/assests'
 import AnnouncementBoard from '../../components/AnnouncementBoard'
 import { CgData } from 'react-icons/cg'
 import ListTwo from '../../components/lists/ListTwo'
@@ -24,6 +23,7 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import { HiOutlineShoppingCart } from 'react-icons/hi2'
 import { formatterUtility } from '../../utilities/formatterutility'
+import Confetti from 'react-confetti';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -37,6 +37,7 @@ const Overview = () => {
   const [isGettingProgress, setIsGettingProgress] = useState(false)
 
   const { user, token, logout, refreshUser, miscellaneousDetails } = useUser()
+  const [hasQualified, setHasQualified] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -136,8 +137,47 @@ const Overview = () => {
   }
 
   useEffect(() => {
-    fetchReferrals();
+    if (token) fetchReferrals();
   }, [token])
+
+  // Add a new useEffect to check for qualification
+  useEffect(() => {
+    if (tripProgress.leadership || tripProgress.crown || tripProgress.stockist) {
+      checkQualification();
+    }
+  }, [tripProgress, user?.repurchase_pv]);
+
+  const checkQualification = () => {
+    let qualified = false;
+    const personalPV = (Number(user?.repurchase_pv) - Number(user?.campaign_pv)) || 0;
+    const isRepurchaseComplete = personalPV >= 40;
+
+    if (tripProgress.leadership) {
+      const leadershipRecruitsPV = getProgressDetails(tripProgress.leadership.recruits_pv).percentage;
+      const leadershipRecruits = getProgressDetails(tripProgress.leadership.recruits).percentage;
+      const lesserLegPV = getProgressDetails(tripProgress.leadership.lesser_pv).percentage;
+
+      if (leadershipRecruitsPV === 100 && leadershipRecruits === 100 && lesserLegPV === 100) {
+        qualified = true;
+      }
+    }
+
+    if (tripProgress.crown) {
+      const crownProgress = getProgressDetails(tripProgress.crown).percentage;
+      if (crownProgress >= 100) {
+        qualified = true;
+      }
+    }
+
+    if (tripProgress.stockist) {
+      const stockistProgress = getProgressDetails(tripProgress.stockist).percentage;
+      if (stockistProgress >= 100) {
+        qualified = true;
+      }
+    }
+
+    setHasQualified(qualified && isRepurchaseComplete);
+  };
 
   const digitalProducts = [
     {
@@ -240,7 +280,7 @@ const Overview = () => {
   };
 
   const ProgressBar = ({ label, progress, value, target }) => (
-    <div className='mb-4'>
+    <div className=''>
       <div className='flex justify-between items-center mb-1'>
         <span className='text-xs font-medium text-gray-700'>{label}</span>
         <span className='text-xs font-medium text-gray-700'>{value}/{target}</span>
@@ -336,7 +376,29 @@ const Overview = () => {
       {/* Promo */}
       <div className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
-          <h3 className='md:text-xl text-lg mb-6 font-semibold'>Ongoing Promo</h3>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className='md:text-xl text-lg font-semibold'>Ongoing Promo</h3>
+            <button 
+              className="whitespace-nowrap bg-accClr text-secClr lg:h-[40px] h-[50px] flex items-center justify-center px-4 rounded-lg lg:text-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={fetchTripProgress}
+              disabled={isGettingProgress}
+            >
+              {isGettingProgress ? "Refreshing Progress..." :"Refresh Progress"}
+            </button>
+          </div>
+          {hasQualified && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative text-center mb-4 overflow-hidden">
+              <Confetti
+                width={window.innerWidth}
+                height={window.innerHeight}
+                recycle={false} // This makes the confetti pop once
+                numberOfPieces={200}
+                run={hasQualified}
+              />
+              <strong className="font-bold">Congratulations {user?.username}! 🎉</strong>
+              <span className="block sm:inline"> You have qualified for the promo trip!</span>
+            </div>
+          )}
           <div className="flex items-center justify-between mb-4">
             <h4 className='font-medium'>WELLTHRIX 042 CRUISE @ The Elite Experience</h4>
             <div className="flex flex-col items-center">
@@ -350,37 +412,45 @@ const Overview = () => {
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 border border-black/10 p-4 rounded-xl">
-              {tripProgress.leadership && (
+              {/* {tripProgress.leadership && ( */}
                 <div className="border-2 p-4 rounded-[inherit] border-secClr flex flex-col">
                   <h5 className="font-bold text-lg mb-2 capitalize">Leadership Builder</h5>
-                  <div className='flex-grow'>
-                    <ProgressBar
-                      label="Lesser Leg PV"
-                      progress={getProgressDetails(tripProgress.leadership.lesser_pv).percentage}
-                      value={getProgressDetails(tripProgress.leadership.lesser_pv).value}
-                      target={getProgressDetails(tripProgress.leadership.lesser_pv).target}
-                    />
+                  <div className='flex-grow space-y-4'>
+                    <div className="space-y-2">
+                      <ProgressBar
+                        label="Lesser Leg PV"
+                        progress={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.lesser_pv).percentage : "0"}
+                        value={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.lesser_pv).value : "0"}
+                        target={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.lesser_pv).target : 3600}
+                      />
+                      <div className='flex justify-between items-center mb-1'>
+                        <span className='text-xs font-medium text-gray-700'>*Higher leg PV</span>
+                        <span className='text-xs font-medium text-gray-700'>{tripProgress.leadership && tripProgress.leadership.higher_pv}</span>
+                      </div>
+                    </div>
                     <ProgressBar
                       label="New Recruits"
-                      progress={getProgressDetails(tripProgress.leadership.recruits).percentage}
-                      value={getProgressDetails(tripProgress.leadership.recruits).value}
-                      target={getProgressDetails(tripProgress.leadership.recruits).target}
+                      progress={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.recruits).percentage : "0"}
+                      value={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.recruits).value : "0"}
+                      target={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.recruits).target : 3}
                     />
                     <ProgressBar
                       label="Recruits PV"
-                      progress={getProgressDetails(tripProgress.leadership.recruits_pv).percentage}
-                      value={getProgressDetails(tripProgress.leadership.recruits_pv).value}
-                      target={getProgressDetails(tripProgress.leadership.recruits_pv).target}
+                      progress={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.recruits_pv).percentage : "0"}
+                      value={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.recruits_pv).value : "0"}
+                      target={tripProgress.leadership ? getProgressDetails(tripProgress.leadership.recruits_pv).target : 180}
                     />
                   </div>
                 </div>
-              )}
-              {tripProgress.crown && (() => {
-                const sponsoredCrowns = getProgressDetails(tripProgress.crown).value;
+              {/* )} */}
+              {
+              // tripProgress.crown && 
+              (() => {
+                const sponsoredCrowns = tripProgress.crown ? getProgressDetails(tripProgress.crown).value : 0;
                 return (
                   <div className="border-2 p-4 rounded-[inherit] border-secClr flex flex-col">
                     <h5 className="font-bold text-lg mb-2 capitalize">Crown Path</h5>
-                    <div className='flex-grow'>
+                    <div className='flex-grow space-y-4'>
                       <ProgressBar
                         label="Sponsor 4 (1 Slot)"
                         progress={sponsoredCrowns ? Math.min((sponsoredCrowns / 4) * 100, 100) : 0}
@@ -388,7 +458,7 @@ const Overview = () => {
                         target={4}
                       />
                       <ProgressBar
-                        label="Sponsor 8 (2 Slots, 1 VIP)"
+                        label="Sponsor 8 (2 Slots: 1 VIP)"
                         progress={sponsoredCrowns ? Math.min((sponsoredCrowns / 8) * 100, 100) : 0}
                         value={sponsoredCrowns || 0}
                         target={8}
@@ -398,26 +468,26 @@ const Overview = () => {
                   </div>
                 );
               })()}
-              {tripProgress.stockist && (
+              {/* {tripProgress.stockist && ( */}
                 <div className="border-2 p-4 rounded-[inherit] border-secClr flex flex-col">
                   <h5 className="font-bold text-lg mb-2 capitalize">VIP Stockist Path</h5>
-                  <div className='flex-grow'>
+                  <div className='flex-grow space-y-4'>
                     <ProgressBar
                       label="Stockists Referred"
-                      progress={getProgressDetails(tripProgress.stockist).percentage}
-                      value={getProgressDetails(tripProgress.stockist).value}
-                      target={getProgressDetails(tripProgress.stockist).target}
+                      progress={tripProgress.stockist ? getProgressDetails(tripProgress.stockist).percentage : 0}
+                      value={tripProgress.stockist ? getProgressDetails(tripProgress.stockist).value : 0}
+                      target={tripProgress.stockist ? getProgressDetails(tripProgress.stockist).target : 1}
                     />
                   </div>
-                  <p className="text-[10px] text-gray-500 mt-auto">Note: Refer a Royal, Imperial, or Grand Imperial Stockist.</p>
+                  <p className="text-[10px] text-gray-500 mt-auto">Note: Refer a Royal Stockist for 1 VIP slot, Imperial Stockist for 2 VIP slot, or Grand Imperial Stockist for 3 VIP slot.</p>
                 </div>
-              )}
-              {user?.repurchase_pv && (
-                <div className="md:col-span-3">
+              {/* )} */}
+              {user?.repurchase_pv && user?.campaign_pv && (
+                <div className="md:col-span-3 space-y-4">
                   <ProgressBar
                     label="Personal Repurchase PV"
-                    progress={user?.repurchase_pv ? Math.min((user.repurchase_pv / 40) * 100, 100) : 0}
-                    value={user?.repurchase_pv || 0}
+                    progress={(Number(user?.repurchase_pv) - Number(user?.campaign_pv)) ? Math.min(((Number(user?.repurchase_pv) - Number(user?.campaign_pv)) / 40) * 100, 100) : 0}
+                    value={(Number(user?.repurchase_pv) - Number(user?.campaign_pv)) || 0}
                     target={40}
                   />
                   <p className="text-xs text-gray-500 mt-auto">Note: The 40PV Personal Repurchase is mandatory for all paths.</p>

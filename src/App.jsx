@@ -115,7 +115,7 @@ function App() {
         />
         <Route
           path="/user/products"
-          element={<MainLayout pageName={"Products"} child={<Products />} />}
+          element={<MainLayout pageName={"Repurchase Mall"} child={<Products />} />}
         />
         <Route
           path="/user/products/cart"

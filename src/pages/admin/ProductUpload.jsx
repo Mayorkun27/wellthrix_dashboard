@@ -100,7 +100,7 @@ const ProductUpload = () => {
           formData.append("product_pv", Number(values.product_pv || 0));
           formData.append("in_stock", Number(values.in_stock || 0));
           formData.append("product_description", values.product_description || "");
-          formData.append("repurchase", values.repurchase ? 1 : 0 || "");
+          formData.append("repurchase", values.repurchase ? 1 : 0);
         }
 
         if (values.product_image) {

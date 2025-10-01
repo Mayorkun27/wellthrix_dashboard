@@ -13,12 +13,13 @@ import PickUps from "./user/PickUps";
 import History from "./user/History";
 import RegistrationOrders from "./user/RegistrationOrders";
 import Inventory from "./user/Inventory";
+import UpgradeOrders from "./user/UpgradeOrders";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const Stockist = () => {
   const { token, logout, user, refreshUser } = useUser();
-  const [activeTab, setActiveTab] = useState("inventory");
+  const [activeTab, setActiveTab] = useState("register");
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const navigate = useNavigate();
   const [pin, setPin] = useState(["", "", "", ""]);
@@ -165,6 +166,16 @@ const Stockist = () => {
             Registration Orders
           </button>
           <button
+            onClick={() => setActiveTab("upgrade")}
+            className={`px-4 h-[40px] font-semibold cursor-pointer rounded-lg md:text-base text-sm whitespace-nowrap ${
+              activeTab === "upgrade"
+                ? "bg-pryClr text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            Upgrade Orders
+          </button>
+          <button
             onClick={() => setActiveTab("history")}
             className={`px-4 h-[40px] font-semibold cursor-pointer rounded-lg md:text-base text-sm whitespace-nowrap ${
               activeTab === "history"
@@ -185,6 +196,8 @@ const Stockist = () => {
           <History />
         ) : activeTab === "inventory" ? (
           <Inventory stockistId={user?.id} />
+        ) : activeTab === "upgrade" ? (
+          <UpgradeOrders stockistId={user?.id} />
         ) : (
           <RegistrationOrders />
         )}

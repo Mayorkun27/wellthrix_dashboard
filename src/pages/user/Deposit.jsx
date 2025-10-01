@@ -166,7 +166,7 @@ const Deposit = () => {
             {/* Manual Payment Option */}
             <div
               onClick={() => formik.setFieldValue("payment_method", "manual")}
-              className={`flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
+              className={`disabledForNo flex-1 bg-pryClr/20 md:px-4 px-2 md:py-8 py-6 rounded-lg flex items-center justify-between border ${formik.values.payment_method === 'manual' ? 'border-pryClr/30 shadow-md' : 'border-black/50'} cursor-pointer`}
             >
               <div className="flex lg:gap-2 gap-4 items-center">
                 <MdPayment className={"md:text-4xl text-3xl text-pryClr"} />
@@ -188,13 +188,17 @@ const Deposit = () => {
           {formik.touched.payment_method && formik.errors.payment_method && (
             <p className="text-red-600">{formik.errors.payment_method}</p>
           )}
-          <div 
-            className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium"
-          >
-            <h3>Bank Name: <span className="font-bold">ZENITH BANK</span></h3>
-            <h3>Account Number: <span className="font-bold">1310212712</span></h3>
-            <h3>Account Name: <span className="font-bold">WELLTHRIX INTERNATIONAL LTD</span></h3>
-          </div>
+          {
+            formik.values.payment_method === "manual" && (
+              <div 
+                className="bg-pryClr/10 p-6 border border-pryClr/20 mt-8 rounded-lg space-y-2 font-medium"
+              >
+                <h3>Bank Name: <span className="font-bold">ZENITH BANK</span></h3>
+                <h3>Account Number: <span className="font-bold">1310212712</span></h3>
+                <h3>Account Name: <span className="font-bold">WELLTHRIX INTERNATIONAL LTD</span></h3>
+              </div>
+            )
+          }
           <div className="w-full mt-5">
             <label htmlFor="amount" className="text-[16px] font-medium">
               Amount

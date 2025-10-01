@@ -86,7 +86,7 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["user"]
         },
         {
-            name: 'Products',
+            name: 'Repurchase Mall',
             icon: <GiShoppingBag size={20} />,
             path: '/user/products',
             role: ["user"]

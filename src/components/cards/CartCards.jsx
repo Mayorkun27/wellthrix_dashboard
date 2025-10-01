@@ -2,7 +2,7 @@ import React from 'react'
 import { RxTrash } from "react-icons/rx";
 import { GoPlus } from "react-icons/go";
 import { RiSubtractLine } from "react-icons/ri";
-import { formatterUtility } from '../../utilities/Formatterutility';
+import { formatterUtility } from '../../utilities/formatterutility';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL

@@ -11,6 +11,7 @@ import {
 import { GiCheckMark } from "react-icons/gi";
 import Modal from "../../../components/modals/Modal";
 import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
+import { MdRemoveRedEye } from "react-icons/md";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -22,6 +23,7 @@ const RegistrationOrders = () => {
   const [lastPage, setLastPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  // const [orderProducts, setOrderProducts] = useState(null);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [orderToConfirm, setOrderToConfirm] = useState(null);
@@ -30,7 +32,7 @@ const RegistrationOrders = () => {
   const statusLabels = {
     pending: { text: "Pending", className: "bg-yellow-100 text-yellow-600" },
     failed: { text: "Failed", className: "bg-[#c51236]/20 text-red-600" },
-    success: { text: "Successful", className: "bg-[#dff7ee]/80 text-pryclr" },
+    picked: { text: "Picked", className: "bg-[#dff7ee]/80 text-pryclr" },
   };
 
   const fetchRegisterOrders = async () => {
@@ -52,12 +54,11 @@ const RegistrationOrders = () => {
         }
       );
 
-      console.log("registration response", response);
+      // console.log("registration response", response);
 
       if (response.status === 200) {
-        const { data, current_page, last_page, per_page } =
-          response.data.registrations;
-        console.log("data", data);
+        const { data, current_page, last_page, per_page } = response.data.registrations;
+        // console.log("data", data);
         setRegisterOrders(data);
         setCurrentPage(current_page);
         setLastPage(last_page);
@@ -84,7 +85,7 @@ const RegistrationOrders = () => {
 
   useEffect(() => {
     if (token && user?.id) {
-      console.log("Fetching orders for page:", currentPage);
+      // console.log("Fetching orders for page:", currentPage);
       fetchRegisterOrders();
     }
   }, [currentPage, token, user?.id]);
@@ -97,17 +98,18 @@ const RegistrationOrders = () => {
 
   // Function to perform the actual PUT request
   const performRegistrationConfirmation = async () => {
-    if (!orderToConfirm?.registration_id) return;
+    console.log("orderToConfirm?.id", orderToConfirm?.orders?.id)
+    if (!orderToConfirm?.orders?.id) return;
 
-    setIsConfirming(true); // Set loading state for the button
+    setIsConfirming(true);
     setShowConfirmModal(false); // Close the dialog immediately
     const toastId = toast.loading(
-      `Confirming registration for ${orderToConfirm?.user?.username}...`
+      `Confirming registration product pickup...`
     );
 
     try {
       const response = await axios.put(
-        `${API_URL}/api/registration/${orderToConfirm.registration_id}/confirm`,
+        `${API_URL}/api/orders/${orderToConfirm.orders?.id}/confirm`,
         {}, // Empty body, as it's typically just a status update
         {
           headers: {
@@ -148,6 +150,12 @@ const RegistrationOrders = () => {
     }
   };
 
+  const filteredProducts = registerOrders.filter(
+    (registerOrder) => registerOrder.transaction_type === "register_product"
+  );
+
+  console.log("filteredProducts", filteredProducts);
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -158,8 +166,8 @@ const RegistrationOrders = () => {
               <th className="px-4 text-center whitespace-nowrap">
                 Transaction type
               </th>
-              <th className="px-4 text-center whitespace-nowrap">username</th>
               <th className="px-4 text-center">ORD ID</th>
+              <th className="px-4 text-center">Receiver username</th>
               <th className="px-4 text-center">Amount</th>
               <th className="px-4 text-center">Date</th>
               <th className="px-4 text-center">Status</th>
@@ -173,10 +181,10 @@ const RegistrationOrders = () => {
                   Loading...
                 </td>
               </tr>
-            ) : registerOrders.length > 0 ? (
-              registerOrders.map((registrationOrder, index) => {
+            ) : filteredProducts.length > 0 ? (
+              filteredProducts.map((registrationOrder, index) => {
                 const statusKey =
-                  registrationOrder?.delivery_status?.toLowerCase(); // Ensure lowercase for key lookup
+                  registrationOrder?.orders?.delivery?.toLowerCase();
                 const { text, className } = statusLabels[statusKey] || {
                   text: statusKey || "unknown",
                   className: "bg-gray-200 text-gray-600",
@@ -191,7 +199,7 @@ const RegistrationOrders = () => {
                     key={registrationOrder.id}
                     className="border-b border-black/10 text-xs"
                   >
-                    <td className="p-3">
+                    <td className="p-3 text-center">
                       {String(serialNumber).padStart(3, "0")}
                     </td>
                     <td className="px-4 py-2 text-center capitalize">
@@ -200,10 +208,10 @@ const RegistrationOrders = () => {
                       )}` || "-"}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {registrationOrder?.user?.username || "-"}
+                      {`REG-${registrationOrder?.id}` || "-"}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {`REG-${registrationOrder?.id}` || "-"}
+                      {registrationOrder?.orders?.user?.username || "-"}
                     </td>
                     <td className="px-4 py-2 text-center">
                       {formatterUtility(Number(registrationOrder?.amount)) ||
@@ -222,7 +230,19 @@ const RegistrationOrders = () => {
                       </div>
                     </td>
                     <td className="px-4 py-2 text-center">
-                      <div className="flex flex-row-reverse items-center">
+                      <div className="flex flex-row items-center">
+                        <button
+                          type="button"
+                          title={`View products`}
+                          disabled={isConfirming} // Disable if not pending or if confirming another order
+                          onClick={() => {
+                            console.log(registrationOrder)
+                            setSelectedOrder(registrationOrder)
+                          }}
+                          className="text-pryClr text-xl cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto disabled:opacity-25 disabled:cursor-not-allowed"
+                        >
+                          <MdRemoveRedEye />
+                        </button>
                         <button
                           type="button"
                           title={
@@ -268,9 +288,7 @@ const RegistrationOrders = () => {
             type="confirm"
             title="Confirm registration pickup?"
             message={`Are you sure you want to confirm registration order pickup REG-${
-              orderToConfirm?.user_id
-            } by ${orderToConfirm?.user?.first_name || ""} ${
-              orderToConfirm?.user?.last_name || ""
+              orderToConfirm?.id
             }?`}
             onConfirm={performRegistrationConfirmation}
             onCancel={() => {
@@ -287,32 +305,28 @@ const RegistrationOrders = () => {
       {selectedOrder && (
         <Modal onClose={() => setSelectedOrder(null)}>
           <h3 className="font-bold text-center md:text-xl">
-            Ref ID: #{selectedOrder.ref_no}
+            Ref ID: REG-{selectedOrder.id}
           </h3>
           <ul className="space-y-2 md:text-lg text-base my-4">
-            {/* <li>
-                            <span className="font-medium">Receiver&apos;s Name: </span>
-                            {`${selectedOrder.orders?.user?.first_name} ${selectedOrder.orders?.user?.last_name}`}
-                        </li>
-                        <li>
-                            <span className="font-medium">Receiver&apos;s Username: </span>
-                            {selectedOrder.orders?.user?.username}
-                        </li>
-                        <li>
-                            <span className="font-medium">Receiver&apos;s Location: </span>
-                            {selectedOrder.orders?.user?.location}
-                        </li>
-                        <span className="font-bold">Contact Information:</span>
-                        <li>
-                            <span className="font-medium">Receiver&apos;s Email: </span>
-                            {selectedOrder.orders?.user?.email}
-                        </li>
-                        <li>
-                            <span className="font-medium">Receiver&apos;s Phone: </span>
-                            {selectedOrder.orders?.user?.mobile}
-                        </li> */}
+            <li>
+              <span className="font-medium">Receiver&apos;s Name: </span>
+              {`${selectedOrder?.orders?.user?.first_name} ${selectedOrder?.orders?.user?.last_name}`}
+            </li>
+            <li>
+                <span className="font-medium">Receiver&apos;s Username: </span>
+                {selectedOrder?.orders?.user?.username}
+            </li>
+            <span className="font-bold">Contact Information:</span>
+            <li>
+                <span className="font-medium">Receiver&apos;s Email: </span>
+                {selectedOrder?.orders?.user?.email}
+            </li>
+            <li>
+                <span className="font-medium">Receiver&apos;s Phone: </span>
+                {selectedOrder?.orders?.user?.mobile}
+            </li>
             <span className="font-bold">Products purchased:</span>
-            {selectedOrder.orders?.products.map((product) => (
+            {selectedOrder.orders.products && selectedOrder.orders?.products?.map((product) => (
               <ul key={product.id}>
                 <li>
                   <span className="font-medium capitalize">product name: </span>
@@ -332,14 +346,14 @@ const RegistrationOrders = () => {
                   <span className="font-medium capitalize">
                     product quantity:{" "}
                   </span>
-                  {product?.quantity}
+                  {product?.product_quantity}
                 </li>
               </ul>
             ))}
           </ul>
           <li className="list-none mt-4 text-lg">
             <span className="font-medium">Order amount: </span>
-            {formatterUtility(Number(selectedOrder.orders?.total_amount))}
+            {formatterUtility(Number(selectedOrder.amount))}
           </li>
           <div
             className={`w-full py-2 mt-4 ${
