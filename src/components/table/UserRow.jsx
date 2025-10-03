@@ -1,17 +1,20 @@
 // src/components/users/UserRow.jsx
 import { FaTrashAlt } from "react-icons/fa";
 import { GiUpgrade } from "react-icons/gi";
-import { formatISODateToCustom, formatterUtility } from "../../utilities/Formatterutility";
+import { formatISODateToCustom, formatterUtility } from "../../utilities/formatterutility";
+import { MdOutlineLockReset } from "react-icons/md";
 
 const UserRow = ({
   user,
   index,
   currentPage,
   perPage,
+  searchQuery,
   onDelete,
   onUpgrade,
   onToggleStatus,
   onEnableStockist,
+  onResetCredentials
 }) => {
   const serialNumber = (currentPage - 1) * perPage + (index + 1);
   const accountStatusText = Number(user.enabled) === 1 ? "Active" : "Deactivated";
@@ -22,7 +25,7 @@ const UserRow = ({
 
   return (
     <tr className="hover:bg-gray-50 text-sm border-b border-black/10 text-center">
-      <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
+      <td className="p-3">{!searchQuery ? String(serialNumber).padStart(3, "0") : "001"}</td>
       <td className="p-4 capitalize">{`${user.first_name} ${user.last_name}` || "-"}</td>
       <td className="p-4">{formatterUtility(Number(user.earning_wallet)) || "-"}</td>
       <td className="p-4">{user.email || "-"}</td>
@@ -57,6 +60,15 @@ const UserRow = ({
 
       <td className="p-4 text-sm text-pryClr font-semibold">
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            title={`Reset ${user.username} credentials`}
+            onClick={() => onResetCredentials(user)}
+            className="text-yellow-600 md:text-2xl text-xl hover:text-yellow-600/90 cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-yellow-600/10 transition-all duration-300 rounded-lg mx-auto"
+          >
+            <MdOutlineLockReset />
+          </button>
+
           <button
             type="button"
             title={`Delete ${user.username}`}

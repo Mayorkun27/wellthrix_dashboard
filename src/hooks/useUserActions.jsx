@@ -1,6 +1,6 @@
 // src/hooks/useUserActions.js
 import { toast } from "sonner";
-import { deleteUser, enableStockist, toggleAccount, upgradeUser } from "../services/userService";
+import { deleteUser, enableStockist, resetCredentials, toggleAccount, upgradeUser } from "../services/userService";
 import { handleAuthError } from "../utilities/handleAuthError";
 
 export const useUserActions = ({ token, logout, refetch }) => {
@@ -72,10 +72,25 @@ export const useUserActions = ({ token, logout, refetch }) => {
     }
   };
 
+  const confirmResetCredentials = async (user) => {
+    if (!user?.id) return;
+    const toastId = toast.loading(`Resetting credentials...`);
+    try {
+      const res = await resetCredentials(token, user.id);
+      toast.success(res.data?.message || `Credentials reset successfully!`, { id: toastId });
+      refetch();
+    } catch (err) {
+      handleAuthError(err, logout);
+      console.error("Credentials reset error:", err);
+      toast.error(err?.response?.data?.message || "An error occurred resetting credentials.", { id: toastId });
+    }
+  };
+
   return {
     confirmDelete,
     confirmEnableStockist,
     confirmToggleAccount,
     confirmUpgradeUser,
+    confirmResetCredentials
   };
 };

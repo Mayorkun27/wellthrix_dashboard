@@ -34,11 +34,15 @@ import Subscribers from "./pages/admin/Subscribers";
 import Loading from "./pages/auth/Loading";
 import P2P from "./pages/user/P2P";
 import NotFound from "./view/NotFound";
+import ManageUserAsStockist from "./pages/stockist/admin/ManageUserAsStockist";
+import ManageStockistInventory from "./pages/stockist/admin/ManageStockistInventory";
+import useAppVersionCheck from "./hooks/useAppVersionCheck";
 import Form from "./pages/admin/Form";
 import FormRequest from "./pages/user/FormRequest";
 
 function App() {
   const { user } = useUser();
+  useAppVersionCheck(60000); // check every 1min
 
   return (
     <>
@@ -117,7 +121,7 @@ function App() {
         />
         <Route
           path="/user/products"
-          element={<MainLayout pageName={"Products"} child={<Products />} />}
+          element={<MainLayout pageName={"Repurchase Mall"} child={<Products />} />}
         />
         <Route
           path="/user/products/cart"
@@ -125,8 +129,18 @@ function App() {
         />
 
         <Route
-          path="/stockist/managestockist"
+          path="/stockist/user/managestockist"
           element={<MainLayout pageName={"Stockist"} child={<Stockist />} />}
+        />
+
+        <Route
+          path="/stockist/admin/managestockist"
+          element={<MainLayout pageName={"Manage Stockists"} child={<ManageUserAsStockist />} />}
+        />
+
+        <Route
+          path="/stockist/admin/managestockist/:id"
+          element={<MainLayout pageName={"Manage Stockists/Mall"} child={<ManageStockistInventory />} />}
         />
 
         <Route

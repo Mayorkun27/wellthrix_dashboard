@@ -39,7 +39,6 @@ The Wellthrix Dashboard provides distinct functionalities for different user rol
 
 ### User Panel (`/user/*`)
 
-*   **Login**: Access your dashboard at the `/login` route.
 *   **Dashboard Overview (`/user/overview`)**: Get a quick glance at your e-wallet, purchase wallet, earnings, incentives, and total credit/debit. View recent referrals and announcements.
 *   **Network (`/user/network`)**: Visualize your referral network as a tree, with options to expand/collapse nodes and view user details.
 *   **Transactions (`/user/transactions`)**: Access a comprehensive history of all your financial movements, including:
@@ -105,9 +104,9 @@ The Wellthrix Dashboard provides distinct functionalities for different user rol
 ## Author Info
 
 *   **Your Name**: Adeleke Oluwamayokun
-*   **LinkedIn**: [\[Your LinkedIn Profile URL\]](https://www.linkedin.com/in/adeleke-oluwamayokun-780a912a5)
-*   **Twitter**: [\[Your Twitter Handle\]](https://www.x.com/Mayorkun27)
-*   **Portfolio**: [\[Your Personal Portfolio URL\]](https://www.oluwamayokun.vercel.app)
+*   **LinkedIn**: [\[LinkedIn Profile URL\]](https://www.linkedin.com/in/adeleke-oluwamayokun-780a912a5)
+*   **Twitter**: [\[Twitter Handle\]](https://www.x.com/Mayorkun_27)
+*   **Portfolio**: [\[Personal Portfolio URL\]](https://oluwamayokun.vercel.app)
 
 ---
 

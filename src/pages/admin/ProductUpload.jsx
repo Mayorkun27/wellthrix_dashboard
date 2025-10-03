@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
-import { formatterUtility } from "../../utilities/Formatterutility";
+import { formatterUtility } from "../../utilities/formatterutility";
 import { FaEdit } from "react-icons/fa";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -27,6 +27,7 @@ const ProductUpload = () => {
       product_description: "",
       in_stock: "",
       product_image: null,
+      repurchase: false,
     },
     validationSchema: Yup.object({
       product_name: Yup.string()
@@ -63,6 +64,7 @@ const ProductUpload = () => {
         then: (schema) => schema.required("Product image is required"),
         otherwise: (schema) => schema.nullable(),
       }),
+      repurchase: Yup.bool()
     }),
     validateOnChange: true,
     validateOnBlur: true,
@@ -80,12 +82,14 @@ const ProductUpload = () => {
           const productPv = values.product_pv != null && values.product_pv !== "" ? Number(values.product_pv) : Number(editingProduct.product_pv != null ? editingProduct.product_pv : 0);
           const inStock = values.in_stock != null && values.in_stock !== "" ? Number(values.in_stock) : Number(editingProduct.in_stock != null ? editingProduct.in_stock : 0);
           const description = values.product_description || editingProduct.product_description || "";
+          const repurchase = values.repurchase || editingProduct.repurchase || "";
 
           formData.append("product_name", productName);
           formData.append("price", price);
           formData.append("product_pv", productPv);
           formData.append("in_stock", inStock);
           formData.append("product_description", description);
+          formData.append("repurchase", repurchase ? 1 : 0);
 
           // Fallback for possible backend field name variations
           formData.append("name", productName); // In case backend expects 'name'
@@ -96,6 +100,7 @@ const ProductUpload = () => {
           formData.append("product_pv", Number(values.product_pv || 0));
           formData.append("in_stock", Number(values.in_stock || 0));
           formData.append("product_description", values.product_description || "");
+          formData.append("repurchase", values.repurchase ? 1 : 0);
         }
 
         if (values.product_image) {
@@ -273,7 +278,7 @@ const ProductUpload = () => {
               value={formik.values.product_name}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Product name changed:", e.target.value);
+                // console.log("Product name changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter product name"
@@ -296,7 +301,7 @@ const ProductUpload = () => {
               value={formik.values.price}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Price changed:", e.target.value);
+                // console.log("Price changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter price"
@@ -319,7 +324,7 @@ const ProductUpload = () => {
               value={formik.values.product_pv}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Product PV changed:", e.target.value);
+                // console.log("Product PV changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter point value"
@@ -342,7 +347,7 @@ const ProductUpload = () => {
               value={formik.values.in_stock}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("In stock changed:", e.target.value);
+                // console.log("In stock changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter stock quantity"
@@ -408,6 +413,17 @@ const ProductUpload = () => {
                 {formik.errors.product_image}
               </div>
             )}
+          </div>
+          <div className="md:col-span-2 flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              name="repurchase"
+              id="repurchase"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="w-5 h-5 accent-accClr"
+            />
+            <label htmlFor="repurchase" className="font-semibold md:text-lg">Check this box if product is available on repurchase only!</label>
           </div>
 
           <div className="md:col-span-2 col-span-1 text-center">

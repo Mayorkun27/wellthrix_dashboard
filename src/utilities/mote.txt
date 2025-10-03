@@ -1,383 +1,49 @@
-This is what i want to achieve actually...ignore the left and right count and retain the collapse button yh?
+🚤 WELLTHRIX 042 CRUISE @ The Elite Experience ✨ 
 
+Trip Value per Person: ₦500,000
 
 
-Now I am good with the cards arrangement, just those connecting lines around is all that is left
 
-I have been trying to use after effect got that, but i need the left card ::after to left 50% and the right card ::after to be -50%
+7th -30th September
 
+🌟 QUALIFICATION ROUTES
 
+✅ Option 1 – Leadership Builder
 
-I have this ".children-card::after{
+4,200 New Group PV on the lesser leg (≈ ₦5m sales)
 
-  content: "";
+Personally sponsor 3 new recruits with a total of 180PV
 
-  position: absolute;
+Maintain 40PV Personal Repurchase
 
-  top: -24px;
 
-  height: 1px;
+🎁 Reward: 1 Cruise Slot
 
-  width: 50%;
 
-  left: 50%;
+---
 
-  border: 1px solid black;
+👑 Option 2 – Crown Path
 
-}
+Sponsor 4 Crown Packages → 1 Slot
 
-.children-card:last-child::after{
+Sponsor 8 Crown Packages → 2 Slots (1 VIP) 
 
-  left: -50%;
 
-}" and this "import React, { useState } from 'react'
+---
 
-import { BsChevronDown, BsChevronRight } from 'react-icons/bs';
+💼 Option 3 – VIP Stockist Path
 
+Refer Royal Stockist → 1 VIP Slot
 
+Refer Imperial Stockist → 2 VIP Slots
 
-const Network = () => {
+Refer Grand Imperial Stockist → 4 VIP Slots
 
-  const [searchTerm, setSearchTerm] = useState('');
 
-  const [selectedGeneration, setSelectedGeneration] = useState('all');
 
-  const [expandedNodes, setExpandedNodes] = useState(new Set(['root']));
+---
 
+⚠ Note: All qualifiers must maintain 40PV Personal Repurchase.
 
 
-  const referralData = {
-
-    id: 'root',
-
-    name: 'John Smith',
-
-    generation: 0,
-
-    earnings: 15420,
-
-    totalReferrals: 24,
-
-    children: [
-
-      {
-
-        id: 'ref1',
-
-        name: 'Sarah Johnson',
-
-        generation: 1,
-
-        earnings: 8750,
-
-        totalReferrals: 12,
-
-        children: [
-
-          {
-
-            id: 'ref1-1',
-
-            name: 'Mike Chen',
-
-            generation: 2,
-
-            earnings: 3200,
-
-            totalReferrals: 5,
-
-            children: [
-
-              {
-
-                id: 'ref1-1-1',
-
-                name: 'Lisa Wang',
-
-                generation: 3,
-
-                earnings: 1800,
-
-                totalReferrals: 3,
-
-                children: [
-
-                  {
-
-                    id: 'ref1-1-1-1',
-
-                    name: 'David Kim',
-
-                    generation: 4,
-
-                    earnings: 950,
-
-                    totalReferrals: 0,
-
-                    children: []
-
-                  }
-
-                ]
-
-              }
-
-            ]
-
-          },
-
-          {
-
-            id: 'ref1-2',
-
-            name: 'Emma Davis',
-
-                        generation: 2,
-
-            earnings: 2900,
-
-            totalReferrals: 4,
-
-            children: []
-
-          }
-
-        ]
-
-      },
-
-      {
-
-        id: 'ref2',
-
-        name: 'Robert Wilson',
-
-        generation: 1,
-
-        earnings: 6200,
-
-        totalReferrals: 8,
-
-        children: [
-
-          {
-
-            id: 'ref2-1',
-
-            name: 'Anna Martinez',
-
-            generation: 2,
-
-            earnings: 4100,
-
-            totalReferrals: 6,
-
-            children: []
-
-          },
-
-          {
-
-            id: 'ref2-1',
-
-            name: 'James Brown',
-
-            generation: 1,
-
-            earnings: 3800,
-
-            totalReferrals: 4,
-
-            children: []
-
-          }
-
-        ]
-
-      },
-
-    ]
-
-  };
-
-
-
-  const toggleNode = (nodeId) => {
-
-    const newExpanded = new Set(expandedNodes);
-
-    if (newExpanded.has(nodeId)) {
-
-      newExpanded.delete(nodeId);
-
-    } else {
-
-      newExpanded.add(nodeId);
-
-    }
-
-    setExpandedNodes(newExpanded);
-
-  };
-
-
-
-  const filterByGeneration = (node, generation) => {
-
-    if (generation === 'all') return true;
-
-    return node.generation === parseInt(generation);
-
-  };
-
-
-
-  const searchInTree = (node, term) => {
-
-    if (!term) return true;
-
-    return node.name.toLowerCase().includes(term.toLowerCase()) ||
-
-           node.id.toLowerCase().includes(term.toLowerCase());
-
-  };
-
-
-
-  const ReferralCard = ({ user, isExpanded, onToggle, hasChildren }) => (
-
-    <div className={`bg-white thiscard rounded-xl transition-all duration-300 py-3 w-[200px]`}>
-
-      <div className="flex flex-col items-center">
-
-        <div className="md:w-11 w-10 md:h-11 h-10 rounded-full border-2 border-pryClr bg-pryClr/20 overflow-hidden capitalize flex items-center justify-center">
-
-          <h3>{`${user.name.split(" ")[0].split("")[0]}${user.name.split(" ")[1].split("")[0]}`}</h3>
-
-        </div>
-
-        <h3 className="font-semibold text-gray-800 text-center mb-2">{user.name}</h3>
-
-        
-
-        {hasChildren && (
-
-          <button
-
-            onClick={() => onToggle(user.id)}
-
-            className={`mt-4 p-2 rounded-lg bg-pryClr text-white hover:shadow-md transition-all duration-200`}
-
-          >
-
-            {isExpanded ? <BsChevronDown size={16} /> : <BsChevronRight size={16} />}
-
-          </button>
-
-        )}
-
-      </div>
-
-    </div>
-
-  );
-
-
-
-  const TreeNode = ({ node, level = 0 }) => {
-
-    const isExpanded = expandedNodes.has(node.id);
-
-    const hasChildren = node.children && node.children.length > 0;
-
-    const shouldShow = filterByGeneration(node, selectedGeneration) && searchInTree(node, searchTerm);
-
-
-
-    if (!shouldShow) return null;
-
-
-
-    return (
-
-      <div className="relative">
-
-        <div className={`flex flex-col items-center justify-between`}>
-
-          {/* The vertical line to the parent */}
-
-          {level > 0 && (
-
-            <div className="absolute left-1/2 -top-6 w-px h-6 bg-gray-900 z-10"></div>
-
-          )}
-
-          
-
-          {/* The Referral Card */}
-
-          <div className={`relative z-20 ${level > 0 && "children-card"}`}>
-
-            <ReferralCard
-
-              user={node}
-
-              isExpanded={isExpanded}
-
-              onToggle={toggleNode}
-
-              hasChildren={hasChildren}
-
-            />
-
-          </div>
-
-        </div>
-
-        
-
-        {isExpanded && hasChildren && (
-
-          <>
-
-            <div className="mt-8 flex gap-8 items-start justify-center relative">
-
-              {node.children.map((child) => (
-
-                <TreeNode key={child.id} node={child} level={level + 1} />
-
-              ))}
-
-            </div>
-
-          </>
-
-        )}
-
-      </div>
-
-    );
-
-  };
-
-
-
-  return (
-
-    <div className='bg-white rounded-xl shadow-md p-8 h-[calc(100dvh-(44px+16px+48px))] mb-2 overflow-auto no-scrollbar'>
-
-      <div className="w-fit scale-75 min-w-full mx-auto">
-
-        <TreeNode node={referralData} />
-
-      </div>
-
-    </div>
-
-  )
-
-}
-
-
-
-export default Network" cureently
+---

@@ -54,3 +54,16 @@ export function formatTransactionType(input, capitalize = false) {
 
   return formatted;
 }
+
+
+export const formatISODateToReadable = (dateInput) => {
+  if (!dateInput) return "-";
+  const date = new Date(dateInput);
+
+  return date.toLocaleDateString("en-US", {
+    weekday: "short", // Wed
+    year: "numeric",  // 2025
+    month: "short",   // Sep
+    day: "numeric"    // 3
+  });
+};
