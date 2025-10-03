@@ -170,16 +170,16 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
         {
-            name: 'Form Features',
+            name: 'Developer Form',
             icon: <MdFormatListBulletedAdd size={20} />,
-            path: '/admin/formfeatures',
+            path: '/admin/devform',
             role: ["admin"]
         },
         {
             name: 'Form Requests',
             icon: <MdFormatListBulletedAdd size={20} />,
-            path: '/user/formrequests',
-            role: ["user"]
+            path: '/sunmence/formrequests',
+            role: ["sunmence"]
         },
     ];
 

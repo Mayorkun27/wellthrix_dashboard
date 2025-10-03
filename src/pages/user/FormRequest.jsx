@@ -1,55 +1,99 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import PaginationControls from "../../utilities/PaginationControls";
 import { FaEye, FaCheck } from "react-icons/fa";
 import Modal from "../../components/modals/Modal";
+import { useUser } from "../../context/UserContext";
+import axios from "axios";
+import { toast } from "sonner";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const FormRequest = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [items, setItems] = useState([]);
+  const { token, logout } = useUser()
   const [selectedItem, setSelectedItem] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
-  const rowsPerPage = 5;
+  const [refresh, setRefresh] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fallbackItems = [
-    {
-      id: "001",
-      title: "Sample Title 1",
-      description: "This is a sample description.",
-      expected_date: "2025-10-10",
-      image: "https://via.placeholder.com/150",
-      status: "pending",
-    },
-    {
-      id: "002",
-      title: "Sample Title 2",
-      description: "Another sample description here.",
-      expected_date: "2025-11-15",
-      image: null,
-      status: "completed",
-    },
-  ];
+  const [items, setItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [perPage] = useState(5);
+
+  const fetchTasks = useCallback(async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`${API_URL}/api/allform`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
+          },
+          params: {
+            page: currentPage,
+            perPage: perPage
+          }
+        });
+  
+        console.log("tasks fetch response", response);
+  
+        if (response.status === 200) {
+          const { data, current_page, last_page, per_page } = response.data;
+          setItems(data);
+          setCurrentPage(current_page);
+          setLastPage(last_page);
+        }
+      } catch (error) {
+          if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
+            logout();
+          }
+          console.error("An error occured tasks announcements", error);
+          toast.error(error.response.data.message || "An error occured fetching tasks");
+      } finally {
+        setIsLoading(false);
+      }
+  }, [token, currentPage, perPage, refresh, logout]);
+  
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   const handleView = (item) => {
     setSelectedItem(item);
     setShowViewModal(true);
   };
 
-  const markCompleted = (id) => {
+  const markCompleted = async (id) => {
     if (window.confirm("Are you sure you want to mark this as completed?")) {
-      setItems(
-        items.map((item) =>
-          item.id === id ? { ...item, status: "completed" } : item
-        )
-      );
+      try {
+        const response = await axios.put(`${API_URL}/api/forms/${id}/complete`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
+          },
+          params: {
+            page: currentPage,
+            perPage: perPage
+          }
+        });
+  
+        console.log("tasks complete response", response);
+  
+        if (response.status === 200) {
+          toast.success(response.data.message || "Task marked completed")
+          setRefresh(true)
+        }
+      } catch (error) {
+          if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
+            logout();
+          }
+          console.error("An error occured completing task", error);
+          toast.error(error.response.data.message || "An error occured completing task");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
-
-  const totalPages = Math.ceil(items.length / rowsPerPage);
-
-  const currentData = useMemo(() => {
-    const start = (currentPage - 1) * rowsPerPage;
-    return items.length > 0 ? items.slice(start, start + rowsPerPage) : fallbackItems;
-  }, [currentPage, items]);
 
   return (
     <div className="space-y-4">
@@ -58,52 +102,49 @@ const FormRequest = () => {
           <table className="w-full">
             <thead>
               <tr className="text-black/70 text-[12px] uppercase border-b border-black/20 whitespace-nowrap">
-                <th className="lg:p-5 p-3 text-left">ID</th>
-                <th className="lg:p-5 p-3 text-left">Title</th>
-                <th className="lg:p-5 p-3 text-left">Description</th>
-                <th className="lg:p-5 p-3 text-left">Date</th>
-                <th className="lg:p-5 p-3 text-left">Image</th>
-                <th className="lg:p-5 p-3 text-left">Action</th>
+                <th className="lg:p-5 p-3 text-center">S/N</th>
+                <th className="lg:p-5 p-3 text-center">Title</th>
+                <th className="lg:p-5 p-3 text-center">Date</th>
+                <th className="lg:p-5 p-3 text-center">Image</th>
+                <th className="lg:p-5 p-3 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              {currentData.length > 0 ? (
-                currentData.map((t) => (
+              {items.length > 0 ? (
+                items.map((t, i) => (
                   <tr
                     key={t.id}
                     className="hover:bg-gray-50 text-sm border-b border-black/10"
                   >
-                    <td className="lg:p-5 p-3 text-left">{t.id}</td>
-                    <td className="lg:p-5 p-3 text-left">{t.title}</td>
-                    <td className="lg:p-5 p-3 text-left min-w-[400px]">{t.description}</td>
-                    <td className="lg:p-5 p-3 text-left">{t.expected_date}</td>
-                    <td className="lg:p-5 p-3 text-left">
-                      <div className="w-[60px] h-[60px]">
+                    <td className="lg:p-5 p-3 text-center">{String(i+1).padStart(3, "0")}</td>
+                    <td className="lg:p-5 p-3 text-center">{t.title}</td>
+                    <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
+                    <td className="lg:p-5 p-3 text-center">
+                      <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
                         <img
-                          src={t.image || "https://via.placeholder.com/150?text=Image+Not+Found"}
-                          alt={t.title}
-                          className="w-full h-full object-cover rounded-full"
+                          src={`https://api.wellthrixinternational.com/storage/app/public/${t?.image}`}
+                          alt={t?.title}
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     </td>
-                    <td className="lg:p-5 p-3 text-left">
-                      <div className="flex gap-3">
+                    <td className="lg:p-5 p-3 text-center">
+                      <div className="flex justify-center gap-3 mx-auto items-center">
                         <button
                           onClick={() => handleView(t)}
-                          className="text-pryClr hover:text-pryClr/50"
+                          className="text-white flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-md w-10 h-10 bg-pryClr"
                           title="View"
                         >
                           <FaEye size={16} />
                         </button>
-                        {t.status === "pending" && (
-                          <button
-                            onClick={() => markCompleted(t.id)}
-                            className="text-pryClr hover:text-pryClr/50"
-                            title="Mark Completed"
-                          >
-                            <FaCheck size={16} />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => markCompleted(t.id)}
+                          className="text-white flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-md w-10 h-10 bg-pryClr"
+                          title="Mark Completed"
+                          disabled={t?.status.toLowerCase() === "completed"}
+                        >
+                          <FaCheck size={16} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -118,11 +159,11 @@ const FormRequest = () => {
             </tbody>
           </table>
 
-          {currentData.length > 0 && (
+          {items.length > 0 && (
             <div className="p-4">
               <PaginationControls
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={lastPage}
                 setCurrentPage={setCurrentPage}
               />
             </div>
@@ -138,11 +179,11 @@ const FormRequest = () => {
           <div className="bg-white p-6 rounded-lg max-w-md w-full">
             <h3 className="text-xl font-semibold mb-4">{selectedItem.title}</h3>
             <p className="mb-2"><strong>Description:</strong> {selectedItem.description}</p>
-            <p className="mb-2"><strong>Expected Date:</strong> {selectedItem.expected_date}</p>
+            <p className="mb-2"><strong>Expected Date:</strong> {selectedItem.due_date}</p>
             <p className="mb-2"><strong>Status:</strong> {selectedItem.status}</p>
             {selectedItem.image && (
               <img
-                src={selectedItem.image}
+                src={`https://api.wellthrixinternational.com/storage/app/public/${selectedItem.image}`}
                 alt={selectedItem.title}
                 className="w-full h-auto mb-4"
               />

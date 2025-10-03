@@ -97,7 +97,7 @@ function App() {
           element={<MainLayout pageName={"Ewallet Transfer"} child={<P2P />} />}
         />
         <Route
-          path="/user/formrequests"
+          path="/sunmence/formrequests"
           element={<MainLayout pageName={"Form Requests"} child={<FormRequest />} />}
         />
         <Route
@@ -239,10 +239,10 @@ function App() {
           }
         />
         <Route
-          path="/admin/formfeatures"
+          path="/admin/devform"
           element={
             <MainLayout
-              pageName={"Form Features"}
+              pageName={"Developer Form"}
               child={<Form />}
             />
           }

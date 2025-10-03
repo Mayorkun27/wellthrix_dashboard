@@ -1,37 +1,29 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import assets from "../../assets/assests";
 import PaginationControls from "../../utilities/PaginationControls";
 import { FaTrash, FaEdit } from "react-icons/fa";
+import axios from "axios";
+import { useUser } from "../../context/UserContext";
+import { toast } from "sonner";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL
 
 const Form = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [items, setItems] = useState([]);
+  const { token, logout } = useUser()
   const [selectedItem, setSelectedItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [items, setItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [perPage] = useState(5);
   const rowsPerPage = 5;
 
-  const fallbackItems = [
-    {
-      id: "001",
-      title: "Sample Title 1",
-      description: "This is a sample description.",
-      expected_date: "2025-10-10",
-      image: "https://via.placeholder.com/150",
-      status: "pending",
-    },
-    {
-      id: "002",
-      title: "Sample Title 2",
-      description: "Another sample description here.",
-      expected_date: "2025-11-15",
-      image: null,
-      status: "completed",
-    },
-  ];
-
-  // Form validation schema
   const validationSchema = Yup.object({
     title: Yup.string()
       .trim()
@@ -47,7 +39,7 @@ const Form = () => {
         then: (schema) => schema.required("Description is required").min(1, "Description cannot be empty"),
         otherwise: (schema) => schema.min(0).optional(),
       }),
-    expected_date: Yup.date()
+    due_date: Yup.date()
       .when([], {
         is: () => !selectedItem,
         then: (schema) => schema.required("Expected date is required").typeError("Invalid date format"),
@@ -56,37 +48,59 @@ const Form = () => {
     image: Yup.mixed().nullable(),
   });
 
-  // Formik setup
   const formik = useFormik({
     initialValues: {
       title: "",
       description: "",
-      expected_date: "",
+      due_date: "",
       image: null,
     },
     validationSchema,
     validateOnChange: true,
     validateOnBlur: true,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       setSubmitting(true);
-      const newItem = {
-        id: selectedItem ? selectedItem.id : Date.now().toString(),
-        title: values.title?.trim() || (selectedItem ? selectedItem.title?.trim() : ""),
-        description: values.description?.trim() || (selectedItem ? selectedItem.description?.trim() : ""),
-        expected_date: values.expected_date || (selectedItem ? selectedItem.expected_date : ""),
-        image: values.image ? URL.createObjectURL(values.image) : (selectedItem ? selectedItem.image : null),
-        status: selectedItem ? selectedItem.status : "pending",
-      };
+      console.log("values", values)
+      const toastId = toast.loading("Creating task...")
 
-      if (selectedItem) {
-        setItems(items.map((item) => (item.id === selectedItem.id ? newItem : item)));
-      } else {
-        setItems([...items, newItem]);
+      try {
+        const formData = new FormData();
+        formData.append("title", values.title);
+        formData.append("description", values.description);
+        formData.append("due_date", values.due_date);
+        if (values.image) {
+          formData.append("image", values.image);
+        }
+
+        const response = await axios.post(`${API_URL}/api/task_schedule`, formData, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+          }
+        });
+
+        console.log("task post response", response);
+
+        if (response.status === 201 || response.data.status === 201) {
+          toast.success(response.data.message || "Task created successfully!", { id: toastId });
+          setRefresh(true);
+          resetForm();
+        } else {
+          throw new Error(response.data.message || "Failed to create task.");
+        }
+      } catch (error) {
+        if (error?.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
+          logout();
+          toast.error("Session expired. Please login again.", { id: toastId });
+        } else {
+          console.error("An error occurred creating task", error);
+          toast.error(error?.response?.data?.message || "An error occurred creating task", { id: toastId });
+        }
+      } finally {
+        setSubmitting(false);
+        resetForm();
       }
 
-      resetForm();
-      setSelectedItem(null);
-      setSubmitting(false);
     },
   });
 
@@ -95,26 +109,9 @@ const Form = () => {
     formik.setFieldValue("image", file);
   };
 
-  const handleEdit = (item) => {
-    setSelectedItem(item);
-    formik.setValues({
-      title: item.title?.trim() || "",
-      description: item.description?.trim() || "",
-      expected_date: item.expected_date || "",
-      image: null,
-    });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const handleCancelEdit = () => {
     setSelectedItem(null);
     formik.resetForm();
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      setItems(items.filter((item) => item.id !== id));
-    }
   };
 
   const toggleStatus = (id) => {
@@ -127,12 +124,42 @@ const Form = () => {
     );
   };
 
-  const totalPages = Math.ceil(items.length / rowsPerPage);
+  const fetchTasks = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API_URL}/api/allform`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json"
+        },
+        params: {
+          page: currentPage,
+          perPage: perPage
+        }
+      });
 
-  const currentData = useMemo(() => {
-    const start = (currentPage - 1) * rowsPerPage;
-    return items.length > 0 ? items.slice(start, start + rowsPerPage) : fallbackItems;
-  }, [currentPage, items]);
+      console.log("tasks fetch response", response);
+
+      if (response.status === 200) {
+        const { data, current_page, last_page, per_page } = response.data;
+        setItems(data);
+        setCurrentPage(current_page);
+        setLastPage(last_page);
+      }
+    } catch (error) {
+        if (error.response?.data?.message?.toLowerCase().includes("unauthenticated")) {
+          logout();
+        }
+        console.error("An error occured tasks announcements", error);
+        toast.error(error.response.data.message || "An error occured fetching tasks");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token, currentPage, perPage, refresh, logout]);
+  
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   return (
     <div className="space-y-4">
@@ -154,7 +181,7 @@ const Form = () => {
                 value={formik.values.title}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="border border-pryClr w-full h-[46px] rounded-lg outline-0 indent-3"
+                className="border border-pryClr/50 w-full h-[46px] rounded-lg outline-0 indent-3"
               />
               {formik.touched.title && formik.errors.title && (
                 <p className="text-red-700 text-sm">{formik.errors.title}</p>
@@ -172,7 +199,7 @@ const Form = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 rows={5}
-                className="border border-pryClr w-full rounded-lg outline-0 p-3 resize-none no-scrollbar"
+                className="border border-pryClr/50 w-full rounded-lg outline-0 p-3 resize-none no-scrollbar"
               ></textarea>
               {formik.touched.description && formik.errors.description && (
                 <p className="text-red-700 text-sm">{formik.errors.description}</p>
@@ -180,20 +207,20 @@ const Form = () => {
             </div>
 
             <div>
-              <label className="text-sm font-semibold" htmlFor="expected_date">
+              <label className="text-sm font-semibold" htmlFor="due_date">
                 Expected Date
               </label>
               <input
                 type="date"
-                name="expected_date"
-                id="expected_date"
-                value={formik.values.expected_date}
+                name="due_date"
+                id="due_date"
+                value={formik.values.due_date}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="border border-pryClr w-full h-[46px] rounded-lg outline-0 indent-3"
+                className="border border-pryClr/50 w-full h-[46px] rounded-lg outline-0 indent-3"
               />
-              {formik.touched.expected_date && formik.errors.expected_date && (
-                <p className="text-red-700 text-sm">{formik.errors.expected_date}</p>
+              {formik.touched.due_date && formik.errors.due_date && (
+                <p className="text-red-700 text-sm">{formik.errors.due_date}</p>
               )}
             </div>
 
@@ -263,42 +290,46 @@ const Form = () => {
           <table className="w-full">
             <thead>
               <tr className="text-black/70 text-[12px] uppercase border-b border-black/20 whitespace-nowrap">
-                <th className="lg:p-5 p-3 text-left">ID</th>
-                <th className="lg:p-5 p-3 text-left">Title</th>
-                <th className="lg:p-5 p-3 text-left">Description</th>
-                <th className="lg:p-5 p-3 text-left">Date</th>
-                <th className="lg:p-5 p-3 text-left">Image</th>
-                <th className="lg:p-5 p-3 text-left">Status</th>
+                <th className="lg:p-5 p-3 text-center">ID</th>
+                <th className="lg:p-5 p-3 text-center">Title</th>
+                <th className="lg:p-5 p-3 text-center">Description</th>
+                <th className="lg:p-5 p-3 text-center">Date</th>
+                <th className="lg:p-5 p-3 text-center">Image</th>
+                <th className="lg:p-5 p-3 text-center">Status</th>
               </tr>
             </thead>
             <tbody>
-              {currentData.length > 0 ? (
-                currentData.map((t) => (
+              {isLoading ? (
+                <tr>
+                  <td className="lg:p-5 p-3 text-center" colSpan={6}>Loading tasks...</td>
+                </tr>
+              ) : items.length > 0 ? (
+                items.map((t, i) => (
                   <tr
-                    key={t.id}
+                    key={t?.id}
                     className="hover:bg-gray-50 text-sm border-b border-black/10"
                   >
-                    <td className="lg:p-5 p-3 text-left">{t.id}</td>
-                    <td className="lg:p-5 p-3 text-left">{t.title}</td>
-                    <td className="lg:p-5 p-3 text-left min-w-[400px]">{t.description}</td>
-                    <td className="lg:p-5 p-3 text-left">{t.expected_date}</td>
-                    <td className="lg:p-5 p-3 text-left">
-                      <div className="w-[60px] h-[60px]">
+                    <td className="lg:p-5 p-3 text-center">{i+1}</td>
+                    <td className="lg:p-5 p-3 text-center">{t?.title}</td>
+                    <td className="lg:p-5 p-3 text-center min-w-[400px]">{t?.description}</td>
+                    <td className="lg:p-5 p-3 text-center">{t?.due_date}</td>
+                    <td className="lg:p-5 p-3 text-center">
+                      <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
                         <img
-                          src={t.image || "https://via.placeholder.com/150?text=Image+Not+Found"}
-                          alt={t.title}
-                          className="w-full h-full object-cover rounded-full"
+                          src={`https://api.wellthrixinternational.com/storage/app/public/${t?.image}`}
+                          alt={t?.title}
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     </td>
-                    <td className="lg:p-5 p-3 text-left">
+                    <td className="lg:p-5 p-3 text-center">
                       <button
-                        onClick={() => toggleStatus(t.id)}
-                        className={`px-3 py-1 rounded text-white ${
-                          t.status === "pending" ? "bg-yellow-500" : "bg-green-500"
+                        onClick={() => toggleStatus(t?.id)}
+                        className={`px-3 py-2 rounded-md border-2 ${
+                          t?.status.toLowerCase() === "on-going" ? "border-accClr text-black bg-accClr/50" : "text-white bg-pryClr"
                         }`}
                       >
-                        {t.status.charAt(0).toUpperCase() + t.status.slice(1)}
+                        {t?.status?.charAt(0).toUpperCase() + t?.status?.slice(1)}
                       </button>
                     </td>
                   </tr>
@@ -313,11 +344,11 @@ const Form = () => {
             </tbody>
           </table>
 
-          {currentData.length > 0 && (
+          {!isLoading && items.length > 0 && (
             <div className="p-4">
               <PaginationControls
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={lastPage}
                 setCurrentPage={setCurrentPage}
               />
             </div>
