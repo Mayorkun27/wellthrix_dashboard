@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
+import { MdChat, MdFormatListBulletedAdd, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
@@ -162,6 +162,18 @@ const LeftNav = ({ setIsOpen }) => {
             icon: <FaRankingStar size={20} />,
             path: '/admin/ranking',
             role: ["admin"]
+        },
+        {
+            name: 'Form Features',
+            icon: <MdFormatListBulletedAdd size={20} />,
+            path: '/admin/formfeatures',
+            role: ["admin"]
+        },
+        {
+            name: 'Form Requests',
+            icon: <MdFormatListBulletedAdd size={20} />,
+            path: '/user/formrequests',
+            role: ["user"]
         },
     ];
 
