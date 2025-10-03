@@ -34,6 +34,8 @@ import Subscribers from "./pages/admin/Subscribers";
 import Loading from "./pages/auth/Loading";
 import P2P from "./pages/user/P2P";
 import NotFound from "./view/NotFound";
+import Form from "./pages/admin/Form";
+import FormRequest from "./pages/user/FormRequest";
 
 function App() {
   const { user } = useUser();
@@ -89,6 +91,10 @@ function App() {
         <Route
           path="/user/ewallettransfer"
           element={<MainLayout pageName={"Ewallet Transfer"} child={<P2P />} />}
+        />
+        <Route
+          path="/user/formrequests"
+          element={<MainLayout pageName={"Form Requests"} child={<FormRequest />} />}
         />
         <Route
           path="/user/rechargehistory"
@@ -215,6 +221,15 @@ function App() {
             <MainLayout
               pageName={"Milestone Bonus"}
               child={<ManageMilestones />}
+            />
+          }
+        />
+        <Route
+          path="/admin/formfeatures"
+          element={
+            <MainLayout
+              pageName={"Form Features"}
+              child={<Form />}
             />
           }
         />
