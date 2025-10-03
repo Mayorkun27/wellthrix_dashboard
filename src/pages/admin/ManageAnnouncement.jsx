@@ -14,6 +14,7 @@ const ManageAnnouncement = () => {
     const { logout, token } = useUser();
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [refresh, setRefresh] = useState(false);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -90,7 +91,7 @@ const ManageAnnouncement = () => {
                     setImagePreview(null); // Clear image preview state
                     // Reload is a strong operation, consider fetching data again
                     setTimeout(() => {
-                        window.location.reload();
+                        setRefresh(true)
                     }, 1000);
                 } else {
                     throw new Error(response.data.message || "Failed to post announcement.");
@@ -222,7 +223,7 @@ const ManageAnnouncement = () => {
             <div className="md:w-2/5 w-full bg-white md:p-6 p-4 rounded-lg shadow-sm">
                 <h3 className='md:text-2xl text-lg mb-2 font-semibold tracking-[-0.1em]'>Announcement Board</h3>
                 <div className="overflow-y-scroll md:max-h-[77vh] max-h-[65vh] pe-2 styled-scrollbar">
-                    <AnnouncementBoard />
+                    <AnnouncementBoard refresh={refresh} />
                 </div>
             </div>
         </div>
