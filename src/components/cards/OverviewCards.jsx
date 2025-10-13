@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatterUtility } from '../../utilities/Formatterutility'
+import { formatterUtility } from '../../utilities/formatterutility'
 import { MdOutlineArrowOutward } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 

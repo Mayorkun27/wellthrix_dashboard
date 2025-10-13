@@ -95,8 +95,8 @@ const AllUsers = () => {
               <th className="p-5">Email</th>
               <th className="p-5">Username</th>
               <th className="p-5">Phone</th>
-              {/* <th className="p-5">Plan</th> */}
-              <th className="p-5">Stockist Enabled</th>
+              <th className="p-5">Plan</th>
+              <th className="p-5">Is Stockist?</th>
               <th className="p-5">Account Status</th>
               <th className="p-5">Date Joined</th>
               <th className="p-5">Action</th>

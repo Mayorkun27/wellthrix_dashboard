@@ -15,6 +15,10 @@ const FormRequest = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [misDetails, setMisDetails] = useState({
+    completed_count: "",
+    pending_count: "",
+  })
 
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +42,11 @@ const FormRequest = () => {
         console.log("tasks fetch response", response);
   
         if (response.status === 200) {
-          const { data, current_page, last_page, per_page } = response.data;
+          setMisDetails({
+            completed_count: response.data.completed_count,
+            pending_count: response.data.pending_count,
+          })
+          const { data, current_page, last_page, per_page } = response.data.tasks;
           setItems(data);
           setCurrentPage(current_page);
           setLastPage(last_page);
@@ -66,7 +74,7 @@ const FormRequest = () => {
   const markCompleted = async (id) => {
     if (window.confirm("Are you sure you want to mark this as completed?")) {
       try {
-        const response = await axios.put(`${API_URL}/api/forms/${id}/complete`, {
+        const response = await axios.put(`${API_URL}/api/forms/${id}/complete`, {}, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Accept": "application/json"
@@ -98,13 +106,25 @@ const FormRequest = () => {
   return (
     <div className="space-y-4">
       <div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="bg-white shadow rounded p-4 text-center">
+            <h4 className="text-gray-600 text-sm font-medium">Completed</h4>
+            <p className="text-2xl font-bold text-green-600">{misDetails.completed_count || 0}</p>
+          </div>
+          <div className="bg-white shadow rounded p-4 text-center">
+            <h4 className="text-gray-600 text-sm font-medium">Pending</h4>
+            <p className="text-2xl font-bold text-yellow-600">{misDetails.pending_count || 0}</p>
+          </div>
+        </div>
+
         <div className="shadow-sm rounded bg-white overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="text-black/70 text-[12px] uppercase border-b border-black/20 whitespace-nowrap">
                 <th className="lg:p-5 p-3 text-center">S/N</th>
                 <th className="lg:p-5 p-3 text-center">Title</th>
-                <th className="lg:p-5 p-3 text-center">Date</th>
+                <th className="lg:p-5 p-3 text-center">Created Date</th>
+                <th className="lg:p-5 p-3 text-center">Due Date</th>
                 <th className="lg:p-5 p-3 text-center">Image</th>
                 <th className="lg:p-5 p-3 text-center">Action</th>
               </tr>
@@ -114,10 +134,11 @@ const FormRequest = () => {
                 items.map((t, i) => (
                   <tr
                     key={t.id}
-                    className="hover:bg-gray-50 text-sm border-b border-black/10"
+                    className={`transition-all text-sm border-b border-black/10 ${t?.status.toLowerCase() === "completed" ? "bg-pryClr/30" : "bg-accClr/30"}`}
                   >
                     <td className="lg:p-5 p-3 text-center">{String(i+1).padStart(3, "0")}</td>
                     <td className="lg:p-5 p-3 text-center">{t.title}</td>
+                    <td className="lg:p-5 p-3 text-center">{t.created_at.split("T")[0]}</td>
                     <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
                     <td className="lg:p-5 p-3 text-center">
                       <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
@@ -176,16 +197,16 @@ const FormRequest = () => {
           onClose={() => setShowViewModal(false)}
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 pointer-events-none"
         >
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+          <div className="bg-white p-6 rounded-lg w-full">
             <h3 className="text-xl font-semibold mb-4">{selectedItem.title}</h3>
-            <p className="mb-2"><strong>Description:</strong> {selectedItem.description}</p>
+            <p className="mb-2 whitespace-pre-wrap"><strong>Description:</strong> {selectedItem.description}</p>
             <p className="mb-2"><strong>Expected Date:</strong> {selectedItem.due_date}</p>
             <p className="mb-2"><strong>Status:</strong> {selectedItem.status}</p>
             {selectedItem.image && (
               <img
                 src={`https://api.wellthrixinternational.com/storage/app/public/${selectedItem.image}`}
                 alt={selectedItem.title}
-                className="w-full h-auto mb-4"
+                className="w-1/2 h-auto mb-4"
               />
             )}
             <button

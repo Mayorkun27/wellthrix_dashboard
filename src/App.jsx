@@ -39,6 +39,7 @@ import ManageStockistInventory from "./pages/stockist/admin/ManageStockistInvent
 import useAppVersionCheck from "./hooks/useAppVersionCheck";
 import Form from "./pages/admin/Form";
 import FormRequest from "./pages/user/FormRequest";
+import EachUser from "./pages/admin/users/EachUser";
 
 function App() {
   const { user } = useUser();
@@ -219,6 +220,10 @@ function App() {
         <Route
           path="/admin/allusers"
           element={<MainLayout pageName={"Users"} child={<AllUsers />} />}
+        />
+        <Route
+          path="/admin/allusers/:id"
+          element={<MainLayout pageName={"Manage User"} child={<EachUser />} />}
         />
         <Route
           path="/admin/loyaltybonus"

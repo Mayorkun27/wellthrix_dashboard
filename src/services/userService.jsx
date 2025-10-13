@@ -13,7 +13,13 @@ export const getAllUsers = (token, searchQuery, page, perPage) => {
   console.log("searchQuery from service", searchQuery);
   return (axios.get(`${API_URL}/api/search-user`, {
     headers: authHeaders(token),
-    params: { query: searchQuery, page, perPage }, // cleaner
+    params: { query: searchQuery, page, perPage },
+  }));
+};
+
+export const getAUser = (token, userId) => {
+  return (axios.get(`${API_URL}/api/users/${userId}`, {
+    headers: authHeaders(token),
   }));
 };
 

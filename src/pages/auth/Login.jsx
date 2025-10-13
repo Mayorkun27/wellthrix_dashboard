@@ -48,7 +48,7 @@ const Login = () => {
           setTimeout(() => {
             toast("Redirecting to dashboard...");
             setTimeout(() => {
-              role === "sunmenceDeveloper" ? navigate(`/sunmence/formrequests`) : role === "admin" ? navigate(`/admin/overview`) : navigate('/user/overview');
+              role === "sunmence" ? navigate(`/sunmence/formrequests`) : role === "admin" ? navigate(`/admin/overview`) : navigate('/user/overview');
             }, 2000);
           }, 1000);
         }

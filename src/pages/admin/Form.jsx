@@ -23,6 +23,10 @@ const Form = () => {
   const [lastPage, setLastPage] = useState(1);
   const [perPage] = useState(5);
   const rowsPerPage = 5;
+  const [misDetails, setMisDetails] = useState({
+    completed_count: "",
+    pending_count: "",
+  })
 
   const validationSchema = Yup.object({
     title: Yup.string()
@@ -141,7 +145,11 @@ const Form = () => {
       console.log("tasks fetch response", response);
 
       if (response.status === 200) {
-        const { data, current_page, last_page, per_page } = response.data;
+        setMisDetails({
+          completed_count: response.data.completed_count,
+          pending_count: response.data.pending_count,
+        })
+        const { data, current_page, last_page, per_page } = response.data.tasks;
         setItems(data);
         setCurrentPage(current_page);
         setLastPage(last_page);
@@ -285,7 +293,17 @@ const Form = () => {
         </form>
       </div>
 
-      <div className="lg:mt-20 mt-10">
+      <div className="lg:mt-20 mt-10 space-y-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="bg-white shadow rounded p-4 text-center">
+            <h4 className="text-gray-600 text-sm font-medium">Completed</h4>
+            <p className="text-2xl font-bold text-green-600">{misDetails.completed_count || 0}</p>
+          </div>
+          <div className="bg-white shadow rounded p-4 text-center">
+            <h4 className="text-gray-600 text-sm font-medium">Pending</h4>
+            <p className="text-2xl font-bold text-yellow-600">{misDetails.pending_count || 0}</p>
+          </div>
+        </div>
         <div className="shadow-sm rounded bg-white overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -293,7 +311,8 @@ const Form = () => {
                 <th className="lg:p-5 p-3 text-center">ID</th>
                 <th className="lg:p-5 p-3 text-center">Title</th>
                 <th className="lg:p-5 p-3 text-center">Description</th>
-                <th className="lg:p-5 p-3 text-center">Date</th>
+                <th className="lg:p-5 p-3 text-center">Created Date</th>
+                <th className="lg:p-5 p-3 text-center">Due Date</th>
                 <th className="lg:p-5 p-3 text-center">Image</th>
                 <th className="lg:p-5 p-3 text-center">Status</th>
               </tr>
@@ -312,7 +331,8 @@ const Form = () => {
                     <td className="lg:p-5 p-3 text-center">{i+1}</td>
                     <td className="lg:p-5 p-3 text-center">{t?.title}</td>
                     <td className="lg:p-5 p-3 text-center min-w-[400px]">{t?.description}</td>
-                    <td className="lg:p-5 p-3 text-center">{t?.due_date}</td>
+                    <td className="lg:p-5 p-3 text-center">{t.created_at.split("T")[0]}</td>
+                    <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
                     <td className="lg:p-5 p-3 text-center">
                       <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
                         <img
