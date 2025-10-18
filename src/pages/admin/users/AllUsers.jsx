@@ -65,7 +65,7 @@ const AllUsers = () => {
         <input
           type="text"
           placeholder="Search users by username or email..."
-          className="w-full pl-4 pr-[50px] h-[50px] border border-pryClr/20 shadow-md rounded-lg focus:outline-none"
+          className="w-full pl-4 pr-[50px] h-[50px] border border-pryClr/30 focus:border-pryClr/50 shadow-md rounded-lg focus:outline-none"
           value={searchQuery}
           onChange={(e) => {
             if (e.target.value.trim() === "") {

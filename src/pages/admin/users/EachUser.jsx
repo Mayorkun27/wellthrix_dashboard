@@ -230,7 +230,7 @@ const EachUser = () => {
                             onClick={() => openDialog("enableStockist")}
                             disabled={Number(user.stockist_enabled) === 1}
                         >
-                            {Number(user.stockist_enabled) === 1 ? "Enabled" : "Enable user as stockist"}
+                            {Number(user.stockist_enabled) === 1 ? "Enabled as Stockist" : "Enable user as stockist"}
                         </button>
 
                         <button

@@ -1,209 +1,170 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import PaginationControls from "../../../utilities/PaginationControls";
-import {
-  formatISODateToCustom,
-  formatterUtility,
-} from "../../../utilities/formatterutility";
-import { FaTrashAlt } from "react-icons/fa";
-import Modal from "../../../components/modals/Modal";
-import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
 import { useUser } from "../../../context/UserContext";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ManageMilestones = () => {
-  const { user, token, logout } = useUser();
+  const { token, logout } = useUser();
   const [eligibleUsers, setEligibleUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // State for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
-  const [perPage, setPerPage] = useState(5);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [bonusToPay, setBonusToPay] = useState(null);
+  const [perPage, setPerPage] = useState(10);
 
-  const fetchEligibleUsers = async () => {
+  // State for filtering
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const fetchEligibleUsers = useCallback(async () => {
     setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `${API_URL}/api/milestones`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          params: {
-            page: currentPage,
-            perPage: perPage,
-          },
-        }
-      );
+    const params = {
+      page: currentPage,
+      perPage: perPage,
+      ...(startDate && { 'start': startDate }),
+      ...(endDate && { 'end': endDate }),
+    };
 
-      console.log("eligible users Response:", response);
-      console.log("eligible users Response:", response.data);
-      console.log("eligible users Response:", response.data.data);
+    try {
+      const response = await axios.get(`${API_URL}/api/milestones`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params,
+      });
+
+      console.log("milestaone res", response)
 
       if (response.status === 200 && response.data.success) {
-        // const { data, current_page, last_page, per_page } = response.data;
-        setEligibleUsers(response.data.data);
+        // const { data, current_page, last_page, per_page } = response.data.data;
+        setEligibleUsers(response?.data.data);
         // setCurrentPage(current_page);
         // setLastPage(last_page);
         // setPerPage(per_page);
       } else {
-        throw new Error(
-          response.data.message || "Failed to fetch eligible users."
-        );
+        throw new Error(response.data.message || "Failed to fetch eligible users.");
       }
     } catch (error) {
       if (error.response?.data?.message?.includes("unauthenticated")) {
         logout();
       }
-      console.error("API submission error:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "An error occurred fetching eligible users!."
-      );
+      console.error("API error:", error);
+      toast.error(error.response?.data?.message || "An error occurred fetching eligible users.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, currentPage, perPage, startDate, endDate, logout]);
 
   useEffect(() => {
     fetchEligibleUsers();
-  }, [user?.id, token, currentPage]);
+  }, [fetchEligibleUsers]);
 
-  const handleConfirmPayout = async (user) => {
-    setShowConfirmModal(true);
-    setBonusToPay(user);
+  const handleFilterChange = (setter) => (e) => {
+    setter(e.target.value);
+    setCurrentPage(1); // Reset to first page when a filter changes
   };
 
-  const confirmPayout = async () => {
-    if (!bonusToPay.id) return;
-
-    const toastId = toast.loading("Reimbursing loyalty bonus...");
-    setShowConfirmModal(false);
-
-    try {
-      const response = await axios.put(
-        `${API_URL}/api/loyalty/pay/${bonusToPay.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        toast.success(
-          response.data.message || "Reimbursed loyalty bonus successfully",
-          { id: toastId }
-        );
-        fetchEligibleUsers();
-      } else {
-        throw new Error(
-          response.data.message || "Failed to reimburse loyalty bonus."
-        );
-      }
-    } catch (error) {
-      if (error.response?.data?.message?.includes("unauthenticated")) {
-        logout();
-      }
-      console.error("Reimbursement error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to reimburse loyalty bonus.",
-        { id: toastId }
-      );
-    } finally {
-      setBonusToPay(null);
-    }
+  const clearFilters = () => {
+    setStartDate('');
+    setEndDate('');
+    setCurrentPage(1);
   };
+
+  const today = new Date().toISOString().split('T')[0];
+  const isFiltered = startDate || endDate;
 
   return (
-    <div className="shadow-sm rounded bg-white overflow-x-auto">
-      <table className="min-w-full">
-        <thead>
-          <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
-            <th className="p-5">S/N</th>
-            <th className="p-5">Full Name</th>
-            <th className="p-5">Email</th>
-            <th className="p-5">Username</th>
-            <th className="p-5">Direct 480's accumulated</th>
-            <th className="p-5">Position</th>
-            {/* <th className="p-5">Action</th> */}
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td colSpan="8" className="text-center p-8">
-                Loading...
-              </td>
-            </tr>
-          ) : eligibleUsers.length > 0 ? (
-            eligibleUsers.map((item, index) => {
-              const serialNumber = (currentPage - 1) * perPage + (index + 1);
-              return (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-50 text-sm border-b border-black/10 text-center"
+    <div className="space-y-8">
+        {/* Filter Section */}
+        <div className="flex md:flex-row flex-col items-end md:gap-6 gap-4">
+            <div className="flex flex-col w-full">
+              <label htmlFor="start-date" className="text-sm font-medium text-gray-600 mb-1">Start Date</label>
+              <input 
+                type="date"
+                id="start-date"
+                value={startDate}
+                onChange={handleFilterChange(setStartDate)}
+                max={endDate || today} 
+                className="h-12 w-full px-4 border border-pryClr/30 shadow-md rounded-lg outline-0 focus:border-pryClr/80"
+              />
+            </div>
+            <div className="flex flex-col w-full">
+              <label htmlFor="end-date" className="text-sm font-medium text-gray-600 mb-1">End Date</label>
+              <input 
+                type="date"
+                id="end-date"
+                value={endDate}
+                onChange={handleFilterChange(setEndDate)}
+                min={startDate}
+                max={today}
+                className="h-12 w-full px-4 border border-pryClr/30 shadow-md rounded-lg outline-0 focus:border-pryClr/80"
+              />
+            </div>
+            {isFiltered && (
+                <button 
+                    onClick={clearFilters}
+                    className="md:w-max w-full h-[45px] cursor-pointer px-6 bg-accClr text-black rounded-md transition-colors text-sm font-medium"
                 >
-                  <td className="p-3">
-                    {String(serialNumber).padStart(3, "0")}
-                  </td>
-                  <td className="p-4 capitalize">
-                    {`${item.fullname}` || "-"}
-                  </td>
-                  <td className="p-4">{item.email || "-"}</td>
-                  <td className="p-4">{item.username || "-"}</td>
-                  <td className="p-4 capitalize">{item.blocks_480pv || "-"}</td>
-                  <td className="p-4 capitalize">{item.position || "-"}</td>
-                  {/* <td className="p-4 text-sm text-pryClr font-semibold">
-                    <button
-                      type="button"
-                      title={`Delete ${item.username}`}
-                      onClick={() => handleConfirmPayout(item)}
-                      className="text-red-600 hover:text-red-700 cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto"
-                    >
-                      <FaTrashAlt />
-                    </button>
-                  </td> */}
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td colSpan="8" className="text-center p-8">
-                No users found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-      {/* {!isLoading && eligibleUsers.length > 0 && (
-        <div className="flex justify-center items-center gap-2 p-4">
-          <PaginationControls
-            currentPage={currentPage}
-            totalPages={lastPage}
-            setCurrentPage={setCurrentPage}
-          />
+                    Clear
+                </button>
+            )}
         </div>
-      )} */}
 
-      {showConfirmModal && (
-        <Modal onClose={() => setShowConfirmModal(false)}>
-          <ConfirmationDialog
-            message={`Are you sure you want to payout ${formatterUtility(
-              Number(bonusToPay?.amount)
-            )} to ${bonusToPay?.username}? This action cannot be undone.`}
-            onConfirm={confirmPayout}
-            onCancel={() => setShowConfirmModal(false)}
-          />
-        </Modal>
-      )}
+        <div className="shadow-sm rounded bg-white overflow-x-auto">
+            <table className="min-w-full">
+                <thead>
+                <tr className="text-black/70 text-[12px] uppercase text-center border-b border-black/20">
+                    <th className="p-5">S/N</th>
+                    <th className="p-5">Full Name</th>
+                    {/* <th className="p-5">Email</th> */}
+                    <th className="p-5">Username</th>
+                    <th className="p-5">Direct PV <br /> accumulated</th>
+                    <th className="p-5">480's Blocks</th>
+                    <th className="p-5">Position</th>
+                </tr>
+                </thead>
+                <tbody>
+                {isLoading ? (
+                    <tr>
+                    <td colSpan="6" className="text-center p-8">Loading...</td>
+                    </tr>
+                ) : eligibleUsers.length > 0 ? (
+                    eligibleUsers.map((item, index) => {
+                    const serialNumber = (currentPage - 1) * perPage + (index + 1);
+                    return (
+                        <tr key={item.id} className="hover:bg-gray-50 text-sm border-b border-black/10 text-center">
+                        <td className="p-3">{String(serialNumber).padStart(3, "0")}</td>
+                        <td className="p-4 capitalize">{item.fullname || "-"}</td>
+                        {/* <td className="p-4">{item.email || "-"}</td> */}
+                        <td className="p-4">{item.username || "-"}</td>
+                        <td className="p-4 capitalize">{item.direct_pv || "-"}</td>
+                        <td className="p-4 capitalize">{item.blocks_480pv || "-"}</td>
+                        <td className="p-4 capitalize">{item.position || "-"}</td>
+                        </tr>
+                    );
+                    })
+                ) : (
+                    <tr>
+                    <td colSpan="6" className="text-center p-8">No users found for the selected filters.</td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
+        </div>
+
+        {!isLoading && eligibleUsers.length > 0 && (
+            <div className="flex justify-center items-center gap-2 p-4">
+            <PaginationControls
+                currentPage={currentPage}
+                totalPages={lastPage}
+                setCurrentPage={setCurrentPage}
+            />
+            </div>
+        )}
     </div>
   );
 };

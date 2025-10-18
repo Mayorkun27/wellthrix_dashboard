@@ -323,37 +323,40 @@ const Form = () => {
                   <td className="lg:p-5 p-3 text-center" colSpan={6}>Loading tasks...</td>
                 </tr>
               ) : items.length > 0 ? (
-                items.map((t, i) => (
-                  <tr
-                    key={t?.id}
-                    className="hover:bg-gray-50 text-sm border-b border-black/10"
-                  >
-                    <td className="lg:p-5 p-3 text-center">{i+1}</td>
-                    <td className="lg:p-5 p-3 text-center">{t?.title}</td>
-                    <td className="lg:p-5 p-3 text-center min-w-[400px]">{t?.description}</td>
-                    <td className="lg:p-5 p-3 text-center">{t.created_at.split("T")[0]}</td>
-                    <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
-                    <td className="lg:p-5 p-3 text-center">
-                      <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
-                        <img
-                          src={`https://api.wellthrixinternational.com/storage/app/public/${t?.image}`}
-                          alt={t?.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </td>
-                    <td className="lg:p-5 p-3 text-center">
-                      <button
-                        onClick={() => toggleStatus(t?.id)}
-                        className={`px-3 py-2 rounded-md border-2 ${
-                          t?.status.toLowerCase() === "on-going" ? "border-accClr text-black bg-accClr/50" : "text-white bg-pryClr"
-                        }`}
-                      >
-                        {t?.status?.charAt(0).toUpperCase() + t?.status?.slice(1)}
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                items.map((t, i) => {
+                  const serialNumber = (currentPage - 1) * perPage + (i + 1);
+                  return (
+                    <tr
+                      key={t?.id}
+                      className="hover:bg-gray-50 text-sm border-b border-black/10"
+                    >
+                      <td className="lg:p-5 p-3 text-center">{String(serialNumber).padStart(3, "0")}</td>
+                      <td className="lg:p-5 p-3 text-center">{t?.title}</td>
+                      <td className="lg:p-5 p-3 text-center min-w-[400px]">{t?.description}</td>
+                      <td className="lg:p-5 p-3 text-center">{t.created_at.split("T")[0]}</td>
+                      <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
+                      <td className="lg:p-5 p-3 text-center">
+                        <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
+                          <img
+                            src={`https://api.wellthrixinternational.com/storage/app/public/${t?.image}`}
+                            alt={t?.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </td>
+                      <td className="lg:p-5 p-3 text-center">
+                        <button
+                          onClick={() => toggleStatus(t?.id)}
+                          className={`px-3 py-2 rounded-md border-2 ${
+                            t?.status.toLowerCase() === "on-going" ? "border-accClr text-black bg-accClr/50" : "text-white bg-pryClr"
+                          }`}
+                        >
+                          {t?.status?.charAt(0).toUpperCase() + t?.status?.slice(1)}
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })
               ) : (
                 <tr>
                   <td colSpan="7" className="text-center p-8">

@@ -160,6 +160,7 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
             body: JSON.stringify({ country: formik.values.country })
           });
           const result = await response.json();
+          console.log("state response", result)
           if (result.error) throw new Error(result.msg);
           
           const stateList = result.data?.states?.map(s => s.name) || [];
@@ -252,6 +253,26 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
 
     fetchStockist()
   }, [])
+
+  const finalCities = [...cities];
+
+  if (formik.values.state.toLowerCase() === "anambra state") {
+    if (!finalCities.includes("Abagana")) {
+      finalCities.push("Abagana");
+    }
+  }
+
+  useEffect(() => {
+    if (formik.values.state.toLowerCase() === "anambra state") {
+      // Check if Abagana is missing and add it only once
+      if (!cities.includes("Abagana")) {
+        setCities(prevCities => [...prevCities, "Abagana"]);
+      }
+    }
+    // Cleanup/reset logic might be needed here too
+  }, [formik.values.state, cities, setCities]);
+
+// The JSX would then just map over the 'cities' state as you intended.
 
   // Get dynamic placeholder for mobile input
   const getMobilePlaceholder = () => {
@@ -439,7 +460,7 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
                   ? 'No cities available'
                   : 'Select City'}
               </option>
-              {cities.map((city) => (
+              {finalCities.sort().map((city) => (
                 <option key={city} value={city}>
                   {city}
                 </option>

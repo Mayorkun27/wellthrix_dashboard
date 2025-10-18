@@ -37,3 +37,36 @@ export const getBankCode = (bankName, banks) => {
   );
   return match ? match.code : "";
 };
+
+
+/**
+ * Resolves bank account number to get account name.
+ * @param {string} accountNumber - The 10-digit account number to resolve.
+ * @param {string} bankCode - The bank code for the account.
+ * @returns {Promise<object|null>} - The resolved account data (e.g., { account_name, account_number }) or null on failure.
+ */
+export const resolveAccountNumber = async (accountNumber, bankCode) => {
+  if (!accountNumber || !bankCode || accountNumber.length !== 10) {
+    return null;
+  }
+  
+  try {
+    const response = await axios.get(
+      `https://api.paystack.co/bank/resolve?account_number=${accountNumber}&bank_code=${bankCode}`,
+      {
+        headers: {
+          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+        },
+      }
+    );
+
+    if (response.data.status && response.data.data) {
+      return response.data.data; 
+    } else {
+      throw new Error(response.data.message || "Failed to resolve account");
+    }
+  } catch (error) {
+    console.error("Error resolving Paystack account:", error.response?.data?.message || error.message);
+    return null;
+  }
+};

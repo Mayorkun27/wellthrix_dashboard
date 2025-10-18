@@ -81,7 +81,7 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
         <div>
           <p className='text-xl md:text-2xl font-bold text-gray-800'>Sponsor And Product</p>
         </div>
-        <div className='w-full rounded-xl bg-pryClr/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6'>
+        <div className='mb-6 w-full rounded-xl bg-pryClr/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6'>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>Package</p>
             <p className='text-lg md:text-xl font-bold capitalize'>{formData?.selectedPackage?.name || 'N/A'}</p>
@@ -107,7 +107,7 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
         <div>
           <p className='text-xl md:text-2xl font-bold text-gray-800'>Contact Information</p>
         </div>
-        <div className='w-full rounded-xl bg-pryClr/5 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6'>
+        <div className='mb-6 w-full rounded-xl bg-pryClr/5 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6'>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>First Name</p>
             <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_3.first_name || 'N/A'}</p>
@@ -149,7 +149,7 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
         <div>
           <p className='text-xl md:text-2xl font-bold text-gray-800'>Login Information</p>
         </div>
-        <div className='w-full rounded-xl bg-pryClr/5 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 gap-4 md:gap-6'>
+        <div className='mb-6 w-full rounded-xl bg-pryClr/5 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 gap-4 md:gap-6'>
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>Username</p>
             <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.username || 'N/A'}</p>
@@ -157,6 +157,24 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
           <div className='flex flex-col'>
             <p className='text-sm md:text-lg text-black/70'>Password</p>
             <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.password || 'N/A'}</p>
+          </div>
+        </div>
+
+        <div>
+          <p className='text-xl md:text-2xl font-bold text-gray-800'>Payment Information</p>
+        </div>
+        <div className='mb-6 w-full rounded-xl bg-pryClr/20 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 gap-4 md:gap-6'>
+          <div className='flex flex-col'>
+            <p className='text-sm md:text-lg text-black/70'>Bank Name</p>
+            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.bank_name || 'N/A'}</p>
+          </div>
+          <div className='flex flex-col'>
+            <p className='text-sm md:text-lg text-black/70'>Account Number</p>
+            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.account_number || 'N/A'}</p>
+          </div>
+          <div className='flex flex-col'>
+            <p className='text-sm md:text-lg text-black/70'>Account Name</p>
+            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.account_name || 'N/A'}</p>
           </div>
         </div>
 

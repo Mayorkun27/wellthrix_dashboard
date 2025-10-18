@@ -304,7 +304,7 @@ const ManagePackage = () => {
             {packages.map((pkg, index) => (
               <div
                 key={pkg.id}
-                className="relative group overflow-hidden w-full rounded-2xl py-4 px-6 flex flex-col gap-2 bg-white text-black cursor-pointer border-2 transition-all duration-500 hover:shadow-lg"
+                className={`relative group overflow-hidden w-full rounded-2xl py-4 px-6 flex flex-col gap-2 bg-white text-black cursor-pointer border-2 transition-all duration-500 hover:shadow-lg ${index % 2 === 0 ? "border-accClr" : "border-pryClr"}`}
               >
                 <div className="flex justify-between items-center">
                   <p className="text-lg font-semibold capitalize">{pkg.name} package</p>

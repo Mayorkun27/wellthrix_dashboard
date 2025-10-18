@@ -131,45 +131,48 @@ const FormRequest = () => {
             </thead>
             <tbody>
               {items.length > 0 ? (
-                items.map((t, i) => (
-                  <tr
-                    key={t.id}
-                    className={`transition-all text-sm border-b border-black/10 ${t?.status.toLowerCase() === "completed" ? "bg-pryClr/30" : "bg-accClr/30"}`}
-                  >
-                    <td className="lg:p-5 p-3 text-center">{String(i+1).padStart(3, "0")}</td>
-                    <td className="lg:p-5 p-3 text-center">{t.title}</td>
-                    <td className="lg:p-5 p-3 text-center">{t.created_at.split("T")[0]}</td>
-                    <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
-                    <td className="lg:p-5 p-3 text-center">
-                      <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
-                        <img
-                          src={`https://api.wellthrixinternational.com/storage/app/public/${t?.image}`}
-                          alt={t?.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </td>
-                    <td className="lg:p-5 p-3 text-center">
-                      <div className="flex justify-center gap-3 mx-auto items-center">
-                        <button
-                          onClick={() => handleView(t)}
-                          className="text-white flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-md w-10 h-10 bg-pryClr"
-                          title="View"
-                        >
-                          <FaEye size={16} />
-                        </button>
-                        <button
-                          onClick={() => markCompleted(t.id)}
-                          className="text-white flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-md w-10 h-10 bg-pryClr"
-                          title="Mark Completed"
-                          disabled={t?.status.toLowerCase() === "completed"}
-                        >
-                          <FaCheck size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                items.map((t, i) => {
+                  const serialNumber = (currentPage - 1) * perPage + (i + 1);
+                  return (
+                    <tr
+                      key={t.id}
+                      className={`transition-all text-sm border-b border-black/10 ${t?.status.toLowerCase() === "completed" ? "bg-pryClr/30" : "bg-accClr/30"}`}
+                    >
+                      <td className="lg:p-5 p-3 text-center">{String(serialNumber).padStart(3, "0")}</td>
+                      <td className="lg:p-5 p-3 text-center">{t.title}</td>
+                      <td className="lg:p-5 p-3 text-center">{t.created_at.split("T")[0]}</td>
+                      <td className="lg:p-5 p-3 text-center">{t.due_date}</td>
+                      <td className="lg:p-5 p-3 text-center">
+                        <div className="w-[60px] h-[60px] mx-auto border border-black/20 overflow-hidden rounded-full">
+                          <img
+                            src={`https://api.wellthrixinternational.com/storage/app/public/${t?.image}`}
+                            alt={t?.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </td>
+                      <td className="lg:p-5 p-3 text-center">
+                        <div className="flex justify-center gap-3 mx-auto items-center">
+                          <button
+                            onClick={() => handleView(t)}
+                            className="text-white flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-md w-10 h-10 bg-pryClr"
+                            title="View"
+                          >
+                            <FaEye size={16} />
+                          </button>
+                          <button
+                            onClick={() => markCompleted(t.id)}
+                            className="text-white flex items-center justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-md w-10 h-10 bg-pryClr"
+                            title="Mark Completed"
+                            disabled={t?.status.toLowerCase() === "completed"}
+                          >
+                            <FaCheck size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
               ) : (
                 <tr>
                   <td colSpan="6" className="text-center p-8">
