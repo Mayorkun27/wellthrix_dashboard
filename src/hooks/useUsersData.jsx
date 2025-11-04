@@ -4,19 +4,20 @@ import { toast } from "sonner";
 import { getAllUsers } from "../services/userService";
 import { handleAuthError } from "../utilities/handleAuthError";
 
-export const useUsersData = ({ token, logout, initialPage = 1, initialPerPage = 5 }) => {
+export const useUsersData = ({ token, logout, searchQuery, initialPage = 1, initialPerPage = 5 }) => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [lastPage, setLastPage] = useState(1);
   const [perPage, setPerPage] = useState(initialPerPage);
-
+  
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await getAllUsers(token, currentPage, perPage);
-      if (res.status === 200 && res.data.success) {
-        const { data, current_page, last_page, per_page } = res.data.data;
+      const res = await getAllUsers(token, searchQuery, currentPage, perPage);
+      console.log("res", res)
+      if (res.status === 200 && res.data.status === "success") {
+        const { data, current_page, last_page, per_page } = searchQuery ? res.data : res.data.data;
         console.log("data", data)
         setUsers(data);
         setCurrentPage(current_page);
@@ -32,7 +33,7 @@ export const useUsersData = ({ token, logout, initialPage = 1, initialPerPage = 
     } finally {
       setIsLoading(false);
     }
-  }, [token, logout, currentPage, perPage]);
+  }, [token, searchQuery, logout, currentPage, perPage]);
 
   useEffect(() => {
     fetchUsers();

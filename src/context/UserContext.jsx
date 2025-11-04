@@ -46,7 +46,7 @@ export const UserProvider = ({ children }) => {
       const data = response.data.data;
       const updatedUser = data.user;
 
-      console.log("refresh response data", data)
+      // console.log("refresh response data", data)
 
       const updatedMiscellaneousDetails = {
         planDetails: data.plan_details,
@@ -75,7 +75,6 @@ export const UserProvider = ({ children }) => {
   const logout = async () => {
     const toastId = toast.loading("Logging Out...");
     try {
-      // You can keep the API call, but the client-side logout should always happen
       await axios.put(`${API_URL}/api/logout`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "../../../context/UserContext";
 import axios from "axios";
 import { toast } from "sonner";
-import { formatISODateToCustom, formatterUtility, formatTransactionType } from "../../../utilities/Formatterutility";
+import { formatISODateToCustom, formatterUtility, formatTransactionType } from "../../../utilities/formatterutility";
 import { MdRemoveRedEye } from "react-icons/md";
 import Modal from "../../../components/modals/Modal";
 
@@ -172,7 +172,7 @@ const ProductsPurchaseHistory = () => {
                                     </li>
                                     <li>
                                         <span className="font-medium capitalize">product quantity: </span>
-                                        {product?.quantity}
+                                        {product?.product_quantity}
                                     </li>
                                 </ul>
                             ))

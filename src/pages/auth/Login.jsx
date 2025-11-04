@@ -36,7 +36,6 @@ const Login = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            withCredentials: true,
         })
 
         console.log("response", response)
@@ -49,7 +48,7 @@ const Login = () => {
           setTimeout(() => {
             toast("Redirecting to dashboard...");
             setTimeout(() => {
-              role === "admin" ? navigate(`/admin/overview`) : navigate('/user/overview');
+              role === "sunmence" ? navigate(`/sunmence/formrequests`) : role === "admin" ? navigate(`/admin/overview`) : navigate('/user/overview');
             }, 2000);
           }, 1000);
         }

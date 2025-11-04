@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
+import { MdChat, MdFormatListBulletedAdd, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
 import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
@@ -86,7 +86,7 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["user"]
         },
         {
-            name: 'Products',
+            name: 'Repurchase Mall',
             icon: <GiShoppingBag size={20} />,
             path: '/user/products',
             role: ["user"]
@@ -142,8 +142,14 @@ const LeftNav = ({ setIsOpen }) => {
         {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
-            path: '/stockist/managestockist',
+            path: '/stockist/user/managestockist',
             role: ["user"]
+        },
+        {
+            name: 'Manage Stockists',
+            icon: <TbTruckDelivery size={20} />,
+            path: '/stockist/admin/managestockist',
+            role: ["admin"]
         },
         {
             name: 'Loyalty Bonus',
@@ -162,6 +168,18 @@ const LeftNav = ({ setIsOpen }) => {
             icon: <FaRankingStar size={20} />,
             path: '/admin/ranking',
             role: ["admin"]
+        },
+        {
+            name: 'Developer Form',
+            icon: <MdFormatListBulletedAdd size={20} />,
+            path: '/admin/devform',
+            role: ["admin"]
+        },
+        {
+            name: 'Form Requests',
+            icon: <MdFormatListBulletedAdd size={20} />,
+            path: '/sunmence/formrequests',
+            role: ["sunmence"]
         },
     ];
 

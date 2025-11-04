@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { formatterUtility } from "../../utilities/Formatterutility";
+import { formatterUtility } from "../../utilities/formatterutility";
 import Modal from "../modals/Modal";
 import { useCart } from "../../context/CartContext";
 import { toast } from "sonner";
@@ -43,7 +43,7 @@ const ProductCards = ({ product }) => {
                             </div>
                             {/* <span className="text-xs font-medium">Quantity: {unitLeft <= 0 ? "0" : unitLeft}</span> */}
                         </div>
-                        {purchaseCondition && (
+                        {product.repurchase === 1 && (
                             <small className="font-semibold text-[10px] text-pryClr">
                                 Available Only on Repurchase
                             </small>
@@ -89,7 +89,7 @@ const ProductCards = ({ product }) => {
                                     <p className="-space-y-1"><span className="tracking-tight block font-semibold">Product Price:</span> {formatterUtility(Number(selectedProduct.price))}</p>
                                     <p className="-space-y-1"><span className="tracking-tight block font-semibold">Product Point Value:</span> {selectedProduct?.product_pv}pv</p>
                                     {/* <p className="-space-y-1"><span className="tracking-tight block font-semibold">Available Quantity:</span> {Number(selectedProduct.in_stock) - Number(selectedProduct.total_sold)}</p> */}
-                                    {purchaseCondition && (
+                                    {product.repurchase === 1 && (
                                         <p className="-space-y-1"><span className="tracking-tight block font-semibold">Purchase Condition:</span> Available Only on Repurchase</p>
                                     )}
                                 </div>

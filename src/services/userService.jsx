@@ -9,11 +9,19 @@ const authHeaders = (token) => ({
   "Content-Type": "application/json",
 });
 
-export const getAllUsers = (token, page, perPage) =>
-  axios.get(`${API_URL}/api/users`, {
+export const getAllUsers = (token, searchQuery, page, perPage) => {
+  console.log("searchQuery from service", searchQuery);
+  return (axios.get(`${API_URL}/api/search-user`, {
     headers: authHeaders(token),
-    params: { page, perPage },
-  });
+    params: { query: searchQuery, page, perPage },
+  }));
+};
+
+export const getAUser = (token, userId) => {
+  return (axios.get(`${API_URL}/api/users/${userId}`, {
+    headers: authHeaders(token),
+  }));
+};
 
 export const deleteUser = (token, userId) =>
   axios.delete(`${API_URL}/api/deleteuser/${userId}`, {
@@ -31,3 +39,10 @@ export const toggleAccount = (token, userId, isEnabled) => {
 
 export const upgradeUser = (token, userId) =>
   axios.post(`${API_URL}/api/users/${userId}/upgrade`, {}, { headers: authHeaders(token) });
+
+export const resetCredentials = (token, userId) =>
+  axios.post(`${API_URL}/api/reset-credentials`, {
+    "user_id": userId
+  }, {
+    headers: authHeaders(token),
+  });

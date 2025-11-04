@@ -36,7 +36,7 @@ const EnableStockistModal = ({ open, user, onClose, onConfirm, isSubmitting }) =
             <option value="" disabled>
               Select stockist plan
             </option>
-            <option value="Grand_imperial">Grand imperial Plan</option>
+            <option value="grand_imperial">Grand imperial Plan</option>
             <option value="imperial_stockist">imperial stockist Plan</option>
             <option value="royal_stockist">royal stockist Plan</option>
             <option value="prestige_stockist">prestige stockist Plan</option>

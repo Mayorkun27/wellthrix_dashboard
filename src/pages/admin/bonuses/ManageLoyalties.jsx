@@ -5,7 +5,7 @@ import PaginationControls from "../../../utilities/PaginationControls";
 import {
   formatISODateToCustom,
   formatterUtility,
-} from "../../../utilities/Formatterutility";
+} from "../../../utilities/formatterutility";
 import { FaTrashAlt } from "react-icons/fa";
 import Modal from "../../../components/modals/Modal";
 import ConfirmationDialog from "../../../components/modals/ConfirmationDialog";
@@ -153,7 +153,7 @@ const ManageLoyalties = () => {
                     {String(serialNumber).padStart(3, "0")}
                   </td>
                   <td className="p-4 capitalize">
-                    {`${item.first_name} ${item.last_name}` || "-"}
+                    {`${item.fullname}` || "-"}
                   </td>
                   <td className="p-4">{item.email || "-"}</td>
                   <td className="p-4">{item.username || "-"}</td>

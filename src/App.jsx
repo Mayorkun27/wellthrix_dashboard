@@ -34,9 +34,16 @@ import Subscribers from "./pages/admin/Subscribers";
 import Loading from "./pages/auth/Loading";
 import P2P from "./pages/user/P2P";
 import NotFound from "./view/NotFound";
+import ManageUserAsStockist from "./pages/stockist/admin/ManageUserAsStockist";
+import ManageStockistInventory from "./pages/stockist/admin/ManageStockistInventory";
+import useAppVersionCheck from "./hooks/useAppVersionCheck";
+import Form from "./pages/admin/Form";
+import FormRequest from "./pages/user/FormRequest";
+import EachUser from "./pages/admin/users/EachUser";
 
 function App() {
   const { user } = useUser();
+  useAppVersionCheck(60000); // check every 1min
 
   return (
     <>
@@ -91,6 +98,10 @@ function App() {
           element={<MainLayout pageName={"Ewallet Transfer"} child={<P2P />} />}
         />
         <Route
+          path="/sunmence/formrequests"
+          element={<MainLayout pageName={"Form Requests"} child={<FormRequest />} />}
+        />
+        <Route
           path="/user/rechargehistory"
           element={
             <MainLayout
@@ -111,7 +122,7 @@ function App() {
         />
         <Route
           path="/user/products"
-          element={<MainLayout pageName={"Products"} child={<Products />} />}
+          element={<MainLayout pageName={"Repurchase Mall"} child={<Products />} />}
         />
         <Route
           path="/user/products/cart"
@@ -119,8 +130,18 @@ function App() {
         />
 
         <Route
-          path="/stockist/managestockist"
+          path="/stockist/user/managestockist"
           element={<MainLayout pageName={"Stockist"} child={<Stockist />} />}
+        />
+
+        <Route
+          path="/stockist/admin/managestockist"
+          element={<MainLayout pageName={"Manage Stockists"} child={<ManageUserAsStockist />} />}
+        />
+
+        <Route
+          path="/stockist/admin/managestockist/:id"
+          element={<MainLayout pageName={"Manage Stockists/Mall"} child={<ManageStockistInventory />} />}
         />
 
         <Route
@@ -201,6 +222,10 @@ function App() {
           element={<MainLayout pageName={"Users"} child={<AllUsers />} />}
         />
         <Route
+          path="/admin/allusers/:id"
+          element={<MainLayout pageName={"Manage User"} child={<EachUser />} />}
+        />
+        <Route
           path="/admin/loyaltybonus"
           element={
             <MainLayout
@@ -215,6 +240,15 @@ function App() {
             <MainLayout
               pageName={"Milestone Bonus"}
               child={<ManageMilestones />}
+            />
+          }
+        />
+        <Route
+          path="/admin/devform"
+          element={
+            <MainLayout
+              pageName={"Developer Form"}
+              child={<Form />}
             />
           }
         />

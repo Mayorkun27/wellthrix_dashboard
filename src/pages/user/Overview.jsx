@@ -8,7 +8,6 @@ import { BsWallet2 } from 'react-icons/bs'
 import { PiHandDeposit, PiHandWithdraw } from 'react-icons/pi'
 import ReferralCards from '../../components/cards/ReferralCards'
 import DigitalCards from '../../components/cards/DigitalCards'
-import assets from '../../assets/assests'
 import AnnouncementBoard from '../../components/AnnouncementBoard'
 import { CgData } from 'react-icons/cg'
 import ListTwo from '../../components/lists/ListTwo'
@@ -23,6 +22,10 @@ import { useUser } from '../../context/UserContext'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { HiOutlineShoppingCart } from 'react-icons/hi2'
+import PromoOne from './promos/PromoOne'
+import PromoTwo from './promos/PromoTwo'
+import PromoThree from './promos/PromoThree'
+import { isDatePast } from '../../utilities/dateUtils'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -34,6 +37,9 @@ const Overview = () => {
   const [referrals, setReferrals] = useState([])
 
   const { user, token, logout, refreshUser, miscellaneousDetails } = useUser()
+  const [refreshPromos, setRefreshPromos] = useState(false)
+  const [isGettingProgress, setIsGettingProgress] = useState(false)
+  const [pendingRefreshes, setPendingRefreshes] = useState(0);
 
   useEffect(() => {
     if (token) {
@@ -115,7 +121,7 @@ const Overview = () => {
         }
       })
 
-      console.log("My refs response", response)
+      // console.log("My refs response", response)
 
       if (response.status === 200) {
         setReferrals(response.data.data)
@@ -124,7 +130,7 @@ const Overview = () => {
       }
       
     } catch (error) {
-      if (error.response.data.message.toLowerCase() == "unauthenticated") {
+      if (error?.response?.data?.message.toLowerCase() == "unauthenticated") {
         logout()
       }
       console.error("An error occured fetching referrals", error)
@@ -133,7 +139,7 @@ const Overview = () => {
   }
 
   useEffect(() => {
-    fetchReferrals();
+    if (token) fetchReferrals();
   }, [token])
 
   const digitalProducts = [
@@ -193,6 +199,25 @@ const Overview = () => {
     },
   ]
 
+  const refreshAllPromos = () => {
+    setIsGettingProgress(true);
+    setPendingRefreshes(2); // Adjust if you add/remove promos
+    setRefreshPromos(prev => !prev);
+  };
+
+  const handleRefreshComplete = () => {
+    setPendingRefreshes(prev => {
+      const newCount = prev - 1;
+      if (newCount <= 0) {
+        setIsGettingProgress(false);
+      }
+      return newCount;
+    });
+  };
+
+  const promoOneExpired = isDatePast("2025-10-01")
+  const promoTwoExpired = isDatePast("2025-11-01")
+  const promoThreeExpired = isDatePast("2025-11-01")
 
   return (
     <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
@@ -274,6 +299,30 @@ const Overview = () => {
           </div>
         </div>
       </div>
+
+
+      {/* Promo */}
+      <div className="md:col-span-6 lg:my-1">
+        <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className='md:text-xl text-base font-semibold'>Ongoing Promo&#40;s&#41;</h3>
+            <button 
+              className="whitespace-nowrap bg-accClr text-secClr lg:h-[40px] md:h-[50px] h-[40px] flex items-center justify-center md:px-4 px-2 rounded-lg lg:text-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={refreshAllPromos}
+              disabled={isGettingProgress}
+            >
+              {isGettingProgress ? "Refreshing Progress..." :"Refresh Progress(es)"}
+            </button>
+          </div>
+
+          <div className='space-y-8'>
+            {!promoThreeExpired && (<PromoThree refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
+            {!promoTwoExpired && (<PromoTwo refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
+            {!promoOneExpired && (<PromoOne refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
+          </div>
+        </div>
+      </div>
+
       {/* Digital Products */}
       <div hidden className="lg:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">

@@ -52,7 +52,7 @@ const AuthRedirect = () => {
         // Redirect
         // setLoadingMessage("Login successful, redirecting...");
         setTimeout(() => {
-          navigate(user?.role === "admin" ? "/admin/overview" : "/user/overview");
+          navigate(user?.role === "sunmence" ? "/sunmence/formrequests" : user?.role === "admin" ? "/admin/overview" : "/user/overview");
         }, 1000);
       } catch (error) {
         console.error("Verification failed", error);
