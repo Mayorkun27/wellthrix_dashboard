@@ -40,6 +40,7 @@ import useAppVersionCheck from "./hooks/useAppVersionCheck";
 import Form from "./pages/admin/Form";
 import FormRequest from "./pages/user/FormRequest";
 import EachUser from "./pages/admin/users/EachUser";
+import SalesReport from "./pages/admin/SalesReport";
 
 function App() {
   const { user } = useUser();
@@ -151,6 +152,15 @@ function App() {
               pageName={`Good Day, ${user?.first_name} ${user?.last_name}`}
               subText={"Here’s your dashboard overview"}
               child={<AdminOverview />}
+            />
+          }
+        />
+        <Route
+          path="/admin/salesreport"
+          element={
+            <MainLayout
+              pageName={"Sales Report"}
+              child={<SalesReport />}
             />
           }
         />

@@ -110,6 +110,12 @@ const LeftNav = ({ setIsOpen }) => {
             role: ["admin"]
         },
         {
+            name: 'Sales Report',
+            icon: <GrAnnounce size={20} />,
+            path: '/admin/salesreport',
+            role: ["admin"]
+        },
+        {
             name: 'Testimonials',
             icon: <MdChat size={20} />,
             path: '/admin/managetestimonials',
