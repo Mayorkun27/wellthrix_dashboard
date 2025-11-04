@@ -40,11 +40,11 @@ const ManageMilestones = () => {
       console.log("milestaone res", response)
 
       if (response.status === 200 && response.data.success) {
-        // const { data, current_page, last_page, per_page } = response.data.data;
-        setEligibleUsers(response?.data.data);
-        // setCurrentPage(current_page);
-        // setLastPage(last_page);
-        // setPerPage(per_page);
+        const { data, current_page, last_page, per_page } = response.data.data;
+        setEligibleUsers(data);
+        setCurrentPage(current_page);
+        setLastPage(last_page);
+        setPerPage(per_page);
       } else {
         throw new Error(response.data.message || "Failed to fetch eligible users.");
       }
