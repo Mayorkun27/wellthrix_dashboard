@@ -5,6 +5,7 @@ import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import { formatterUtility } from "../../utilities/Formatterutility";
 import PaginationControls from "../../utilities/PaginationControls";
+import { PiCurrencyNgn, PiCoins, PiHandWithdraw, PiHandCoins, PiShoppingCartSimple } from 'react-icons/pi';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const IMAGE_BASE_URL = "https://api.wellthrixinternational.com/storage/app/public";
@@ -110,16 +111,117 @@ const SalesReport = () => {
 
     return (
         <div className="space-y-4">
-            {/* <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm"> */}
-                {/* <h3 className="md:text-3xl text-2xl tracking-[-0.1em] mb-4 font-semibold text-black/80">
-          Sales Report Filters
-        </h3> */}
-                <form onSubmit={formik.handleSubmit} className="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Filter by Date</h3>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <div className="space-y-4">
+
+                <div className="flex flex-col gap-6 md:gap-4 mb-6">
+                    {/* Top Row: 2 Cards */}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="w-full sm:flex-1">
+                            <div className='bg-pryClr p-4 text-secClr rounded-lg flex items-center gap-2 shadow-md'>
+                                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                                    <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+                                        <PiCurrencyNgn />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[calc(100%-40px)]">
+                                    <div className="flex items-center justify-between w-full">
+                                        <small className="lg:text-[10px] text-xs">Total Sales (₦)</small>
+                                    </div>
+                                    <h4 className='text-xl font-bold text-white'>
+                                        {formatterUtility(Number(summary.total_sales || 0))}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="w-full sm:flex-1">
+                            <div className='bg-pryClr p-4 text-secClr rounded-lg flex items-center gap-2 shadow-md'>
+                                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                                    <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+                                        <PiCoins />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[calc(100%-40px)]">
+                                    <div className="flex items-center justify-between w-full">
+                                        <small className="lg:text-[10px] text-xs">Total PV</small>
+                                    </div>
+                                    <h4 className='text-xl font-bold text-white'>
+                                        {summary.total_pv || 0}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Bottom Row: 3 Cards */}
+                    <div className="flex flex-col sm:flex-row gap-6">
+                        <div className="w-full sm:flex-1">
+                            <div className='bg-pryClr p-4 text-secClr rounded-lg flex items-center gap-2 shadow-md'>
+                                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                                    <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+                                        <PiHandWithdraw />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[calc(100%-40px)]">
+                                    <div className="flex items-center justify-between w-full">
+                                        <small className="lg:text-[10px] text-xs">Total Payout (₦)</small>
+                                    </div>
+                                    <h4 className='text-xl font-bold text-white'>
+                                        {formatterUtility(Number(summary.total_payout || 0))}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="w-full sm:flex-1">
+                            <div className='bg-pryClr p-4 text-secClr rounded-lg flex items-center gap-2 shadow-md'>
+                                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                                    <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+                                        <PiHandCoins />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[calc(100%-40px)]">
+                                    <div className="flex items-center justify-between w-full">
+                                        <small className="lg:text-[10px] text-xs">Company Profit (₦)</small>
+                                    </div>
+                                    <h4
+                                        className={`text-xl font-bold ${summary.company_profit < 0 ? "text-red-600" : "text-green-600"}`}
+                                    >
+                                        {formatterUtility(Number(summary.company_profit || 0))}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="w-full sm:flex-1">
+                            <div className='bg-pryClr p-4 text-secClr rounded-lg flex items-center gap-2 shadow-md'>
+                                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                                    <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+                                        <PiShoppingCartSimple />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1 w-[calc(100%-40px)]">
+                                    <div className="flex items-center justify-between w-full">
+                                        <small className="lg:text-[10px] text-xs">Orders Count</small>
+                                    </div>
+                                    <h4 className='text-xl font-bold text-white'>
+                                        {summary.orders_count || 0}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form
+                    onSubmit={formik.handleSubmit}
+                    className="bg-white p-6 rounded-2xl shadow-md border border-gray-100"
+                >
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                        Filter by Date
+                    </h3>
+
+                    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
                         {/* Start Date */}
-                        <div className="flex flex-col">
+                        <div className="flex flex-col w-full sm:flex-1">
                             <label
                                 htmlFor="start_date"
                                 className="text-sm font-medium text-gray-600 mb-2"
@@ -132,12 +234,12 @@ const SalesReport = () => {
                                 id="start_date"
                                 value={formik.values.start_date}
                                 onChange={formik.handleChange}
-                                className="border border-gray-300 focus:border-pryClr focus:ring-2 focus:ring-pryClr/30 transition-all w-full h-[46px] rounded-lg outline-none px-3 text-gray-700"
+                                className="border border-gray-300 focus:border-pryClr focus:ring-2 focus:ring-pryClr/30 transition-all h-[46px] rounded-lg outline-none px-3 text-gray-700"
                             />
                         </div>
 
                         {/* End Date */}
-                        <div className="flex flex-col">
+                        <div className="flex flex-col w-full sm:flex-1">
                             <label
                                 htmlFor="end_date"
                                 className="text-sm font-medium text-gray-600 mb-2"
@@ -150,73 +252,27 @@ const SalesReport = () => {
                                 id="end_date"
                                 value={formik.values.end_date}
                                 onChange={formik.handleChange}
-                                className="border border-gray-300 focus:border-pryClr focus:ring-2 focus:ring-pryClr/30 transition-all w-full h-[46px] rounded-lg outline-none px-3 text-gray-700"
+                                className="border border-gray-300 focus:border-pryClr focus:ring-2 focus:ring-pryClr/30 transition-all h-[46px] rounded-lg outline-none px-3 text-gray-700"
                             />
                         </div>
-                    </div>
 
-                    <div className="mt-8 flex justify-end">
-                        <button
-                            type="submit"
-                            disabled={formik.isSubmitting}
-                            className={`bg-pryClr text-white px-6 py-2.5 rounded-lg shadow hover:shadow-lg hover:bg-pryClr/90 transition-all duration-200 ${formik.isSubmitting ? "opacity-60 cursor-not-allowed" : ""
-                                }`}
-                        >
-                            {formik.isSubmitting ? "Applying..." : "Apply Filters"}
-                        </button>
+                        {/* Submit Button */}
+                        <div className="w-full sm:w-auto sm:ml-2">
+                            <button
+                                type="submit"
+                                disabled={formik.isSubmitting}
+                                className={`bg-pryClr text-white font-medium px-6 py-[11px] rounded-lg shadow hover:shadow-lg hover:bg-pryClr/90 transition-all duration-200 w-full sm:w-auto ${formik.isSubmitting ? "opacity-60 cursor-not-allowed" : ""
+                                    }`}
+                            >
+                                {formik.isSubmitting ? "Applying..." : "Apply Filters"}
+                            </button>
+                        </div>
                     </div>
                 </form>
 
-            {/* </div> */}
 
-            <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-  {/* Total Sales */}
-  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 text-center hover:shadow-md transition-all duration-200">
-    <h4 className="text-gray-600 text-sm font-medium mb-1">Total Sales (₦)</h4>
-    <p className="text-2xl font-bold text-green-600">
-      {formatterUtility(Number(summary.total_sales || 0))}
-    </p>
-  </div>
 
-  {/* Total PV */}
-  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 text-center hover:shadow-md transition-all duration-200">
-    <h4 className="text-gray-600 text-sm font-medium mb-1">Total PV</h4>
-    <p className="text-2xl font-bold text-blue-600">
-      {summary.total_pv || 0}
-    </p>
-  </div>
-
-  {/* Total Payout */}
-  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 text-center hover:shadow-md transition-all duration-200">
-    <h4 className="text-gray-600 text-sm font-medium mb-1">Total Payout (₦)</h4>
-    <p className="text-2xl font-bold text-red-600">
-      {formatterUtility(Number(summary.total_payout || 0))}
-    </p>
-  </div>
-
-  {/* Company Profit */}
-  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 text-center hover:shadow-md transition-all duration-200">
-    <h4 className="text-gray-600 text-sm font-medium mb-1">Company Profit (₦)</h4>
-    <p
-      className={`text-2xl font-bold ${
-        summary.company_profit < 0 ? "text-red-600" : "text-green-600"
-      }`}
-    >
-      {formatterUtility(Number(summary.company_profit || 0))}
-    </p>
-  </div>
-
-  {/* Orders Count */}
-  <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-5 text-center hover:shadow-md transition-all duration-200 sm:col-span-2">
-    <h4 className="text-gray-600 text-sm font-medium mb-1">Orders Count</h4>
-    <p className="text-2xl font-bold text-blue-600">
-      {summary.orders_count || 0}
-    </p>
-  </div>
-</div>
-
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-4 mt-6">
                     <h3 className="md:text-3xl text-2xl tracking-[-0.1em] font-semibold text-black/80">
                         Top-Selling Products
                     </h3>
