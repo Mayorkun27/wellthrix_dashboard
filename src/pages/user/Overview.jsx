@@ -241,7 +241,7 @@ const Overview = () => {
         }
       </div>
       {/* Profile */}
-      <div className="lg:col-span-2 md:col-span-6 h-full flex flex-col lg:gap-0 gap-4 justify-between lg:my-1 -mt-2">
+      <div className="lg:col-span-2 md:col-span-6 grid lg:grid-cols-1 md:grid-cols-2 lg:gap-2 gap-4 h-full lg:my-1">
         <OverviewCards 
           amount={user?.unilevel_wallet}
           walletType={"Unilevel Wallet"}
@@ -251,13 +251,23 @@ const Overview = () => {
             </div>
           }
         />
-        <div className="flex lg:flex-row md:flex-row flex-col gap-4 items-center lg:justify-center justify-evenly">
-          <div className="shadow-md lg:w-[150px] md:w-[250px] lg:h-[150px] md:h-[250px] w-[200px] h-[200px] lg:rounded-xl rounded-full bg-accClr overflow-hidden flex items-center justify-center">
-            <h3 className='lg:text-5xl md:text-8xl text-6xl text-pryClr font-extrabold uppercase'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
+        <OverviewCards 
+          amount={user?.total_earning}
+          walletType={"Total Earnings"}
+          icon={
+            <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+              <HiOutlineShoppingCart />
+            </div>
+          }
+          bgType={2}
+        />
+        <div className="lg:col-span-1 md:col-span-2 flex lg:flex-row md:flex-row flex-col gap-4 items-center lg:justify-start justify-center">
+          <div className="shadow-md lg:w-[90px] md:w-[230px] lg:h-[80px] md:h-[230px] w-[200px] h-[200px] lg:rounded-xl rounded-full bg-accClr overflow-hidden flex items-center justify-center">
+            <h3 className='lg:text-4xl md:text-8xl text-6xl text-pryClr font-extrabold uppercase'>{splittedFirstNameFirstLetter+splittedLastNameFirstLetter}</h3>
           </div>
           <div className="flex flex-col md:items-start items-center lg:gap-0 gap-1">
             <h3 className='font-bold'>@{user?.username}</h3>
-            <div className="flex flex-col items-start justify-between lg:gap-2 md:gap-0 gap-2 text-xs">
+            <div className="flex lg:flex-row md:flex-col flex-row items-start justify-between md:gap-2 gap-2 text-xs">
               <p>Package: <span className='font-bold uppercase'>{miscellaneousDetails?.planDetails?.name}</span></p>
               <p>Rank: <span className='font-bold uppercase'>{user?.rank || "No rank"}</span></p>
             </div>
@@ -302,7 +312,7 @@ const Overview = () => {
 
 
       {/* Promo */}
-      <div className="md:col-span-6 lg:my-1">
+      <div hidden className="md:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className='md:text-xl text-base font-semibold'>Ongoing Promo&#40;s&#41;</h3>

@@ -3,9 +3,9 @@ import { formatterUtility } from '../../utilities/formatterutility'
 import { MdOutlineArrowOutward } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 
-const OverviewCards = ({ walletType, amount, isAmount=true, icon, buttonText, buttonType, path }) => {
+const OverviewCards = ({ walletType, amount, isAmount=true, icon, buttonText, buttonType, path, bgType=1 }) => {
   return (
-    <Link to={path} className='bg-pryClr p-4 text-secClr rounded-lg flex items-center border-red-500 gap-2 shadow-md'>
+    <Link to={path} className={`${bgType === 1 ? "bg-pryClr text-secClr" : "bg-accClr text-black"} p-4 rounded-lg flex items-center border-red-500 gap-2 shadow-md`}>
       <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
         {icon}
       </div>
