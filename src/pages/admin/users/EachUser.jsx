@@ -74,6 +74,14 @@ const EachUser = () => {
 
     const overviews = [
       {
+        walletType: "Total Earnings",
+        amount: user?.total_earning,
+        icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+            <MdOutlineAccountBalanceWallet />
+          </div>,
+        buttonType: 1,
+      },
+      {
         walletType: "E-Wallet",
         amount: user?.e_wallet,
         icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
@@ -150,7 +158,7 @@ const EachUser = () => {
             <div className='space-y-4'>
                 <div>
                     <h3 className="md:text-2xl text-xl font-semibold mb-4"><span className='capitalize'>{user.username}</span>&apos;s Details</h3>
-                    <div className="grid lg:grid-cols-4 grid-cols-1 gap-4 h-full mb-6">
+                    <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 h-full mb-6">
                         {
                             overviews.map((overview, index) => (
                             <div className="h-full" key={index}>
