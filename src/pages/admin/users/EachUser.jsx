@@ -6,15 +6,15 @@ import { toast } from 'sonner';
 import { handleAuthError } from '../../../utilities/handleAuthError';
 import OverviewCards from '../../../components/cards/OverviewCards';
 import { FaTrashAlt } from 'react-icons/fa';
-import { MdOutlineAccountBalanceWallet, MdOutlineSdCard, MdOutlineLockReset } from 'react-icons/md'
+import { MdOutlineAccountBalanceWallet, MdOutlineLockReset } from 'react-icons/md'
 import { IoWalletOutline } from 'react-icons/io5'
-import { GiElectric, GiWallet, GiUpgrade } from 'react-icons/gi'
+import { GiWallet, GiUpgrade } from 'react-icons/gi'
 import { BsWallet2 } from 'react-icons/bs'
-import { PiHandDeposit, PiHandWithdraw } from 'react-icons/pi'
 import { useUserActions } from '../../../hooks/useUserActions';
 import Modal from '../../../components/modals/Modal';
 import EnableStockistModal from '../../../components/modals/EnableStockistModal';
 import ConfirmationDialog from '../../../components/modals/ConfirmationDialog';
+import { HiOutlineWallet } from "react-icons/hi2";
 
 const EachUser = () => {
     const { token, logout } = useUser();
@@ -73,6 +73,14 @@ const EachUser = () => {
     };
 
     const overviews = [
+      {
+        walletType: "Total Earnings",
+        amount: user?.total_earning,
+        icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
+            <HiOutlineWallet />
+          </div>,
+        buttonType: 1,
+      },
       {
         walletType: "E-Wallet",
         amount: user?.e_wallet,
@@ -150,7 +158,7 @@ const EachUser = () => {
             <div className='space-y-4'>
                 <div>
                     <h3 className="md:text-2xl text-xl font-semibold mb-4"><span className='capitalize'>{user.username}</span>&apos;s Details</h3>
-                    <div className="grid lg:grid-cols-4 grid-cols-1 gap-4 h-full mb-6">
+                    <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 h-full mb-6">
                         {
                             overviews.map((overview, index) => (
                             <div className="h-full" key={index}>
