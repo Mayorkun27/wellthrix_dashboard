@@ -93,7 +93,7 @@ export const UserProvider = ({ children }) => {
 
       // Redirect after a short delay
       setTimeout(() => {
-        // window.location.href = "https://wellthrixinternational.com/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
       }, 100);
     }
   };

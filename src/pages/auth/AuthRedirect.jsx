@@ -21,14 +21,14 @@ const AuthRedirect = () => {
 
     const verifyAndRedirect = async () => {
       if (!encryptedToken) {
-        // window.location.href = "https://wellthrixinternational.com/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
         return;
       }
 
       const token = decryptToken(decodeURIComponent(encryptedToken));
       console.log("decrypted token", token)
       if (!token) {
-        // window.location.href = "https://wellthrixinternational.com/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
         return;
       }
 
@@ -58,7 +58,7 @@ const AuthRedirect = () => {
         }, 1000);
       } catch (error) {
         console.error("Verification failed", error);
-        // window.location.href = "https://wellthrixinternational.com/#/login";
+        window.location.href = "https://wellthrixinternational.com/#/login";
       }
     };
 
