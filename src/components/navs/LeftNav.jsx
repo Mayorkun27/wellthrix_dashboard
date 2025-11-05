@@ -13,6 +13,7 @@ import { TbTruckDelivery } from 'react-icons/tb';
 import { VscPackage } from 'react-icons/vsc';
 import { useUser } from '../../context/UserContext';
 import { BsSignpost } from 'react-icons/bs';
+import { TbReport } from "react-icons/tb";
 
 const LeftNav = ({ setIsOpen }) => {
 
@@ -55,12 +56,6 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/deposit',
             role: ["user"]
         },
-        // {
-        //     name: 'Withdraw',
-        //     icon: <PiHandDeposit size={20} />,
-        //     path: '/user/withdraw',
-        //     role: ["user"]
-        // },
         {
             name: 'Transfer Funds',
             icon: <GrTransaction size={20} />,
@@ -111,7 +106,7 @@ const LeftNav = ({ setIsOpen }) => {
         },
         {
             name: 'Sales Report',
-            icon: <GrAnnounce size={20} />,
+            icon: <TbReport size={20} />,
             path: '/admin/salesreport',
             role: ["admin"]
         },

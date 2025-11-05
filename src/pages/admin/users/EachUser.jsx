@@ -6,15 +6,15 @@ import { toast } from 'sonner';
 import { handleAuthError } from '../../../utilities/handleAuthError';
 import OverviewCards from '../../../components/cards/OverviewCards';
 import { FaTrashAlt } from 'react-icons/fa';
-import { MdOutlineAccountBalanceWallet, MdOutlineSdCard, MdOutlineLockReset } from 'react-icons/md'
+import { MdOutlineAccountBalanceWallet, MdOutlineLockReset } from 'react-icons/md'
 import { IoWalletOutline } from 'react-icons/io5'
-import { GiElectric, GiWallet, GiUpgrade } from 'react-icons/gi'
+import { GiWallet, GiUpgrade } from 'react-icons/gi'
 import { BsWallet2 } from 'react-icons/bs'
-import { PiHandDeposit, PiHandWithdraw } from 'react-icons/pi'
 import { useUserActions } from '../../../hooks/useUserActions';
 import Modal from '../../../components/modals/Modal';
 import EnableStockistModal from '../../../components/modals/EnableStockistModal';
 import ConfirmationDialog from '../../../components/modals/ConfirmationDialog';
+import { HiOutlineWallet } from "react-icons/hi2";
 
 const EachUser = () => {
     const { token, logout } = useUser();
@@ -77,7 +77,7 @@ const EachUser = () => {
         walletType: "Total Earnings",
         amount: user?.total_earning,
         icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
-            <MdOutlineAccountBalanceWallet />
+            <HiOutlineWallet />
           </div>,
         buttonType: 1,
       },
