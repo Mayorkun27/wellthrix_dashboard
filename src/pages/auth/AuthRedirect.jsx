@@ -17,6 +17,7 @@ const AuthRedirect = () => {
 
   useEffect(() => {
     const encryptedToken = urlParams.get("token");
+    console.log("encryptedToken", encryptedToken)
 
     const verifyAndRedirect = async () => {
       if (!encryptedToken) {
@@ -25,6 +26,7 @@ const AuthRedirect = () => {
       }
 
       const token = decryptToken(decodeURIComponent(encryptedToken));
+      console.log("decrypted token", token)
       if (!token) {
         window.location.href = "https://wellthrixinternational.com/#/login";
         return;
