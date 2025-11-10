@@ -41,6 +41,7 @@ import Form from "./pages/admin/Form";
 import FormRequest from "./pages/user/FormRequest";
 import EachUser from "./pages/admin/users/EachUser";
 import SalesReport from "./pages/admin/SalesReport";
+import Promo from "./pages/admin/promos/Promo";
 
 function App() {
   const { user } = useUser();
@@ -265,6 +266,10 @@ function App() {
         <Route
           path="/admin/ranking"
           element={<MainLayout pageName={"Ranking"} child={<Ranking />} />}
+        />
+        <Route
+          path="/admin/promoqualifiers"
+          element={<MainLayout pageName={"Promo Qualifiers"} child={<Promo />} />}
         />
       </Routes>
     </>

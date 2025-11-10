@@ -26,6 +26,7 @@ import PromoOne from './promos/PromoOne'
 import PromoTwo from './promos/PromoTwo'
 import PromoThree from './promos/PromoThree'
 import { isDatePast } from '../../utilities/dateUtils'
+import PromoFour from './promos/PromoFour'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -218,6 +219,7 @@ const Overview = () => {
   const promoOneExpired = isDatePast("2025-10-01")
   const promoTwoExpired = isDatePast("2025-11-01")
   const promoThreeExpired = isDatePast("2025-11-01")
+  const promoFourExpired = isDatePast("2025-11-27")
 
   return (
     <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
@@ -304,7 +306,7 @@ const Overview = () => {
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
             <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
             <div className="h-[80%] overflow-y-scroll pe-2 styled-scrollbar">
-              <AnnouncementBoard />
+              {/* <AnnouncementBoard /> */}
             </div>
           </div>
         </div>
@@ -312,7 +314,7 @@ const Overview = () => {
 
 
       {/* Promo */}
-      <div hidden className="md:col-span-6 lg:my-1">
+      <div className="md:col-span-6 lg:my-1">
         <div className="bg-white md:p-6 p-4 rounded-lg shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className='md:text-xl text-base font-semibold'>Ongoing Promo&#40;s&#41;</h3>
@@ -326,6 +328,7 @@ const Overview = () => {
           </div>
 
           <div className='space-y-8'>
+            {!promoFourExpired && (<PromoFour refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoThreeExpired && (<PromoThree refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoTwoExpired && (<PromoTwo refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoOneExpired && (<PromoOne refresh={refreshPromos} onComplete={handleRefreshComplete} />)}

@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useUser } from "../../context/UserContext";
 import PaginationControls from "../../utilities/PaginationControls";
-import { formatISODateToCustom, formatterUtility } from "../../utilities/Formatterutility";
+import { formatISODateToCustom, formatterUtility } from "../../utilities/formatterutility";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 

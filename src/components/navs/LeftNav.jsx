@@ -13,11 +13,11 @@ import { TbTruckDelivery } from 'react-icons/tb';
 import { VscPackage } from 'react-icons/vsc';
 import { useUser } from '../../context/UserContext';
 import { BsSignpost } from 'react-icons/bs';
-import { TbReport } from "react-icons/tb";
+import { TbReport, TbAward } from "react-icons/tb";
 
 const LeftNav = ({ setIsOpen }) => {
 
-    const { user, logout, miscellanousDetails } = useUser()
+    const { user, logout } = useUser()
 
     const navItems = [
         {
@@ -168,6 +168,12 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Rankings',
             icon: <FaRankingStar size={20} />,
             path: '/admin/ranking',
+            role: ["admin"]
+        },
+        {
+            name: 'Promo Qualifiers',
+            icon: <TbAward size={20} />,
+            path: '/admin/promoqualifiers',
             role: ["admin"]
         },
         {

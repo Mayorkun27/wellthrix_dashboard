@@ -49,6 +49,7 @@ const UpgradeOrders = () => {
                 params: {
                     transactions_page: currentPage,
                     perPage: perPage,
+                    transaction_type: "upgrade_products"
                 },
             }
         );
@@ -146,10 +147,10 @@ const UpgradeOrders = () => {
     }
   };
 
-  const filteredProducts = upgradeOrders.filter(
-    (upgradeOrder) => upgradeOrder.transaction_type === "upgrade_products"
-  );
-  console.log("filteredProducts", filteredProducts);
+  // const upgradeOrders = upgradeOrders.filter(
+  //   (upgradeOrder) => upgradeOrder.transaction_type === ""
+  // );
+  // console.log("upgradeOrders", upgradeOrders);
 
   return (
     <div>
@@ -176,8 +177,8 @@ const UpgradeOrders = () => {
                   Loading...
                 </td>
               </tr>
-            ) : filteredProducts.length > 0 ? (
-              filteredProducts.map((upgradeOrder, index) => {
+            ) : upgradeOrders.length > 0 ? (
+              upgradeOrders.map((upgradeOrder, index) => {
                 const statusKey =
                   upgradeOrder?.orders?.delivery?.toLowerCase();
                 const { text, className } = statusLabels[statusKey] || {
@@ -267,7 +268,7 @@ const UpgradeOrders = () => {
             )}
           </tbody>
         </table>
-        {!isLoading && filteredProducts.length > 0 && !filteredProducts.length > 10 && (
+        {!isLoading && upgradeOrders.length > 0 && (
           <PaginationControls
             currentPage={currentPage}
             totalPages={lastPage}
