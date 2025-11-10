@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { toast } from "sonner";
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
-import { formatterUtility } from "../../utilities/Formatterutility";
+import { formatterUtility } from "../../utilities/formatterutility";
 import PaginationControls from "../../utilities/PaginationControls";
 import { PiCurrencyNgn, PiCoins, PiHandWithdraw, PiHandCoins, PiShoppingCartSimple } from 'react-icons/pi';
 
