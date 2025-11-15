@@ -29,11 +29,11 @@ const EarningWalletHistory = () => {
                 }
             });
 
-            console.log("Earnings History Response:", response);
+            // console.log("Earnings History Response:", response);
 
             if (response.status === 200) {
                 const { data, current_page, last_page, per_page } = response.data;
-                console.log("data", data)
+                // console.log("data", data)
                 setEarningsWallet(data);
                 setCurrentPage(current_page);
                 setLastPage(last_page);

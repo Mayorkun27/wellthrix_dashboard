@@ -35,7 +35,7 @@ const Register = () => {
 
  const handleNextStep = (newSessionId = null) => {
     if (newSessionId) {
-      console.log('Register updating sessionId:', newSessionId);
+      // console.log('Register updating sessionId:', newSessionId);
       setSessionId(newSessionId);
     }
     setStep((prev) => Math.min(prev + 1, Object.keys(steps).length));

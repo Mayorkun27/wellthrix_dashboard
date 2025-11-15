@@ -20,7 +20,7 @@ const Products = () => {
         }
       })
 
-      console.log("Products Response:", response)
+      // console.log("Products Response:", response)
 
       if (response.status === 200) {
         setProducts(response.data.products || response.data)

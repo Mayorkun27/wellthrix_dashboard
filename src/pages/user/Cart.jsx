@@ -64,9 +64,9 @@ const Cart = () => {
                 }
             });
 
-            console.log("stockists response", response);
+            // console.log("stockists response", response);
             if (response.status === 200 && response.data.success) {
-                console.log(response.data.data);
+                // console.log(response.data.data);
                 setStockists(response.data.data);
             } else {
                 toast.error(response.data.message || "Failed to fetch stockists.");
@@ -120,7 +120,7 @@ const Cart = () => {
                 pin: pin.join('') // Include the collected PIN
             };
 
-            console.log("final payload", payload);
+            // console.log("final payload", payload);
 
             const response = await axios.post(`${API_URL}/api/buy-product`, payload, {
                 headers: {
@@ -129,7 +129,7 @@ const Cart = () => {
                 }
             });
 
-            console.log("response", response);
+            // console.log("response", response);
 
             if (response.status === 200) {
                 toast.success(response.data.message || "Order placed successfully!", { id: toastId });

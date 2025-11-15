@@ -65,7 +65,7 @@ const Digital = () => {
     );
     if (isPinComplete) {
       setIsLoading(true);
-      console.log("Final Submission Data:", { ...formData, pin: pin.join("") });
+      // console.log("Final Submission Data:", { ...formData, pin: pin.join("") });
 
       try {
         const response = await axios.post(
@@ -79,7 +79,7 @@ const Digital = () => {
           }
         );
 
-        console.log("transaction response", response);
+        // console.log("transaction response", response);
 
         if (response.status === 200) {
           toast.success(

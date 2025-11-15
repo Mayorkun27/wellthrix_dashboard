@@ -5,16 +5,14 @@ import * as Yup from "yup";
 import { toast } from "sonner";
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
-import { BsArrowRight } from 'react-icons/bs';
 import { LuSparkle, LuCrown } from 'react-icons/lu';
 import { AiOutlineRise } from 'react-icons/ai';
 import { FaRegStar, FaTrashAlt, FaEdit } from 'react-icons/fa';
 import { IoShieldCheckmarkOutline } from 'react-icons/io5';
 import { CgArrowTopRight } from 'react-icons/cg';
 import { VscGraph } from 'react-icons/vsc';
-import { FiSearch } from 'react-icons/fi';
 import { GiFire } from 'react-icons/gi';
-import { formatterUtility } from "../../utilities/Formatterutility";
+import { formatterUtility } from "../../utilities/formatterutility";
 import Modal from "../../components/modals/Modal";
 import ConfirmationDialog from "../../components/modals/ConfirmationDialog";
 
@@ -62,7 +60,7 @@ const ManagePackage = () => {
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
 
-      console.log("Form values before submission:", values);
+      // console.log("Form values before submission:", values);
 
       try {
         const payload = {
@@ -72,12 +70,12 @@ const ManagePackage = () => {
         };
 
         // Debug: Log payload
-        console.log("Request payload:", payload);
+        // console.log("Request payload:", payload);
 
         const endpoint = editingPackage
           ? `${API_URL}/api/plans/${editingPackage.id}`
           : `${API_URL}/api/plans`;
-        console.log("Requesting:", endpoint);
+        // console.log("Requesting:", endpoint);
 
         let response;
         if (editingPackage) {
@@ -96,7 +94,7 @@ const ManagePackage = () => {
           });
         }
 
-        console.log("Package upload/update response:", response.data);
+        // console.log("Package upload/update response:", response.data);
 
         if (response.status === 201 || response.status === 200) {
           toast.success(editingPackage ? "Package updated successfully" : "Package uploaded successfully");
@@ -133,7 +131,7 @@ const ManagePackage = () => {
         },
       });
 
-      console.log("Package retrieve response:", response);
+      // console.log("Package retrieve response:", response);
 
       if (response.status === 200) {
         setPackages(response.data.data.data || []);
@@ -190,7 +188,7 @@ const ManagePackage = () => {
   };
 
   const handleEditPackage = (pkg) => {
-    console.log("Editing package:", pkg);
+    // console.log("Editing package:", pkg);
     setEditingPackage(pkg);
     formik.setValues({
       name: pkg.name?.trim() || "",
@@ -226,7 +224,7 @@ const ManagePackage = () => {
               value={formik.values.name}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Package name changed:", e.target.value);
+                // console.log("Package name changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
             />
@@ -245,7 +243,7 @@ const ManagePackage = () => {
               value={formik.values.point_value}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Point value changed:", e.target.value);
+                // console.log("Point value changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
             />
@@ -264,7 +262,7 @@ const ManagePackage = () => {
               value={formik.values.price}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Price changed:", e.target.value);
+                // console.log("Price changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
             />

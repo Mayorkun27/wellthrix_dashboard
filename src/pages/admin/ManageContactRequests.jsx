@@ -54,7 +54,7 @@ const ManageContactRequests = () => {
       });
 
       const data = response.data.data || response.data;
-      console.log("Fetched contacts:", data);
+      // console.log("Fetched contacts:", data);
 
       if (!Array.isArray(data)) {
         throw new Error("Invalid response format: Expected an array of contacts");
@@ -131,7 +131,7 @@ const ManageContactRequests = () => {
         },
       });
 
-      console.log(`Deleted contact with ID: ${contactToDelete.id}`, response.data);
+      // console.log(`Deleted contact with ID: ${contactToDelete.id}`, response.data);
       setContacts(contacts.filter((contact) => contact.id !== contactToDelete.id));
       setShowDeleteModal(false);
       setContactToDelete(null);

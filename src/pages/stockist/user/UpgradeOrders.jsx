@@ -54,11 +54,11 @@ const UpgradeOrders = () => {
             }
         );
 
-      console.log("this response", response);
+      // console.log("this response", response);
 
       if (response.status === 200) {
         const { data, current_page, last_page, per_page } = response.data.transactions;
-        // console.log("data", data);
+        // // console.log("data", data);
         setUpgradeOrders(data);
         setCurrentPage(current_page);
         setLastPage(last_page);
@@ -85,7 +85,7 @@ const UpgradeOrders = () => {
 
   useEffect(() => {
     if (token && user?.id) {
-      console.log("Fetching orders for page:", currentPage);
+      // console.log("Fetching orders for page:", currentPage);
       fetchUpgradeOrders();
     }
   }, [currentPage, token, user?.id]);
@@ -116,7 +116,7 @@ const UpgradeOrders = () => {
         }
       );
 
-      console.log("reistration confirmation response", response);
+      // console.log("reistration confirmation response", response);
 
       if (response.status === 200) {
         toast.success(
@@ -150,7 +150,7 @@ const UpgradeOrders = () => {
   // const upgradeOrders = upgradeOrders.filter(
   //   (upgradeOrder) => upgradeOrder.transaction_type === ""
   // );
-  // console.log("upgradeOrders", upgradeOrders);
+  // // console.log("upgradeOrders", upgradeOrders);
 
   return (
     <div>
@@ -232,7 +232,7 @@ const UpgradeOrders = () => {
                           title={`View products`}
                           disabled={isConfirming} // Disable if not pending or if confirming another order
                           onClick={() => {
-                            console.log(upgradeOrder)
+                            // console.log(upgradeOrder)
                             setSelectedOrder(upgradeOrder)
                           }}
                           className="text-pryClr text-xl cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg disabled:opacity-25 disabled:cursor-not-allowed"

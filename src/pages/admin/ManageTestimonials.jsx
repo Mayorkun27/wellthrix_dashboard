@@ -103,7 +103,7 @@ const ManageTestimonials = () => {
       for (let [key, value] of formData.entries()) {
         formDataEntries[key] = value instanceof File ? value.name : value;
       }
-      console.log("FormData contents:", formDataEntries);
+      // console.log("FormData contents:", formDataEntries);
 
       try {
         const url = selectedTestimonial
@@ -111,7 +111,7 @@ const ManageTestimonials = () => {
           : `${API_URL}/api/testimonial`;
         const method = selectedTestimonial ? "put" : "post";
 
-        console.log("Requesting:", { method, url });
+        // console.log("Requesting:", { method, url });
 
         const response = await axios({
           method,
@@ -124,7 +124,7 @@ const ManageTestimonials = () => {
           timeout: 10000,
         });
 
-        console.log("Submit response:", response.data);
+        // console.log("Submit response:", response.data);
 
         toast.success(
           selectedTestimonial
@@ -185,7 +185,7 @@ const ManageTestimonials = () => {
   };
 
   const handleEdit = (testimonial) => {
-    console.log("Editing testimonial:", testimonial);
+    // console.log("Editing testimonial:", testimonial);
     setSelectedTestimonial(testimonial);
     formik.setValues({
       full_name: testimonial.full_name?.trim() || "",
@@ -221,8 +221,8 @@ const ManageTestimonials = () => {
         throw new Error("API base URL is not defined. Check your .env file.");
       }
 
-      console.log("Fetching testimonials from:", `${API_URL}/api/testimonial`);
-      console.log("Using token:", token);
+      // console.log("Fetching testimonials from:", `${API_URL}/api/testimonial`);
+      // console.log("Using token:", token);
 
       const response = await axios.get(`${API_URL}/api/testimonial`, {
         headers: {
@@ -244,7 +244,7 @@ let data = dataa.data;
         image: testimonial.image ? `${IMAGE_BASE_URL}/${testimonial.image}` : null,
       }));
 
-      console.log("Mapped testimonials:", mappedData);
+      // console.log("Mapped testimonials:", mappedData);
 
       setTestimonials(mappedData);
     } catch (err) {
@@ -328,7 +328,7 @@ let data = dataa.data;
         }
       );
 
-      console.log(`Deleted testimonial with ID: ${testimonialToDelete}`, response.data);
+      // console.log(`Deleted testimonial with ID: ${testimonialToDelete}`, response.data);
       setTestimonials(testimonials.filter((t) => t.id !== testimonialToDelete));
       setShowDeleteModal(false);
       setTestimonialToDelete(null);
@@ -388,7 +388,7 @@ let data = dataa.data;
                 value={formik.values.full_name}
                 onChange={(e) => {
                   formik.handleChange(e);
-                  console.log("Full name changed:", e.target.value);
+                  // console.log("Full name changed:", e.target.value);
                 }}
                 onBlur={formik.handleBlur}
                 className="border border-pryClr w-full h-[46px] rounded-lg outline-0 indent-3"
@@ -408,7 +408,7 @@ let data = dataa.data;
                 value={formik.values.rating}
                 onChange={(e) => {
                   formik.handleChange(e);
-                  console.log("Rating changed:", e.target.value);
+                  // console.log("Rating changed:", e.target.value);
                 }}
                 onBlur={formik.handleBlur}
                 className={`w-full p-3 border border-pryClr outline-0 rounded-lg ${formik.touched.rating && formik.errors.rating
@@ -438,7 +438,7 @@ let data = dataa.data;
               value={formik.values.comment}
               onChange={(e) => {
                 formik.handleChange(e);
-                console.log("Comment changed:", e.target.value);
+                // console.log("Comment changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               rows={5}

@@ -29,7 +29,7 @@ const PurchaseWalletHistory = () => {
                 }
             });
 
-            console.log("Repurchase History Response:", response.data);
+            // console.log("Repurchase History Response:", response.data);
 
             if (response.status === 200 && response.data.ok) {
                 const { data, current_page, last_page, per_page } = response.data.data;

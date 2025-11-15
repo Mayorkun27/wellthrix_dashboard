@@ -71,7 +71,7 @@ const Deposit = () => {
         formData.append('proof_of_payment', values.proof_of_payment);
       }
 
-      console.log("Deposit form data", formData)
+      // console.log("Deposit form data", formData)
 
       try {
         const response = await axios.post(`${API_URL}/api/wallets/fund/initiate`, formData, {
@@ -80,7 +80,7 @@ const Deposit = () => {
           }
         });
 
-        console.log("deposit response", response)
+        // console.log("deposit response", response)
 
         if (response.status === 201 && response.data.ok) {
           toast.success(response.data.message || `Deposit initiated successfully`);

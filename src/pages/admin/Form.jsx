@@ -64,7 +64,7 @@ const Form = () => {
     validateOnBlur: true,
     onSubmit: async (values, { resetForm }) => {
       setSubmitting(true);
-      console.log("values", values)
+      // console.log("values", values)
       const toastId = toast.loading("Creating task...")
 
       try {
@@ -83,7 +83,7 @@ const Form = () => {
           }
         });
 
-        console.log("task post response", response);
+        // console.log("task post response", response);
 
         if (response.status === 201 || response.data.status === 201) {
           toast.success(response.data.message || "Task created successfully!", { id: toastId });
@@ -142,7 +142,7 @@ const Form = () => {
         }
       });
 
-      console.log("tasks fetch response", response);
+      // console.log("tasks fetch response", response);
 
       if (response.status === 200) {
         setMisDetails({

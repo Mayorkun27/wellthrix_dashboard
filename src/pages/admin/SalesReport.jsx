@@ -3,15 +3,18 @@ import { useFormik } from "formik";
 import { toast } from "sonner";
 import axios from "axios";
 import { useUser } from "../../context/UserContext";
-import { formatterUtility } from "../../utilities/formatterutility";
+import { formatterUtility, formatTransactionType } from "../../utilities/formatterutility";
 import PaginationControls from "../../utilities/PaginationControls";
 import { PiCurrencyNgn, PiCoins, PiHandWithdraw, PiHandCoins, PiShoppingCartSimple } from 'react-icons/pi';
+import OverviewCards from "../../components/cards/OverviewCards";
+import { TbCurrencyNaira } from "react-icons/tb";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const IMAGE_BASE_URL = "https://api.wellthrixinternational.com/storage/app/public";
 
 const SalesReport = () => {
     const [summary, setSummary] = useState({});
+    const [breakDown, setBreakDown] = useState({});
     const [topProducts, setTopProducts] = useState([]);
     const [topEarners, setTopEarners] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -54,10 +57,11 @@ const SalesReport = () => {
                 },
             });
 
-            console.log("Sales report retrieve response:", response);
+            // console.log("Sales report retrieve response:", response);
 
             if (response.status === 200) {
                 setSummary(response.data.summary || {});
+                setBreakDown(response.data.payout_by_status.breakdown || {});
                 setTopProducts(response.data.top_products || []);
                 setTopEarners(response.data.top_earners || []);
                 setCurrentPage(response.data.current_page || 1);
@@ -270,7 +274,39 @@ const SalesReport = () => {
                     </div>
                 </form>
 
-
+                <h3 className="lg:col-span-6 md:col-span-3 md:text-3xl text-2xl tracking-[-0.1em] font-semibold text-black/80">Payout Breakdown</h3>
+                <div className="shadow-sm rounded bg-white overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="text-black/70 text-[12px] uppercase border-b border-black/20 whitespace-nowrap">
+                                <th className="lg:p-5 p-3 text-center">S/N</th>
+                                <th className="lg:p-5 p-3 text-center">Bonus Type</th>
+                                <th className="lg:p-5 p-3 text-center">Amount Disbursed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr>
+                                    <td className="lg:p-5 p-3 text-center" colSpan={3}>Loading...</td>
+                                </tr>
+                            ) : (
+                                Object.keys(breakDown).map((key, i) => {
+                                    const serialNumber = (currentPage - 1) * perPage + (i + 1);
+                                    return (
+                                        <tr
+                                            key={key}
+                                            className="hover:bg-gray-50 text-sm border-b border-black/10"
+                                        >
+                                            <td className="lg:p-5 p-3 text-center">{String(serialNumber).padStart(3, "0")}</td>
+                                            <td className="lg:p-5 p-3 text-center">{formatTransactionType(key, true)}</td>
+                                            <td className="lg:p-5 p-3 text-center">{formatterUtility(Number(breakDown[key]))}</td>
+                                        </tr>
+                                    );
+                                }))
+                            }
+                        </tbody>
+                    </table>
+                </div>
 
                 <div className="flex justify-between items-center mb-4 mt-6">
                     <h3 className="md:text-3xl text-2xl tracking-[-0.1em] font-semibold text-black/80">

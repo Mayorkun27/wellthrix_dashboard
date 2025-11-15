@@ -29,7 +29,7 @@ const Subscribers = () => {
                 }
             });
 
-            console.log("subscribers Response:", response.data);
+            // // console.log("subscribers Response:", response.data);
 
             if (response.status === 200) {
                 const { data, current_page, last_page, per_page } = response.data.data;

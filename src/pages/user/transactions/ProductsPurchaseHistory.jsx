@@ -24,11 +24,11 @@ const ProductsPurchaseHistory = () => {
                 },
             });
 
-            console.log("Product purchase History Response:", response);
+            // console.log("Product purchase History Response:", response);
 
             if (response.status === 200) {
                 setProductsPurchaseHistory(response.data.data);
-                console.log("response.data.data", response.data.data)
+                // console.log("response.data.data", response.data.data)
             } else {
                 throw new Error(response.data.message || "Failed to fetch product purchase history.");
             }

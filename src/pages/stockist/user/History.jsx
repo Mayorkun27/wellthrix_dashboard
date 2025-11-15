@@ -49,7 +49,7 @@ const History = () => {
         }
       );
 
-      // console.log("history response", response);
+      // // console.log("history response", response);
 
       if (response.status === 200) {
         const { data, current_page, last_page, per_page } = response.data.data;

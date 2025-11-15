@@ -52,11 +52,11 @@ const PickUps = () => {
         }
       );
 
-      console.log("pickup response", response);
+      // console.log("pickup response", response);
 
       if (response.status === 200) {
         const { data, current_page, last_page, per_page } =response.data.transactions;
-        console.log("data", data);
+        // console.log("data", data);
         setPickupOrders(data);
         setCurrentPage(current_page);
         setLastPage(last_page);
@@ -95,8 +95,8 @@ const PickUps = () => {
 
   // Function to perform the actual PUT request
   const performPickupConfirmation = async () => {
-    console.log("clciked");
-    console.log("orderToConfirm", orderToConfirm);
+    // console.log("clciked");
+    // console.log("orderToConfirm", orderToConfirm);
     if (!orderToConfirm?.orders?.id) return;
 
     setIsConfirming(true); // Set loading state for the button
@@ -145,7 +145,7 @@ const PickUps = () => {
   const filteredProducts = pickupOrders.filter(
     (pickupOrder) => pickupOrder.transaction_type === "manual_purchase"
   );
-  console.log("filteredProducts", filteredProducts);
+  // console.log("filteredProducts", filteredProducts);
 
   return (
     <div>

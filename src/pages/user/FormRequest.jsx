@@ -39,7 +39,7 @@ const FormRequest = () => {
           }
         });
   
-        console.log("tasks fetch response", response);
+        // console.log("tasks fetch response", response);
   
         if (response.status === 200) {
           setMisDetails({
@@ -85,7 +85,7 @@ const FormRequest = () => {
           }
         });
   
-        console.log("tasks complete response", response);
+        // console.log("tasks complete response", response);
   
         if (response.status === 200) {
           toast.success(response.data.message || "Task marked completed")

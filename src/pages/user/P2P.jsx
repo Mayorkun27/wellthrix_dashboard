@@ -108,7 +108,7 @@ const P2P = () => {
           },
         }
       );
-      console.log("Validate username response:", response.data);
+      // console.log("Validate username response:", response.data);
       const foundUser = response.data.data;
       if (response.status === 200 && foundUser && foundUser.id) {
         setRecipientName(`${foundUser.first_name || ''} ${foundUser.last_name || ''}`.trim());

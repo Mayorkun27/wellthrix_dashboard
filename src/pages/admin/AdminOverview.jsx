@@ -25,7 +25,7 @@ const AdminOverview = () => {
         }
       })
 
-      console.log("overview response", response)
+      // console.log("overview response", response)
 
       if (response.status === 200) {
         setOverviewDetails(response.data)

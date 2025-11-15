@@ -23,7 +23,7 @@ const Inventory = ({ stockistId, refetch }) => {
         }
       );
 
-      console.log("inventory response", response);
+      // console.log("inventory response", response);
 
       if (response.status === 200) {
         setAvailableInventory(response.data.products);

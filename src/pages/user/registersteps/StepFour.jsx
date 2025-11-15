@@ -9,6 +9,7 @@ import { fetchPaystackBanks, resolveAccountNumber } from '../../../utilities/pay
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const StepFour = ({ prevStep, nextStep, formData, updateFormData, sessionId }) => {
+  // console.log("formData on dstep 4", formData)
   const [banks, setBanks] = useState([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
   const [isResolving, setIsResolving] = useState(false);
@@ -32,17 +33,51 @@ const StepFour = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =
     getBanks();
   }, []);
 
+  // const validationSchema = Yup.object().shape({
+  //   username: Yup.string().required('Username is required'),
+  //   password: Yup.string().required('Password is required').min(8, 'Password must be at least 8 characters'),
+  //   password_confirmation: Yup.string().required('Please confirm your password').oneOf([Yup.ref('password'), null], 'Passwords must match'),
+  //   terms_accepted: Yup.boolean().required('You must agree to the terms and conditions').oneOf([true], 'You must agree to the terms and conditions'),
+  //   bank_name: Yup.string().required('Bank Name is required'),
+  //   account_number: Yup.string()
+  //     .required('Account Number is required')
+  //     .matches(/^\d{8,20}$/, "Account Number must be 8-20 digits"),
+  //   account_name: Yup.string().required('Account Name is required'),
+  //   usdt_wallet: Yup.string().required('USDT Wallet is required'),
+  // });
+
   const validationSchema = Yup.object().shape({
-    username: Yup.string().required('Username is required'),
-    password: Yup.string().required('Password is required').min(8, 'Password must be at least 8 characters'),
-    password_confirmation: Yup.string().required('Please confirm your password').oneOf([Yup.ref('password'), null], 'Passwords must match'),
-    terms_accepted: Yup.boolean().required('You must agree to the terms and conditions').oneOf([true], 'You must agree to the terms and conditions'),
-    bank_name: Yup.string().required('Bank Name is required'),
-    account_number: Yup.string()
-      .required('Account Number is required')
-      .matches(/^\d{8,20}$/, "Account Number must be 8-20 digits"),
-    account_name: Yup.string().required('Account Name is required'),
-  });
+      username: Yup.string().required('Username is required'),
+      password: Yup.string().required('Password is required').min(8, 'Password must be at least 8 characters'),
+      password_confirmation: Yup.string().required('Please confirm your password').oneOf([Yup.ref('password'), null], 'Passwords must match'),
+      terms_accepted: Yup.boolean().required('You must agree to the terms and conditions').oneOf([true], 'You must agree to the terms and conditions'),
+
+      bank_name: Yup.string().when('$country', {
+        is: (country) => country && country.toLowerCase() === 'nigeria',
+        then: (schema) => schema.required('Bank Name is required for Nigerian accounts'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+
+      account_number: Yup.string().when('$country', {
+        is: (country) => country && country.toLowerCase() === 'nigeria',
+        then: (schema) => schema
+          .required('Account Number is required for Nigerian accounts')
+          .matches(/^\d{8,20}$/, "Account Number must be 8-20 digits"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+
+      account_name: Yup.string().when('$country', {
+        is: (country) => country && country.toLowerCase() === 'nigeria',
+        then: (schema) => schema.required('Account Name is required for Nigerian accounts'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+
+      usdt_wallet: Yup.string().when('$country', {
+        is: (country) => country && country.toLowerCase() !== 'nigeria',
+        then: (schema) => schema.required('USDT Wallet is required for non-Nigerian residents'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    });
 
   const formik = useFormik({
     initialValues: {
@@ -53,8 +88,10 @@ const StepFour = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =
       bank_name: formData.bank_name || '',
       account_number: formData.account_number || '',
       account_name: formData.account_name || '',
+      usdt_wallet: formData.usdt_wallet || '',
     },
     validationSchema,
+    validationContext: { country: formData.country },
     onSubmit: async (values, { setSubmitting }) => {
       if (!sessionId) {
         toast.error('Session ID is missing. Please start over.');
@@ -200,65 +237,89 @@ const StepFour = ({ prevStep, nextStep, formData, updateFormData, sessionId }) =
           <div>
             <p className='text-xl md:text-2xl font-bold text-gray-800'>Payment Information</p>
           </div>
-          <div className='w-full flex flex-col gap-4'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <div className='flex flex-col'>
-                <label htmlFor='bank_name' className='text-sm font-medium text-gray-700 mb-1'>
-                  Bank Name {formik.touched.bank_name && formik.errors.bank_name && (
-                    <span className='text-red-500 text-xs'> - {formik.errors.bank_name}</span>
-                  )}
-                </label>
-                <select
-                  id="bank_name"
-                  name="bank_name"
-                  onChange={handleBankChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.bank_name}
-                  disabled={isLoadingBanks}
-                  className="p-3 h-[50px] w-full border border-pryClr/20 rounded-md outline-0 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option value="">{isLoadingBanks ? "Loading Banks..." : "Select Bank"}</option>
-                  {banks.map((bank) => (
-                    <option key={bank.id} value={bank.name}>
-                      {bank.name}
-                    </option>
-                  ))}
-                </select>
+          {
+            formData.country.toLowerCase() === "nigeria" ? (
+              <div className='w-full flex flex-col gap-4'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <div className='flex flex-col'>
+                    <label htmlFor='bank_name' className='text-sm font-medium text-gray-700 mb-1'>
+                      Bank Name {formik.touched.bank_name && formik.errors.bank_name && (
+                        <span className='text-red-500 text-xs'> - {formik.errors.bank_name}</span>
+                      )}
+                    </label>
+                    <select
+                      id="bank_name"
+                      name="bank_name"
+                      onChange={handleBankChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.bank_name}
+                      disabled={isLoadingBanks}
+                      className="p-3 h-[50px] w-full border border-pryClr/20 rounded-md outline-0 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="">{isLoadingBanks ? "Loading Banks..." : "Select Bank"}</option>
+                      {banks.map((bank) => (
+                        <option key={bank.id} value={bank.name}>
+                          {bank.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className='flex flex-col'>
+                    <label htmlFor='account_number' className='text-sm font-medium text-gray-700 mb-1'>
+                      Account Number {formik.touched.account_number && formik.errors.account_number && (
+                        <span className='text-red-500 text-xs'> - {formik.errors.account_number}</span>
+                      )}
+                    </label>
+                    <input
+                      type='text'
+                      inputMode='numeric'
+                      id='account_number'
+                      name='account_number'
+                      value={formik.values.account_number}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={`h-12 px-4 py-2 border ${formik.touched.account_number && formik.errors.account_number ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                    />
+                  </div>
+                </div>
+                <div className='flex flex-col'>
+                  <label htmlFor='account_name' className='text-sm font-medium text-gray-700 mb-1'>
+                    Account Name {formik.touched.account_name && formik.errors.account_name && (
+                      <span className='text-red-500 text-xs'> - {formik.errors.account_name}</span>
+                    )}
+                  </label>
+                  <input
+                    type='text'
+                    id='account_name'
+                    name='account_name'
+                    value={isResolving ? 'Resolving...' : formik.values.account_name}
+                    readOnly
+                    className={`h-12 px-4 py-2 border cursor-not-allowed ${isResolving ? 'opacity-50' : ''} ${formik.touched.account_name && formik.errors.account_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                  />
+                </div>
               </div>
-              <div className='flex flex-col'>
-                <label htmlFor='account_number' className='text-sm font-medium text-gray-700 mb-1'>
-                  Account Number {formik.touched.account_number && formik.errors.account_number && (
-                    <span className='text-red-500 text-xs'> - {formik.errors.account_number}</span>
-                  )}
-                </label>
-                <input
-                  type='text'
-                  inputMode='numeric'
-                  id='account_number'
-                  name='account_number'
-                  value={formik.values.account_number}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className={`h-12 px-4 py-2 border ${formik.touched.account_number && formik.errors.account_number ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
-                />
+            ) : (
+              <div className='w-full flex flex-col gap-4'>
+                <div className='flex flex-col'>
+                  <label htmlFor='usdt_wallet' className='text-sm font-medium text-gray-700 mb-1'>
+                    USDT Wallet {formik.touched.usdt_wallet && formik.errors.usdt_wallet && (
+                      <span className='text-red-500 text-xs'> - {formik.errors.usdt_wallet}</span>
+                    )}
+                  </label>
+                  <input
+                    type='text'
+                    id='usdt_wallet'
+                    name='usdt_wallet'
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.usdt_wallet}
+                    className={`h-12 px-4 py-2 border ${formik.touched.usdt_wallet && formik.errors.usdt_wallet ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
+                  />
+                </div>
+                  
               </div>
-            </div>
-            <div className='flex flex-col'>
-              <label htmlFor='account_name' className='text-sm font-medium text-gray-700 mb-1'>
-                Account Name {formik.touched.account_name && formik.errors.account_name && (
-                  <span className='text-red-500 text-xs'> - {formik.errors.account_name}</span>
-                )}
-              </label>
-              <input
-                type='text'
-                id='account_name'
-                name='account_name'
-                value={isResolving ? 'Resolving...' : formik.values.account_name}
-                readOnly
-                className={`h-12 px-4 py-2 border cursor-not-allowed ${isResolving ? 'opacity-50' : ''} ${formik.touched.account_name && formik.errors.account_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-pryClr focus:border-pryClr`}
-              />
-            </div>
-          </div>
+            )
+          }
         </div>
 
         {/* Terms and Conditions */}

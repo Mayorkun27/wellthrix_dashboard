@@ -71,7 +71,7 @@ const ProductUpload = () => {
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       setSubmitting(true);
 
-      console.log("Form values before submission:", values);
+      // console.log("Form values before submission:", values);
 
       try {
         const formData = new FormData();
@@ -112,12 +112,12 @@ const ProductUpload = () => {
         for (let [key, value] of formData.entries()) {
           formDataEntries[key] = value instanceof File ? value.name : value;
         }
-        console.log("FormData contents:", formDataEntries);
+        // console.log("FormData contents:", formDataEntries);
 
         const endpoint = editingProduct
           ? `${API_URL}/api/updateproduct/${editingProduct.id}`
           : `${API_URL}/api/products`;
-        console.log("Requesting:", endpoint);
+        // console.log("Requesting:", endpoint);
 
         const response = await axios.post(endpoint, formData, {
           headers: {
@@ -126,7 +126,7 @@ const ProductUpload = () => {
           },
         });
 
-        console.log("Product upload/update response:", response.data);
+        // console.log("Product upload/update response:", response.data);
 
         if (response.status === 201 || response.status === 200) {
           toast.success(editingProduct ? "Product updated successfully!" : "Product uploaded successfully!");
@@ -178,8 +178,8 @@ const ProductUpload = () => {
         },
       });
 
-      console.log("Fetch products response:", response.data);
-      console.log("Products data:", response.data.products || response.data);
+      // console.log("Fetch products response:", response.data);
+      // console.log("Products data:", response.data.products || response.data);
 
       if (response.status === 200) {
         setProducts(response.data.products || response.data || []);
@@ -223,7 +223,7 @@ const ProductUpload = () => {
   };
 
   const handleEdit = (product) => {
-    console.log("Editing product:", product);
+    // console.log("Editing product:", product);
     setEditingProduct(product);
     formik.setValues({
       product_name: product.product_name?.trim() || "",
@@ -278,7 +278,7 @@ const ProductUpload = () => {
               value={formik.values.product_name}
               onChange={(e) => {
                 formik.handleChange(e);
-                // console.log("Product name changed:", e.target.value);
+                // // console.log("Product name changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter product name"
@@ -301,7 +301,7 @@ const ProductUpload = () => {
               value={formik.values.price}
               onChange={(e) => {
                 formik.handleChange(e);
-                // console.log("Price changed:", e.target.value);
+                // // console.log("Price changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter price"
@@ -324,7 +324,7 @@ const ProductUpload = () => {
               value={formik.values.product_pv}
               onChange={(e) => {
                 formik.handleChange(e);
-                // console.log("Product PV changed:", e.target.value);
+                // // console.log("Product PV changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter point value"
@@ -347,7 +347,7 @@ const ProductUpload = () => {
               value={formik.values.in_stock}
               onChange={(e) => {
                 formik.handleChange(e);
-                // console.log("In stock changed:", e.target.value);
+                // // console.log("In stock changed:", e.target.value);
               }}
               onBlur={formik.handleBlur}
               placeholder="Enter stock quantity"

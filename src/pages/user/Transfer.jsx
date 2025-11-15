@@ -91,9 +91,9 @@ const Transfer = () => {
                 .required("Wallet to transfer to is required"),
         }),
         onSubmit: async (values, { setSubmitting }) => {
-            console.log("transfer values", values);
+            // console.log("transfer values", values);
             setSubmitting(true)
-            console.log("pin", pin)
+            // console.log("pin", pin)
 
             let endpoint = "";
             if (values.from === "e_wallet") {
@@ -106,7 +106,7 @@ const Transfer = () => {
                 return;
             }
 
-            console.log("sending req to endpoint", API_URL+"/api/"+endpoint)
+            // console.log("sending req to endpoint", API_URL+"/api/"+endpoint)
 
             try {
                 const response = await axios.post(`${API_URL}/api/${endpoint}`, { ...values, pin: pin.join('') }, {
@@ -116,7 +116,7 @@ const Transfer = () => {
                     }
                 });
 
-                console.log("transfer response", response)
+                // console.log("transfer response", response)
 
                 if (response.status === 200 && response.data.ok) {
                     toast.success(response.data.message || `Funds transfer successful`);

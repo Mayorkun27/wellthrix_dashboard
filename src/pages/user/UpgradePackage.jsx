@@ -180,7 +180,7 @@ const UpgradePackage = () => {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       });
 
-      console.log("upgrade response", response)
+      // console.log("upgrade response", response)
 
       if (response.status === 200) {
         toast.success(`Successfully upgraded to ${selectedPackage.name} package!`, { id: toastId });

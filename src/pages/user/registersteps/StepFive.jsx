@@ -9,8 +9,8 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
 
   useEffect(() => {
-    console.log('StepFive sessionId:', sessionId);
-    console.log('StepFive formData:', formData);
+    // console.log('StepFive sessionId:', sessionId);
+    // console.log('StepFive formData:', formData);
   }, [sessionId, formData]);
 
   const [ registerOverview, setRegisterOverview ] = useState(null)
@@ -26,8 +26,8 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
       }
 
       setIsLoading(true)
-      console.log('StepFive received sessionId:', sessionId);
-      console.log({ 'X-Session-ID': sessionId });
+      // console.log('StepFive received sessionId:', sessionId);
+      // console.log({ 'X-Session-ID': sessionId });
       try {
         const response = await axios.get(`${API_URL}/api/registration/overview`, {
           headers: {
@@ -38,7 +38,7 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
           }
         });
 
-        console.log("overview response", response)
+        // console.log("overview response", response)
 
         if (response.status === 200 && response.data.success) {
           toast.success(response.data.message || "Overview data fetched successfully.");
@@ -163,20 +163,29 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
         <div>
           <p className='text-xl md:text-2xl font-bold text-gray-800'>Payment Information</p>
         </div>
-        <div className='mb-6 w-full rounded-xl bg-pryClr/20 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 gap-4 md:gap-6'>
-          <div className='flex flex-col'>
-            <p className='text-sm md:text-lg text-black/70'>Bank Name</p>
-            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.bank_name || 'N/A'}</p>
+        {formData.country.toLowerCase() === "nigeria" ? (
+          <div className='mb-6 w-full rounded-xl bg-pryClr/20 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 gap-4 md:gap-6'>
+            <div className='flex flex-col'>
+              <p className='text-sm md:text-lg text-black/70'>Bank Name</p>
+              <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.bank_name || 'N/A'}</p>
+            </div>
+            <div className='flex flex-col'>
+              <p className='text-sm md:text-lg text-black/70'>Account Number</p>
+              <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.account_number || 'N/A'}</p>
+            </div>
+            <div className='flex flex-col'>
+              <p className='text-sm md:text-lg text-black/70'>Account Name</p>
+              <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.account_name || 'N/A'}</p>
+            </div>
           </div>
-          <div className='flex flex-col'>
-            <p className='text-sm md:text-lg text-black/70'>Account Number</p>
-            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.account_number || 'N/A'}</p>
+        ) : (
+          <div className='mb-6 w-full rounded-xl bg-pryClr/20 border border-black/20 shadow-md px-4 md:px-6 py-6 grid grid-cols-2 gap-4 md:gap-6'>
+            <div className='flex flex-col'>
+              <p className='text-sm md:text-lg text-black/70'>USDT Wallet</p>
+              <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.usdt_wallet || 'N/A'}</p>
+            </div>
           </div>
-          <div className='flex flex-col'>
-            <p className='text-sm md:text-lg text-black/70'>Account Name</p>
-            <p className='text-lg md:text-xl font-bold'>{registerOverview?.step_4.account_name || 'N/A'}</p>
-          </div>
-        </div>
+        )}
 
         {/* Navigation Buttons */}
         <div className='flex justify-between mt-4'>

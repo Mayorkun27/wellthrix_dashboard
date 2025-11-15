@@ -4,7 +4,7 @@ import axios from "axios";
 import { useUser } from "../../context/UserContext";
 import { toast } from "sonner";
 import { FiSearch } from "react-icons/fi";
-import { formatDateToStyle, formatISODateToCustom, formatterUtility } from "../../utilities/Formatterutility";
+import { formatDateToStyle, formatterUtility } from "../../utilities/formatterutility";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -82,7 +82,7 @@ const Ranking = () => {
         params,
       });
 
-      console.log("rank response", response)
+      // console.log("rank response", response)
 
       if (response.status === 200 && response.data.success) {
         const { data, current_page, last_page, per_page } = response.data.data;

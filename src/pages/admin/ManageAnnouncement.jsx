@@ -61,7 +61,7 @@ const ManageAnnouncement = () => {
                 })
         }),
         onSubmit: async (values, { setSubmitting, resetForm }) => {
-            console.log("values to be submitted", values);
+            // console.log("values to be submitted", values);
             setSubmitting(true);
             const toastId = toast.loading("Posting announcement...");
 
@@ -82,7 +82,7 @@ const ManageAnnouncement = () => {
                     }
                 });
 
-                console.log("announcement post response", response);
+                // console.log("announcement post response", response);
 
                 if (response.status === 201 || response.data.status === 201) { // Check for 201 or data.status 201
                     toast.success(response.data.message || "Announcement posted successfully!", { id: toastId });

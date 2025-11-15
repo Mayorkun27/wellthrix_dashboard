@@ -45,8 +45,8 @@ const Stockist = () => {
         .max(user?.stockist_balance, `Insufficient funds!`),
     }),
     onSubmit: async (values) => {
-      console.log("stockist withdraw values", values);
-      console.log("Validation successful, showing pin modal");
+      // console.log("stockist withdraw values", values);
+      // console.log("Validation successful, showing pin modal");
       setShowWithdrawModal(false);
       setShowPinModal(true); // ✅ show pin modal
       setPin(["", "", "", ""]);
@@ -66,7 +66,7 @@ const Stockist = () => {
         }
       );
 
-      console.log("withdrawal response", response);
+      // console.log("withdrawal response", response);
 
       if (response.status === 200) {
         toast.success(

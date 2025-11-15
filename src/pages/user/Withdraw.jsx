@@ -57,13 +57,13 @@ const Withdraw = () => {
         .required('Payment method is required'),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      console.log("Values to be submitted", values)
+      // console.log("Values to be submitted", values)
       setSubmitting(true);
 
-      console.log(pin.join(""))
-      console.log(values.account_number.toString())
-      console.log(typeof values.account_number.toString())
-      console.log(typeof pin.join(""))
+      // console.log(pin.join(""))
+      // console.log(values.account_number.toString())
+      // console.log(typeof values.account_number.toString())
+      // console.log(typeof pin.join(""))
 
       try {
         const response = await axios.post(`${API_URL}/api/withdraw`, { ...values, pin: pin.join("") }, {
@@ -72,7 +72,7 @@ const Withdraw = () => {
           }
         });
 
-        console.log("withdrawal response", response)
+        // console.log("withdrawal response", response)
 
         if (response.status === 200) {
           toast.success(response.data.message || `Withdrawal initiated successfully`);

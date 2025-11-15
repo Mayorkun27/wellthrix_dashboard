@@ -122,7 +122,7 @@ const Overview = () => {
         }
       })
 
-      // console.log("My refs response", response)
+      // // console.log("My refs response", response)
 
       if (response.status === 200) {
         setReferrals(response.data.data)
@@ -306,7 +306,7 @@ const Overview = () => {
           <div className="bg-white md:px-6 py-4 p-4 rounded-lg shadow-sm h-full">
             <h3 className='md:text-xl text-lg mb-2 font-semibold tracking-tighter'>Announcement Board</h3>
             <div className="h-[80%] overflow-y-scroll pe-2 styled-scrollbar">
-              {/* <AnnouncementBoard /> */}
+              <AnnouncementBoard />
             </div>
           </div>
         </div>

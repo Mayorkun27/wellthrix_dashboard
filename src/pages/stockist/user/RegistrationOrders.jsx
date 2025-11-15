@@ -37,7 +37,7 @@ const RegistrationOrders = () => {
 
   const fetchRegisterOrders = async () => {
     setIsLoading(true);
-    console.log(`Posting to ${API_URL}/api/stockists/${user?.id}/user`);
+    // console.log(`Posting to ${API_URL}/api/stockists/${user?.id}/user`);
     try {
       const response = await axios.post(
         `${API_URL}/api/stockists/${user?.id}/user`,
@@ -54,11 +54,11 @@ const RegistrationOrders = () => {
         }
       );
 
-      // console.log("registration response", response);
+      // // console.log("registration response", response);
 
       if (response.status === 200) {
         const { data, current_page, last_page, per_page } = response.data.registrations;
-        // console.log("data", data);
+        // // console.log("data", data);
         setRegisterOrders(data);
         setCurrentPage(current_page);
         setLastPage(last_page);
@@ -85,7 +85,7 @@ const RegistrationOrders = () => {
 
   useEffect(() => {
     if (token && user?.id) {
-      // console.log("Fetching orders for page:", currentPage);
+      // // console.log("Fetching orders for page:", currentPage);
       fetchRegisterOrders();
     }
   }, [currentPage, token, user?.id]);
@@ -98,7 +98,7 @@ const RegistrationOrders = () => {
 
   // Function to perform the actual PUT request
   const performRegistrationConfirmation = async () => {
-    console.log("orderToConfirm?.id", orderToConfirm?.orders?.id)
+    // console.log("orderToConfirm?.id", orderToConfirm?.orders?.id)
     if (!orderToConfirm?.orders?.id) return;
 
     setIsConfirming(true);
@@ -119,7 +119,7 @@ const RegistrationOrders = () => {
         }
       );
 
-      console.log("reistration confirmation response", response);
+      // console.log("reistration confirmation response", response);
 
       if (response.status === 200) {
         toast.success(
@@ -154,7 +154,7 @@ const RegistrationOrders = () => {
     (registerOrder) => registerOrder.transaction_type === "register_product"
   );
 
-  console.log("filteredProducts", filteredProducts);
+  // console.log("filteredProducts", filteredProducts);
 
   return (
     <div>
@@ -236,7 +236,7 @@ const RegistrationOrders = () => {
                           title={`View products`}
                           disabled={isConfirming} // Disable if not pending or if confirming another order
                           onClick={() => {
-                            console.log(registrationOrder)
+                            // console.log(registrationOrder)
                             setSelectedOrder(registrationOrder)
                           }}
                           className="text-pryClr text-xl cursor-pointer w-10 h-10 flex justify-center items-center hover:bg-pryClr/10 transition-all duration-300 rounded-lg mx-auto disabled:opacity-25 disabled:cursor-not-allowed"

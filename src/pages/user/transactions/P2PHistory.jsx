@@ -29,7 +29,7 @@ const P2PHistory = () => {
                 }
             });
 
-            console.log("ewallet transfer History Response:", response.data);
+            // console.log("ewallet transfer History Response:", response.data);
 
             if (response.status === 200 && response.data.ok) {
                 // const { transaction, current_page, last_page, per_page } = response.data.data;
