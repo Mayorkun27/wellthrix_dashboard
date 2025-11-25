@@ -6,11 +6,19 @@ import PinResetTab from './profileTabs/PinResetTab';
 import PersonalDetailsForm from './profileTabs/PersonalDetailsForm';
 import ContactDetailsForm from './profileTabs/ContactDetailsForm';
 import BankDetailsForm from './profileTabs/BankDetailsForm';
+import MyRankProgress from './profileTabs/MyRankProgress';
+import { useLocation } from 'react-router-dom';
 
-
-// Main Dashboard Component
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
+  const searchParams = new URLSearchParams(useLocation().search);
+  const getRole = searchParams.get("destination");
+
+  useEffect(() => {
+    if (getRole === "toclaim") {
+      setActiveTab("rank");
+    }
+  }, [searchParams])
 
   const { refreshUser } = useUser()
 
@@ -22,6 +30,8 @@ const Dashboard = () => {
     switch (activeTab) {
       case 'profile':
         return <ProfileInfoTab />;
+      case 'rank':
+        return <MyRankProgress />;
       case 'password':
         return <PasswordResetTab />;
       case 'pin':
@@ -47,6 +57,13 @@ const Dashboard = () => {
             onClick={() => setActiveTab('profile')}
           >
             Profile
+          </button>
+          <button
+            className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'rank' ? 'text-pryClr border-b-2 font-bold border-pryClr' : 'text-pryClr/60 transition-all duration-300'
+              }`}
+            onClick={() => setActiveTab('rank')}
+          >
+            My Rank Progress
           </button>
           <button
             className={`text-lg md:text-xl whitespace-nowrap font-medium cursor-pointer pb-1 snap-center ${activeTab === 'password' ? 'text-pryClr border-b-2 font-bold border-pryClr' : 'text-pryClr/60 transition-all duration-300'

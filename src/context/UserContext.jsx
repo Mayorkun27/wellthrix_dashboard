@@ -9,17 +9,22 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [hasPendingRank, sethasPendingRank] = useState(null);
   const [miscellaneousDetails, setMiscellaneousDetails] = useState(null);
 
   // Use a single useEffect to load all persisted data
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+    const storedRankStatus = localStorage.getItem("rank-status");
     const storedMiscellaneousDetails = localStorage.getItem("miscellaneousDetails");
 
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+    }
+    if (storedRankStatus) {
+      sethasPendingRank(storedRankStatus)
     }
     if (storedMiscellaneousDetails) {
       setMiscellaneousDetails(JSON.parse(storedMiscellaneousDetails));
@@ -30,6 +35,7 @@ export const UserProvider = ({ children }) => {
     localStorage.setItem("token", authToken);
     setToken(authToken);
     await refreshUser(authToken);
+    await checkPendingRanks(authToken);
   };
 
   const refreshUser = async (authToken = token) => {
@@ -98,9 +104,22 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const checkPendingRanks = async (authToken = token) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/rank/pending`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      const status = response.data.has_pending
+      localStorage.setItem("rank-status", status);
+      sethasPendingRank(status)
+    } catch (err) {
+      console.error("Failed to fetch user rank:", err);
+    }
+  };
+
   return (
     <UserContext.Provider
-      value={{ user, token, role, miscellaneousDetails, login, logout, isLoggedIn, refreshUser, setUser, setToken }}
+      value={{ user, token, role, miscellaneousDetails, login, logout, isLoggedIn, refreshUser, setUser, setToken, checkPendingRanks, hasPendingRank }}
     >
       {children}
     </UserContext.Provider>

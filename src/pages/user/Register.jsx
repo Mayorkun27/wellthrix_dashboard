@@ -18,7 +18,7 @@ const steps = {
 };
 
 const Register = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(3);
   const [formData, setFormData] = useState({});
   const [sessionId, setSessionId] = useState(null);
 

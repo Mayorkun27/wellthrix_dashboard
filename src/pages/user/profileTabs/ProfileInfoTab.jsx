@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FaArrowUpLong, FaUser, FaUsers } from 'react-icons/fa6';
-import assets from '../../../assets/assests';
 import { useUser } from '../../../context/UserContext';
-import { useLocation } from 'react-router-dom';
 import { Link } from "react-router-dom";
-import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from 'react-icons/fa';
 import { ImArrowLeft, ImArrowRight } from 'react-icons/im';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ProfileInfoTab = () => {
-  const searchParams = new URLSearchParams(useLocation().search);
-  const comeToEditBank = searchParams.get("setbank");
-
   const { user, miscellaneousDetails, refreshUser } = useUser()
 
   useEffect(() => {
