@@ -205,7 +205,6 @@ const StepFive = ({ prevStep, nextStep, formData, sessionId }) => {
           </button>
         </div>
       </div>
-
     </div>
   )
 }
