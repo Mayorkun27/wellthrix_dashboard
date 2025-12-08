@@ -7,6 +7,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
+const COUNTRY_URL = import.meta.env.VITE_COUNTRY_BASE_URL;
 
 const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) => {
 
@@ -123,21 +124,22 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
       setLoading(prev => ({ ...prev, countries: true }));
       setError(null);
       try {
-        const response = await fetch('https://csc.sidsworld.co.in/api/countries');
+        const response = await fetch(`${COUNTRY_URL}/api/countries`);
         const result = await response.json();
+        console.log("result", result)
         if (result.error) throw new Error(result.msg);
-        if (!result.countries || result.countries.length === 0) {
+        if (!result || result.length === 0) {
           throw new Error('No countries found');
         }
 
-        const countryList = result.countries
+        const countryList = result
           .map(c => ({ name: c.name, id: c.id, iso2: c.iso2 }))
           .sort((a, b) => a.name.localeCompare(b.name));
 
         const codeMap = {};
         const idMap = {};
 
-        result.countries.forEach(c => {
+        result.forEach(c => {
           codeMap[c.name] = c.iso2;
           idMap[c.name] = c.id;
         });
@@ -163,12 +165,16 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
         setError(null);
         const countryId = countryIdMap[formik.values.country];
         try {
-          const response = await fetch(`https://csc.sidsworld.co.in/api/states/${countryId}`);
+          const response = await fetch(`${COUNTRY_URL}/api/countries/${countryId}/states`);
           const result = await response.json();
           console.log("state response", result)
           if (result.error) throw new Error(result.msg);
           
-          const stateList = result.states?.map((s) => ({ name: s.name, id: s.id })) || [];
+          const stateList = result
+            ?.map((s) => ({ name: s.name, id: s.id }))
+            .sort((a, b) => a.name.localeCompare(b.name)) 
+          || [];
+          
           setStates(stateList.map(s => s.name));
 
           // Build map for state name → id
@@ -202,35 +208,6 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
   }, [formik.values.country]);
 
   // Fetch cities when state changes
-  // useEffect(() => {
-  //   if (formik.values.country && formik.values.state) {
-  //     const fetchCities = async () => {
-  //       setLoading(prev => ({ ...prev, cities: true }));
-  //       setError(null);
-  //       try {
-  //         const response = await fetch(`https://csc.sidsworld.co.in/api/cities/${countryId}`);
-  //         const result = await response.json();
-  //         if (result.error) throw new Error(result.msg);
-          
-  //         setCities(result.cities || []);
-  //         formik.setFieldValue('city', '');
-  //       } catch (err) {
-  //         console.error('Error fetching cities:', err);
-  //         setError('Failed to load cities for selected state.');
-  //         setCities([]);
-  //         formik.setFieldValue('city', '');
-  //       } finally {
-  //         setLoading(prev => ({ ...prev, cities: false }));
-  //       }
-  //     };
-  //     fetchCities();
-  //   } else {
-  //     setCities([]);
-  //     formik.setFieldValue('city', '');
-  //   }
-  // }, [formik.values.state, formik.values.country]);
-
-  // Fetch cities when state changes
   useEffect(() => {
     const fetchCities = async () => {
       if (!formik.values.country || !formik.values.state) return;
@@ -240,16 +217,15 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
 
       try {
         const stateId = stateIdMap[formik.values.state];
+        const countryId = countryIdMap[formik.values.country];
         if (!stateId) throw new Error("State ID not found");
 
-        const response = await fetch(
-          `https://csc.sidsworld.co.in/api/cities/${stateId}`
-        );
+        const response = await fetch(`${COUNTRY_URL}/api/states/${stateId}/cities`);
         const result = await response.json();
 
         if (result.error) throw new Error(result.msg);
 
-        let cityList = result.cities?.map(c => c.name) || [];
+        let cityList = result?.map(c => c.name) || [];
 
         // Add Abagana if state is Anambra State and it doesn't exist
         if (formik.values.state.toLowerCase() === "anambra" && !cityList.includes("Abagana")) {
