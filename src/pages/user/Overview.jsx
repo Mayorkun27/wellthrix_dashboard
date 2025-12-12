@@ -70,9 +70,8 @@ const Overview = () => {
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <IoWalletOutline />
         </div>,
-      buttonText: "Purchase Now",
-      buttonType: 1,
-      path: "/user/products"
+      // buttonText: "Purchase Now",
+      // buttonType: 1
     },
     {
       walletType: "Earnings Wallet",

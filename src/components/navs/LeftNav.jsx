@@ -44,12 +44,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/network',
             role: ["user"]
         },
-        {
-            name: 'Register',
-            icon: <SlUserFollow className="-skew-x-1" size={20} />,
-            path: '/user/register',
-            role: ["user"]
-        },
+        // {
+        //     name: 'Register',
+        //     icon: <SlUserFollow className="-skew-x-1" size={20} />,
+        //     path: '/user/register',
+        //     role: ["user"]
+        // },
         {
             name: 'Deposit',
             icon: <BiMoneyWithdraw size={20} />,
@@ -80,12 +80,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/rechargehistory',
             role: ["user"]
         },
-        {
-            name: 'Repurchase Mall',
-            icon: <GiShoppingBag size={20} />,
-            path: '/user/products',
-            role: ["user"]
-        },
+        // {
+        //     name: 'Repurchase Mall',
+        //     icon: <GiShoppingBag size={20} />,
+        //     path: '/user/products',
+        //     role: ["user"]
+        // },
         {
             name: 'E-wallet Transfer',
             icon: <FaMoneyBillTransfer size={20} />,

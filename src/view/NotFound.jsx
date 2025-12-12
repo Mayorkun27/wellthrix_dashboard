@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
 import assets from "../assets/assests";
 import { Link } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 const NotFound = () => {
+  const { isLoggedIn } = useUser()
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -35,7 +37,7 @@ const NotFound = () => {
             {/* Back to Home Button */}
             <div className="mt-8">
               <Link
-                to="https://wellthrixinternational.com"
+                to={isLoggedIn ? "/user/overview" : "https://wellthrixinternational.com"}
                 className="px-6 py-3 rounded-md bg-gradient-to-l from-accClr to-pryClr text-white font-semibold hover:opacity-90 transition"
               >
                 Back to Home

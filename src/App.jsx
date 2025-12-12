@@ -91,10 +91,10 @@ function App() {
           path="/user/recharge"
           element={<MainLayout pageName={"Digital"} child={<Digital />} />}
         />
-        <Route
+        {/* <Route
           path="/user/register"
           element={<MainLayout pageName={"Register"} child={<Register />} />}
-        />
+        /> */}
         <Route
           path="/user/ewallettransfer"
           element={<MainLayout pageName={"Ewallet Transfer"} child={<P2P />} />}
@@ -122,10 +122,10 @@ function App() {
             <MainLayout pageName={"Upgrade"} child={<UpgradePackage />} />
           }
         />
-        <Route
+        {/* <Route
           path="/user/products"
           element={<MainLayout pageName={"Repurchase Mall"} child={<Products />} />}
-        />
+        /> */}
         <Route
           path="/user/products/cart"
           element={<MainLayout pageName={"Cart"} child={<Cart />} />}
