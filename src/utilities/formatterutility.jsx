@@ -1,5 +1,3 @@
-import { TbCurrencyNaira } from "react-icons/tb"
-
 export const formatterUtility = (amount, noSign=false) => {
     const sign = noSign ? "" : "₦";
     return `${sign}${Number(amount).toLocaleString()}`;

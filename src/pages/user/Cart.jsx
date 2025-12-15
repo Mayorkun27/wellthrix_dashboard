@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import CartCards from '../../components/cards/CartCards';
 import assets from '../../assets/assests';
-import { formatterUtility } from '../../utilities/Formatterutility';
+import { formatterUtility } from '../../utilities/formatterutility';
 import { Link, useNavigate } from 'react-router-dom';
 import Modal from '../../components/modals/Modal';
 import { useUser } from '../../context/UserContext';
