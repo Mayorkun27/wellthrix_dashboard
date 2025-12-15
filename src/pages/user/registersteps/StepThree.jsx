@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+  import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { getCountryCallingCode, isValidPhoneNumber } from 'libphonenumber-js';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
+const COUNTRY_URL = import.meta.env.VITE_COUNTRY_BASE_URL;
 
 const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) => {
 
@@ -31,6 +32,8 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
   });
   const [error, setError] = useState(null);
   const [countryCodeMap, setCountryCodeMap] = useState({});
+  const [countryIdMap, setCountryIdMap] = useState({});
+  const [stateIdMap, setStateIdMap] = useState({});
   const [stockists, setStockists] = useState([]);
   const [isFetchingStockists, setIsFetchingStockists] = useState(false);
 
@@ -121,22 +124,29 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
       setLoading(prev => ({ ...prev, countries: true }));
       setError(null);
       try {
-        const response = await fetch('https://countriesnow.space/api/v0.1/countries');
+        const response = await fetch(`${COUNTRY_URL}/api/countries`);
         const result = await response.json();
+        console.log("result", result)
         if (result.error) throw new Error(result.msg);
+        if (!result || result.length === 0) {
+          throw new Error('No countries found');
+        }
 
-        // Map country names to ISO codes and sort countries alphabetically
-        const countryMap = {};
-        const countryList = result.data
-          .map(c => ({ name: c.country, isoCode: c.iso2 }))
+        const countryList = result
+          .map(c => ({ name: c.name, id: c.id, iso2: c.iso2 }))
           .sort((a, b) => a.name.localeCompare(b.name));
-        
-        countryList.forEach(c => {
-          countryMap[c.name] = c.isoCode;
+
+        const codeMap = {};
+        const idMap = {};
+
+        result.forEach(c => {
+          codeMap[c.name] = c.iso2;
+          idMap[c.name] = c.id;
         });
 
         setCountries(countryList.map(c => c.name));
-        setCountryCodeMap(countryMap);
+        setCountryCodeMap(codeMap);
+        setCountryIdMap(idMap);
       } catch (err) {
         console.error('Error fetching countries:', err);
         setError('Failed to load countries. Please try again later.');
@@ -153,18 +163,27 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
       const fetchStates = async () => {
         setLoading(prev => ({ ...prev, states: true }));
         setError(null);
+        const countryId = countryIdMap[formik.values.country];
         try {
-          const response = await fetch('https://countriesnow.space/api/v0.1/countries/states', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ country: formik.values.country })
-          });
+          const response = await fetch(`${COUNTRY_URL}/api/countries/${countryId}/states`);
           const result = await response.json();
           console.log("state response", result)
           if (result.error) throw new Error(result.msg);
           
-          const stateList = result.data?.states?.map(s => s.name) || [];
-          setStates(stateList);
+          const stateList = result
+            ?.map((s) => ({ name: s.name, id: s.id }))
+            .sort((a, b) => a.name.localeCompare(b.name)) 
+          || [];
+          
+          setStates(stateList.map(s => s.name));
+
+          // Build map for state name → id
+          const idMap = {};
+          stateList.forEach(s => {
+            idMap[s.name] = s.id;
+          });
+          setStateIdMap(idMap);
+
           setCities([]);
           formik.setFieldValue('state', '');
           formik.setFieldValue('city', '');
@@ -190,39 +209,43 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
 
   // Fetch cities when state changes
   useEffect(() => {
-    if (formik.values.country && formik.values.state) {
-      const fetchCities = async () => {
-        setLoading(prev => ({ ...prev, cities: true }));
-        setError(null);
-        try {
-          const response = await fetch('https://countriesnow.space/api/v0.1/countries/state/cities', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              country: formik.values.country,
-              state: formik.values.state
-            })
-          });
-          const result = await response.json();
-          if (result.error) throw new Error(result.msg);
-          
-          setCities(result.data || []);
-          formik.setFieldValue('city', '');
-        } catch (err) {
-          console.error('Error fetching cities:', err);
-          setError('Failed to load cities for selected state.');
-          setCities([]);
-          formik.setFieldValue('city', '');
-        } finally {
-          setLoading(prev => ({ ...prev, cities: false }));
+    const fetchCities = async () => {
+      if (!formik.values.country || !formik.values.state) return;
+
+      setLoading(prev => ({ ...prev, cities: true }));
+      setError(null);
+
+      try {
+        const stateId = stateIdMap[formik.values.state];
+        const countryId = countryIdMap[formik.values.country];
+        if (!stateId) throw new Error("State ID not found");
+
+        const response = await fetch(`${COUNTRY_URL}/api/states/${stateId}/cities`);
+        const result = await response.json();
+
+        if (result.error) throw new Error(result.msg);
+
+        let cityList = result?.map(c => c.name) || [];
+
+        // Add Abagana if state is Anambra State and it doesn't exist
+        if (formik.values.state.toLowerCase() === "anambra" && !cityList.includes("Abagana")) {
+          cityList.push("Abagana");
         }
-      };
-      fetchCities();
-    } else {
-      setCities([]);
-      formik.setFieldValue('city', '');
-    }
-  }, [formik.values.state, formik.values.country]);
+
+        setCities(cityList.sort());
+        formik.setFieldValue('city', ''); // reset city selection
+      } catch (err) {
+        console.error('Error fetching cities:', err);
+        setError('Failed to load cities for selected state.');
+        setCities([]);
+        formik.setFieldValue('city', '');
+      } finally {
+        setLoading(prev => ({ ...prev, cities: false }));
+      }
+    };
+
+    fetchCities();
+  }, [formik.values.state, formik.values.country, stateIdMap]);
 
   useEffect(() => {
     const fetchStockist = async () => {
@@ -254,32 +277,22 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
     fetchStockist()
   }, [])
 
-  const finalCities = [...cities];
-
-  if (formik.values.state.toLowerCase() === "anambra state") {
-    if (!finalCities.includes("Abagana")) {
-      finalCities.push("Abagana");
-    }
-  }
-
   useEffect(() => {
-    if (formik.values.state.toLowerCase() === "anambra state") {
-      // Check if Abagana is missing and add it only once
-      if (!cities.includes("Abagana")) {
-        setCities(prevCities => [...prevCities, "Abagana"]);
-      }
+    if (formik.values.state.toLowerCase() === "anambra") {
+      setCities(prev => {
+        if (prev.includes("Abagana")) return prev;
+        return [...prev, "Abagana"];
+      });
     }
-    // Cleanup/reset logic might be needed here too
-  }, [formik.values.state, cities, setCities]);
+  }, [formik.values.state]);
 
-// The JSX would then just map over the 'cities' state as you intended.
 
   // Get dynamic placeholder for mobile input
   const getMobilePlaceholder = () => {
-    const country = formik.values.country;
+    const country = formData.countryOfResidence;
     if (!country || !countryCodeMap[country]) return 'Enter phone number';
     const countryCode = getCountryCallingCode(countryCodeMap[country]);
-    return `${countryCode}XXXXXXXXXX`;
+    return `+${countryCode} XXXXXXXXXX`;
   };
 
   return (
@@ -460,7 +473,7 @@ const StepThree = ({ prevStep, nextStep, formData, updateFormData, sessionId }) 
                   ? 'No cities available'
                   : 'Select City'}
               </option>
-              {finalCities.sort().map((city) => (
+              {cities.sort().map((city) => (
                 <option key={city} value={city}>
                   {city}
                 </option>

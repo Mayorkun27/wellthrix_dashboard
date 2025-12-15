@@ -3,15 +3,18 @@ import { useUser } from '../../../context/UserContext';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { formatterUtility } from '../../../utilities/formatterutility';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const StepSix = ({ prevStep, formData, updateFormData, sessionId }) => {
   
   console.log("sessionId received in StepSix:", sessionId); 
+  console.log("formdata received in StepSix:", formData); 
 
   const { token, logout } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const navigate = useNavigate();
 
@@ -38,10 +41,7 @@ const StepSix = ({ prevStep, formData, updateFormData, sessionId }) => {
 
       if (response.status === 200 && response.data.success) {
         toast.success(response.data.message || "Registration completed successfully.", { id: toastId });
-        updateFormData(null);
-        setTimeout(() => {
-          navigate("/user/overview");
-        }, 2000);
+        setIsSuccess(true)
       } else {
         throw new Error(response.data.message || "Registration completion failed.");
       }
@@ -55,6 +55,13 @@ const StepSix = ({ prevStep, formData, updateFormData, sessionId }) => {
       setIsLoading(false);
     }
   };
+
+  const handleFinish = () => {
+    updateFormData(null);
+    setTimeout(() => {
+      navigate("/user/overview");
+    }, 500);
+  }
 
   useEffect(() => {
     if (sessionId && token) {
@@ -73,6 +80,22 @@ const StepSix = ({ prevStep, formData, updateFormData, sessionId }) => {
           <div className='flex flex-col items-center justify-center'>
             <div className="w-24 h-24 border-4 border-pryClr rounded-full border-t-transparent animate-spin"></div>
             <h3>Completing Registration</h3>
+          </div>
+        )}
+
+        {isSuccess && (
+          <div className='flex flex-col gap-2 items-center justify-center'>
+            <div className='w-24 h-24 rounded-full bg-accClr flex justify-center items-center text-5xl mb-2'>🎉</div>
+            <h3 className='font-semibold text-xl'>Registration completed successfully</h3>
+            <h3><span className='capitalize'>{formData?.sponsor?.username}</span> has successfully sponsored <span className='capitalize'>{formData?.username}</span> on the <span className='capitalize'>{formData?.selectedPackage?.name}</span> package</h3>
+                    
+            <button
+              type='button'
+              onClick={handleFinish}
+              className='mt-6 rounded-lg cursor-pointer text-white px-6 py-3 transition-colors bg-pryClr hover:bg-pryClrDark disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              Back Home
+            </button>
           </div>
         )}
 

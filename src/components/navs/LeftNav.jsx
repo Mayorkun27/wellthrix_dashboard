@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdChat, MdFormatListBulletedAdd, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineGroupWork, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
+import { MdChat, MdFormatListBulletedAdd, MdLogout, MdOutlineContactMail, MdOutlineDashboard, MdOutlineFileUpload, MdOutlineLoyalty, MdOutlineUnsubscribe } from 'react-icons/md';
 import { CgDigitalocean } from 'react-icons/cg';
-import { PiCardsThreeFill, PiHandDeposit, PiNetwork } from 'react-icons/pi';
+import { PiCardsThreeFill, PiNetwork } from 'react-icons/pi';
 import { BiMoneyWithdraw } from "react-icons/bi";
 import assets from '../../assets/assests';
 import { SlUserFollow } from 'react-icons/sl';
-import { FaMoneyBillTransfer, FaPlugCircleBolt, FaRankingStar, FaUsers } from 'react-icons/fa6';
+import { FaMoneyBillTransfer, FaPlugCircleBolt, FaRankingStar, FaRegCircleUser, FaUsers } from 'react-icons/fa6';
 import { GiShoppingBag } from 'react-icons/gi';
 import { GrAnnounce, GrTransaction } from "react-icons/gr";
 import { TbTruckDelivery } from 'react-icons/tb';
@@ -44,12 +44,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/network',
             role: ["user"]
         },
-        {
-            name: 'Register',
-            icon: <SlUserFollow className="-skew-x-1" size={20} />,
-            path: '/user/register',
-            role: ["user"]
-        },
+        // {
+        //     name: 'Register',
+        //     icon: <SlUserFollow className="-skew-x-1" size={20} />,
+        //     path: '/user/register',
+        //     role: ["user"]
+        // },
         {
             name: 'Deposit',
             icon: <BiMoneyWithdraw size={20} />,
@@ -80,12 +80,12 @@ const LeftNav = ({ setIsOpen }) => {
             path: '/user/rechargehistory',
             role: ["user"]
         },
-        {
-            name: 'Repurchase Mall',
-            icon: <GiShoppingBag size={20} />,
-            path: '/user/products',
-            role: ["user"]
-        },
+        // {
+        //     name: 'Repurchase Mall',
+        //     icon: <GiShoppingBag size={20} />,
+        //     path: '/user/products',
+        //     role: ["user"]
+        // },
         {
             name: 'E-wallet Transfer',
             icon: <FaMoneyBillTransfer size={20} />,
@@ -144,6 +144,12 @@ const LeftNav = ({ setIsOpen }) => {
             name: 'Stockist',
             icon: <TbTruckDelivery size={20} />,
             path: '/stockist/user/managestockist',
+            role: ["user"]
+        },
+        {
+            name: 'Profile',
+            icon: <FaRegCircleUser size={20} />,
+            path: '/user/profile',
             role: ["user"]
         },
         {

@@ -27,6 +27,8 @@ import PromoTwo from './promos/PromoTwo'
 import PromoThree from './promos/PromoThree'
 import { isDatePast } from '../../utilities/dateUtils'
 import PromoFour from './promos/PromoFour'
+import { FaGift, FaWaveSquare } from 'react-icons/fa6'
+import PromoFive from './promos/PromoFive'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -37,7 +39,7 @@ const Overview = () => {
 
   const [referrals, setReferrals] = useState([])
 
-  const { user, token, logout, refreshUser, miscellaneousDetails } = useUser()
+  const { user, token, logout, refreshUser, checkPendingRanks, hasPendingRank, miscellaneousDetails } = useUser()
   const [refreshPromos, setRefreshPromos] = useState(false)
   const [isGettingProgress, setIsGettingProgress] = useState(false)
   const [pendingRefreshes, setPendingRefreshes] = useState(0);
@@ -45,6 +47,7 @@ const Overview = () => {
   useEffect(() => {
     if (token) {
       refreshUser();
+      checkPendingRanks(token);
     }
   }, [token]);
   
@@ -68,9 +71,8 @@ const Overview = () => {
       icon: <div className='bg-secClr text-pryClr w-full h-full flex items-center justify-center text-xl'>
           <IoWalletOutline />
         </div>,
-      buttonText: "Purchase Now",
-      buttonType: 1,
-      path: "/user/products"
+      // buttonText: "Purchase Now",
+      // buttonType: 1
     },
     {
       walletType: "Earnings Wallet",
@@ -202,7 +204,7 @@ const Overview = () => {
 
   const refreshAllPromos = () => {
     setIsGettingProgress(true);
-    setPendingRefreshes(2); // Adjust if you add/remove promos
+    setPendingRefreshes(1);
     setRefreshPromos(prev => !prev);
   };
 
@@ -220,6 +222,7 @@ const Overview = () => {
   const promoTwoExpired = isDatePast("2025-11-01")
   const promoThreeExpired = isDatePast("2025-11-01")
   const promoFourExpired = isDatePast("2025-11-27")
+  const promoFiveExpired = isDatePast("2026-04-01")
 
   return (
     <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
@@ -277,6 +280,25 @@ const Overview = () => {
           </div>
         </div>
       </div>
+      {hasPendingRank && (
+        <div className="md:col-span-6">
+          <div className="p-4 bg-accClr shadow-md border border-pryClr/20 rounded-lg flex items-center justify-between">
+            <div className='flex items-center gap-4'>
+                <FaGift className="text-white animate-bounce" size={24} />
+                <div>
+                    <h4 className='font-bold text-white'>Hey <span className='capitalize'>{user?.first_name}</span> </h4>
+                    <p className='text-sm text-white'>You have an Unclaimed Rank Reward!.</p>
+                </div>
+            </div>
+            <Link 
+              to={"/user/profile?destination=toclaim"}
+              className="px-4 py-2 bg-pryClr text-white font-semibold rounded-md"
+            >
+              Claim Now
+            </Link>
+          </div>
+        </div>
+      )}
       <div className="flex md:flex-row flex-col items-center md:col-span-6 gap-6">
         {/* New Refs */}
         <div className="lg:my-1 md:w-1/2 w-full h-full">
@@ -328,6 +350,7 @@ const Overview = () => {
           </div>
 
           <div className='space-y-8'>
+            {!promoFiveExpired && (<PromoFive refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoFourExpired && (<PromoFour refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoThreeExpired && (<PromoThree refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoTwoExpired && (<PromoTwo refresh={refreshPromos} onComplete={handleRefreshComplete} />)}

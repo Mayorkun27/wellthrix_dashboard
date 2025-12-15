@@ -6,7 +6,7 @@ import { formatTransactionType } from '../../../utilities/formatterutility';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-const Promo = () => {
+const PromoFour = () => {
     const { user, token, logout } = useUser();
     const [allQualifiers, setAllQualifiers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +40,7 @@ const Promo = () => {
                 }
             });
 
-            console.log("promo qualifiers Response:", response);
+            console.log("PromoFour qualifiers Response:", response);
 
             if (response.status === 200) {
                 setAllQualifiers(response.data);
@@ -113,4 +113,4 @@ const Promo = () => {
     )
 }
 
-export default Promo
+export default PromoFour

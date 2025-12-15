@@ -149,10 +149,10 @@ const ManagePackage = () => {
     }
   };
 
-  const handleDeletePackage = async (id) => {
-    setShowDeleteModal(true);
-    setPackageToDelete(id);
-  };
+  // const handleDeletePackage = async (id) => {
+  //   setShowDeleteModal(true);
+  //   setPackageToDelete(id);
+  // };
 
   const confirmDelete = async () => {
     if (!packageToDelete) return;
@@ -333,14 +333,14 @@ const ManagePackage = () => {
                     <FaEdit className="text-lg" />
                     <span className="font-medium">Edit</span>
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => handleDeletePackage(pkg.id)}
                     className="w-1/2 text-sm h-[50px] text-white bg-red-700 cursor-pointer shadow-lg flex items-center justify-center gap-2 py-2 px-4 rounded-lg transition-colors"
                   >
                     <FaTrashAlt className="text-lg" />
                     <span className="font-medium">Delete Package</span>
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))}

@@ -32,7 +32,7 @@ const UserRow = ({
         <td className="p-4">{user.email || "-"}</td>
         <td className="p-4">{user.username || "-"}</td>
         <td className="p-4 capitalize">{user.mobile || "-"}</td>
-        <td className="p-4 capitalize">{user.plan_name || "-"}</td>
+        <td className="p-4 capitalize">{user?.membership_plan?.name || "-"}</td>
 
         <td className="p-4 capitalize font-semibold">
           {Number(user.stockist_enabled) === 1 ? "Yes" : "No"}
