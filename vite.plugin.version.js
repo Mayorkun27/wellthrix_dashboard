@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 
@@ -10,7 +10,14 @@ export default function versionPlugin() {
     name: "version-plugin",
     closeBundle() {
       const version = Date.now(); // unique timestamp
-      const filePath = path.resolve(__dirname, "dist/version.json");
+      const distPath = path.resolve(__dirname, "dist");
+      const filePath = path.join(distPath, "version.json");
+      
+      // Ensure the 'dist' directory exists
+      if (!existsSync(distPath)) {
+        mkdirSync(distPath, { recursive: true });
+      }
+      
       writeFileSync(filePath, JSON.stringify({ version }), "utf-8");
     },
   };
