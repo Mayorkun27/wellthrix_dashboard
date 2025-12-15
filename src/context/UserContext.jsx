@@ -89,18 +89,18 @@ export const UserProvider = ({ children }) => {
       console.error("API Logout failed, clearing local state anyway:", err);
       toast.error("Logout failed. Please try again.", { id: toastId });
     } finally {
-      // // Always clear local state and storage, regardless of API response
-      // localStorage.removeItem("token");
-      // localStorage.removeItem("user");
-      // localStorage.removeItem("miscellaneousDetails");
-      // setToken(null);
-      // setUser(null);
-      // setMiscellaneousDetails(null);
+      // Always clear local state and storage, regardless of API response
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("miscellaneousDetails");
+      setToken(null);
+      setUser(null);
+      setMiscellaneousDetails(null);
 
-      // // Redirect after a short delay
-      // setTimeout(() => {
-      //   window.location.href = "https://wellthrixinternational.com/#/login";
-      // }, 100);
+      // Redirect after a short delay
+      setTimeout(() => {
+        window.location.href = "https://wellthrixinternational.com/#/login";
+      }, 100);
     }
   };
 
