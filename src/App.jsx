@@ -41,7 +41,7 @@ import Form from "./pages/admin/Form";
 import FormRequest from "./pages/user/FormRequest";
 import EachUser from "./pages/admin/users/EachUser";
 import SalesReport from "./pages/admin/SalesReport";
-import Promo from "./pages/admin/promos/Promo";
+import ManagePromoQualifiers from "./pages/admin/ManagePromoQualifiers";
 
 function App() {
   const { user } = useUser();
@@ -269,7 +269,7 @@ function App() {
         />
         <Route
           path="/admin/promoqualifiers"
-          element={<MainLayout pageName={"Promo Qualifiers"} child={<Promo />} />}
+          element={<MainLayout pageName={"Promo Qualifiers"} child={<ManagePromoQualifiers />} />}
         />
       </Routes>
     </>

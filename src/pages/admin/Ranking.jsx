@@ -24,11 +24,11 @@ const Ranking = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedRank, setSelectedRank] = useState('');
   const [ranks, setRanks] = useState([
-    "Bronze",
-    "Silver",
-    "Gold",
-    "Platinum",
-    "Diamond",
+    "Bronze Leader",
+    "Silver Leader",
+    "Gold Leader",
+    "Platinum Leader",
+    "Diamond Executive",
     "Blue Diamond",
     "Black Diamond",
     "Royal Diamond",

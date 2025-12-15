@@ -28,6 +28,7 @@ import PromoThree from './promos/PromoThree'
 import { isDatePast } from '../../utilities/dateUtils'
 import PromoFour from './promos/PromoFour'
 import { FaGift, FaWaveSquare } from 'react-icons/fa6'
+import PromoFive from './promos/PromoFive'
 
 const API_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -203,7 +204,7 @@ const Overview = () => {
 
   const refreshAllPromos = () => {
     setIsGettingProgress(true);
-    setPendingRefreshes(2); // Adjust if you add/remove promos
+    setPendingRefreshes(1);
     setRefreshPromos(prev => !prev);
   };
 
@@ -221,6 +222,7 @@ const Overview = () => {
   const promoTwoExpired = isDatePast("2025-11-01")
   const promoThreeExpired = isDatePast("2025-11-01")
   const promoFourExpired = isDatePast("2025-11-27")
+  const promoFiveExpired = isDatePast("2026-04-01")
 
   return (
     <div className='grid md:grid-cols-6 grid-cols-1 gap-6 items-'>
@@ -348,6 +350,7 @@ const Overview = () => {
           </div>
 
           <div className='space-y-8'>
+            {!promoFiveExpired && (<PromoFive refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoFourExpired && (<PromoFour refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoThreeExpired && (<PromoThree refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
             {!promoTwoExpired && (<PromoTwo refresh={refreshPromos} onComplete={handleRefreshComplete} />)}
