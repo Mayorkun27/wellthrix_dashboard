@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
 import ProfileInfoTab from './profileTabs/ProfileInfoTab';
-import PasswordResetTab from './profileTabs/PasswordResettab';
+import PasswordResetTab from './profileTabs/PasswordResetTab';
 import PinResetTab from './profileTabs/PinResetTab';
 import PersonalDetailsForm from './profileTabs/PersonalDetailsForm';
 import ContactDetailsForm from './profileTabs/ContactDetailsForm';
