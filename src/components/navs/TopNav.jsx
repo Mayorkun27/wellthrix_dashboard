@@ -85,7 +85,7 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
             <IoMdNotificationsOutline className="text-pryClr md:text-3xl text-2xl" />
           </Link>
 
-          {/* {
+          {
             user?.role === "user" && (
               <Link
                 to={"/user/products/cart"}
@@ -101,7 +101,7 @@ const TopNav = ({ pageName, subText, selectedType, setSelectedType }) => {
                 )}
               </Link>
             )
-          } */}
+          }
 
           <Link
             to="/user/profile"

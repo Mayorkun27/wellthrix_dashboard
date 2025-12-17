@@ -128,16 +128,16 @@ const MyRankProgress = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const rankTiers = [
-        { title: 'Bronze', bonus_amount: 50000, pv_needed: 1250, plan: 3 },
-        { title: 'Silver', bonus_amount: 150000, pv_needed: 4250, plan: 4 },
-        { title: 'Gold', bonus_amount: 250000, pv_needed: 10500, plan: 5 },
-        { title: 'Platinum', bonus_amount: 1000000, pv_needed: 38000, plan: 6, extra: 'Local Trip' },
-        { title: 'Diamond', bonus_amount: 2200000, pv_needed: 85000, plan: 6, extra: 'International Trip' },
-        { title: 'Blue Diamond', bonus_amount: 8000000, pv_needed: 170000, plan: 7, extra: 'Car' },
-        { title: 'Black Diamond', bonus_amount: 12000000, pv_needed: 400000, plan: 7, extra: 'Land' },
-        { title: 'Royal Diamond', bonus_amount: 25000000, pv_needed: 1200000, plan: 7, extra: 'SUV' },
-        { title: 'Crown Ambassador', bonus_amount: 50000000, pv_needed: 2000000, plan: 7, extra: 'Bungalow' },
-        { title: 'Double Crown Ambassador', bonus_amount: 120000000, pv_needed: 4200000, plan: 7, extra: 'Duplex' },
+        { title: 'Bronze Leader', bonus_amount: 100000, pv_needed: 1500, plan: 3 },
+        { title: 'Silver Leader', bonus_amount: 300000, pv_needed: 5000, plan: 4 },
+        { title: 'Gold Leader', bonus_amount: 1000000, pv_needed: 15000, plan: 5, extra: 'Iphone' },
+        { title: 'Platinum Leader', bonus_amount: 6000000, pv_needed: 55000, plan: 6, extra: 'Car' },
+        { title: 'Diamond Executive', bonus_amount: 8000000, pv_needed: 110000, plan: 6, extra: 'Car' },
+        { title: 'Blue Diamond', bonus_amount: 15000000, pv_needed: 180000, plan: 7, extra: 'Car' },
+        { title: 'Black Diamond', bonus_amount: 20000000, pv_needed: 400000, plan: 7, extra: 'Super Car' },
+        { title: 'Royal Diamond', bonus_amount: 25000000, pv_needed: 1300000, plan: 7, extra: 'Land' },
+        { title: 'Crown Ambassador', bonus_amount: 50000000, pv_needed: 2100000, plan: 7, extra: 'Bungalow' },
+        { title: 'Double Crown Ambassador', bonus_amount: 120000000, pv_needed: 4500000, plan: 7, extra: 'Duplex' },
     ];
 
     const fetchMyRankAchievement = async () => {

@@ -37,9 +37,9 @@ const ProductCards = ({ product }) => {
                         <h3 className="font-bold text-base text-pryClr capitalize">{product.product_name}</h3>
                         <div className="flex items-center justify-between">
                             <div className="font-semibold text-[#EC3030CC] flex md:items-start items-center md:pb-0 pb-1 gap-2 md:text-sm">
-                                <span>{formatterUtility(Number(product.price))}</span>
-                                <span>&#40;&#36;{formatterUtility(Number(product.price / dollarRate), true)}&#41;</span>
-                                <span>- {product.product_pv}PV</span>
+                                <span>{formatterUtility(Number(product.repurchase_price))}</span>
+                                <span>&#40;&#36;{formatterUtility(Number(product.repurchase_price / dollarRate), true)}&#41;</span>
+                                <span>- {product.product_repurchase_pv}PV</span>
                             </div>
                             {/* <span className="text-xs font-medium">Quantity: {unitLeft <= 0 ? "0" : unitLeft}</span> */}
                         </div>

@@ -47,7 +47,7 @@ const Products = () => {
     }
   }, [token])
 
-  const displayProducts = products
+  const displayProducts = products.filter(product => Boolean(product.repurchase_price))
 
   if (loading) {
     return (
